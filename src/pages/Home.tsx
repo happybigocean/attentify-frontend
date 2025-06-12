@@ -6,14 +6,14 @@ export default function Home() {
     <div className="bg-white">
       <header className="absolute inset-x-0 top-0 z-50">
         <nav
-          className="flex items-center justify-between p-6 lg:px-8"
+          className="flex items-center justify-between p-3 lg:px-8"
           aria-label="Global"
         >
           <div className="flex lg:flex-1">
             <a href="#" className="-m-1.5 p-1.5">
               <span className="sr-only">Your Company</span>
               <img
-                className="h-11 w-auto"
+                className="h-12 w-auto"
                 src="logo.png"
                 alt=""
               />
@@ -47,23 +47,32 @@ export default function Home() {
               Product
             </a>
             <a href="#" className="text-sm/6 font-semibold text-gray-900">
-              Features
+              Solutions
             </a>
             <a href="#" className="text-sm/6 font-semibold text-gray-900">
-              Marketplace
+              Pricing
             </a>
             <a href="#" className="text-sm/6 font-semibold text-gray-900">
-              Company
+              Abous Us
+            </a>
+            <a href="#" className="text-sm/6 font-semibold text-gray-900">
+              Support
             </a>
           </div>
-          <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-            <a href="#" className="text-sm/6 font-semibold text-gray-900">
-              Log in <span aria-hidden="true">→</span>
+          <div className="hidden sm:flex sm:flex-1 sm:justify-end sm:items-center">
+            <a href="#" className="mr-4 text-sm/6 font-semibold text-gray-900">
+              Log in 
+            </a>
+            <a
+                href="#"
+                className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            >
+            Start free trial
             </a>
           </div>
         </nav>
         {/* Mobile menu, show/hide based on menu open state. */}
-        <div className="lg:hidden" role="dialog" aria-modal="true">
+        <div className="hidden" role="dialog" aria-modal="true">
           {/* Background backdrop, show/hide based on slide-over state. */}
           <div className="fixed inset-0 z-50" />
           <div className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
@@ -152,7 +161,7 @@ export default function Home() {
             }}
           />
         </div>
-        <div className="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
+        <div className="mx-auto max-w-2xl pt-10 py-32 sm:pt-20">
           <div className="text-center">
             <h1 className="text-5xl font-semibold tracking-tight text-balance text-gray-900 sm:text-5xl">
               AI-Powered Multi-Channel Support for Shopify Stores
