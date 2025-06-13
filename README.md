@@ -1,54 +1,96 @@
-# React + TypeScript + Vite
+# Attentify Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the frontend for **Attentify**, a unified, AI-powered customer support hub for Shopify stores.  
+Built with **React**, **Vite**, and styled with **Tailwind CSS**.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ✨ Features
 
-## Expanding the ESLint configuration
+- Modern, responsive UI
+- Public landing page and authentication flows
+- Unified inbox for all channels
+- Settings, analytics, templates, and more
+- Connects to the Attentify FastAPI backend
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## 🚀 Getting Started
+
+### 1. **Clone the repository**
+
+```bash
+git clone https://github.com/your-org/attentify.git
+cd attentify/frontend
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 2. **Install dependencies**
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+```bash
+npm install
+# or
+yarn install
 ```
+
+### 3. **Environment Variables**
+
+Create a `.env` file for your API endpoint:
+
+```env
+VITE_API_URL=http://localhost:8000/api/v1
+```
+
+### 4. **Run the development server**
+
+```bash
+npm run dev
+# or
+yarn dev
+```
+
+Visit [http://localhost:5173](http://localhost:5173) (or as shown in your terminal) to view the app.
+
+---
+
+## 🗂️ Project Structure
+
+```
+frontend/
+├── src/
+│   ├── assets/
+│   ├── components/          # Shared UI components
+│   ├── features/            # Feature modules (inbox, auth, etc.)
+│   ├── hooks/
+│   ├── layouts/
+│   ├── pages/               # Route-level pages
+│   ├── services/            # API clients
+│   ├── store/               # State management
+│   ├── App.tsx
+│   ├── main.tsx
+│   └── index.css
+├── public/
+├── vite.config.ts
+├── tailwind.config.js
+└── package.json
+```
+
+---
+
+## 🛠️ Useful Commands
+
+- **Start dev server:** `npm run dev` or `yarn dev`
+- **Build for production:** `npm run build` or `yarn build`
+- **Preview production build:** `npm run preview` or `yarn preview`
+- **Lint:** `npm run lint` or `yarn lint`
+
+---
+
+## 🧑‍💻 Contributing
+
+See the main repository [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
+
+---
+
+## 📄 License
+
+MIT
