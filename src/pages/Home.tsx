@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <div className="bg-white relative">
@@ -9,10 +11,10 @@ export default function Home() {
       <header className="absolute inset-x-0 top-0 z-50">
         <nav className="flex items-center justify-between p-3 lg:px-8" aria-label="Global">
           <div className="flex lg:flex-1">
-            <a href="#" className="-m-1.5 p-1.5">
-              <span className="sr-only">Your Company</span>
-              <img className="h-12 w-auto" src="logo.png" alt="" />
-            </a>
+            <Link to="/" className="-m-1.5 p-1.5">
+              <span className="sr-only">Attentify</span>
+              <img className="h-12 w-auto" src="logo.png" alt="Attentify logo" />
+            </Link>
           </div>
           <div className="flex lg:hidden">
             <button
@@ -34,9 +36,11 @@ export default function Home() {
             <a href="#" className="text-sm font-semibold text-gray-900">Support</a>
           </div>
           <div className="hidden sm:flex sm:flex-1 sm:justify-end sm:items-center">
-            <a href="#" className="mr-4 text-sm font-semibold text-gray-900">Log in</a>
+            <a 
+              onClick={() => navigate('/login')}
+              className="mr-4 text-sm font-semibold text-gray-900">Log in</a>
             <a
-              href="#"
+              onClick={() => navigate('/login')}
               className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-indigo-600"
             >
               Start free trial
@@ -70,7 +74,7 @@ export default function Home() {
             <a href="#" className="block text-base font-semibold text-gray-900">Pricing</a>
             <a href="#" className="block text-base font-semibold text-gray-900">About Us</a>
             <a href="#" className="block text-base font-semibold text-gray-900">Support</a>
-            <a href="#" className="block text-base font-semibold text-gray-900">Log in</a>
+            <a onClick={() => navigate('/login')} className="block text-base font-semibold text-gray-900">Log in</a>
           </div>
         </div>
       </header>
@@ -98,7 +102,7 @@ export default function Home() {
           </p>
           <div className="mt-10 flex flex-col sm:flex-row sm:justify-center sm:items-center gap-4">
             <a
-              href="#"
+              onClick={() => navigate('/login')}
               className="rounded-md bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow hover:bg-indigo-500"
             >
               Start free trial
