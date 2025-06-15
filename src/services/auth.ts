@@ -19,11 +19,16 @@ export async function login(email: string, password: string) {
   }
 }
 
-export async function register(email: string, password: string) {
+export async function register(email: string, password: string, firstName: string, lastName: string) {
   try {
     const response = await axios.post(
       `${API_URL}/auth/register`,
-      { email, password },
+      { 
+        email, 
+        password,
+        first_name: firstName,
+        last_name: lastName,
+      },
       {
         headers: {
           "Content-Type": "application/json",

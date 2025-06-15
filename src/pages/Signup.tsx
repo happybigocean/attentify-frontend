@@ -5,6 +5,8 @@ import { register } from "../services/auth";
 export default function Signup() {
     const [passwordVisible, setPasswordVisible] = useState(false);
 
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
     const [registerEmail, setRegisterEmail] = useState("");
     const [registerPassword, setRegisterPassword] = useState("");
     const [loading, setLoading] = useState(false);
@@ -16,11 +18,13 @@ export default function Signup() {
         setLoading(true);
         setError(null);
         try {
-            const data = await register(registerEmail, registerPassword);
-            localStorage.setItem("token", data.access_token);
+            const data = await register(registerEmail, registerPassword, firstName, lastName);
+            const { token, user } = data;
+            localStorage.setItem("token", token);
+            localStorage.setItem('user', JSON.stringify(user));
             setMessage("Registered! Redirecting...");
             setTimeout(() => {
-                window.location.href = "/";
+                window.location.href = "/dashboard";
             }, 1000);
         } catch (err: any) {
             setError(err.message || "Registration failed");
@@ -43,7 +47,6 @@ export default function Signup() {
             </header>
 
             <div className="relative isolate pt-24 flex flex-1 items-center justify-center px-4 lg:pt-48">
-                {/* Top gradient pattern */}
                 <div
                     className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
                     aria-hidden="true"
@@ -63,6 +66,26 @@ export default function Signup() {
 
                         {error && <div className="text-red-500 text-sm mb-2 text-center">{error}</div>}
                         {message && <div className="text-green-600 text-sm mb-2 text-center">{message}</div>}
+
+                        <label className="text-sm text-gray-700 mb-1">First Name</label>
+                        <input
+                            type="text"
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 mb-4 focus:outline-none focus:ring focus:ring-indigo-200"
+                            placeholder="John"
+                            value={firstName}
+                            onChange={(e) => setFirstName(e.target.value)}
+                            required
+                        />
+
+                        <label className="text-sm text-gray-700 mb-1">Last Name</label>
+                        <input
+                            type="text"
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 mb-4 focus:outline-none focus:ring focus:ring-indigo-200"
+                            placeholder="Doe"
+                            value={lastName}
+                            onChange={(e) => setLastName(e.target.value)}
+                            required
+                        />
 
                         <label className="text-sm text-gray-700 mb-1">Email address</label>
                         <input
@@ -134,7 +157,6 @@ export default function Signup() {
                         </button>
                     </div>
 
-                    {/* Already have an account? */}
                     <div className="text-center text-sm text-gray-600 mt-0">
                         Already have an account?{" "}
                         <Link to="/login" className="text-indigo-600 hover:underline font-medium">
@@ -142,15 +164,11 @@ export default function Signup() {
                         </Link>
                     </div>
 
-                    {/* Divider + Language */}
                     <div className="border-t border-gray-200 mt-4 flex justify-center items-center px-4 py-2">
-                        <div className="text-sm text-gray-500">
-                            English (United States) ▼
-                        </div>
+                        <div className="text-sm text-gray-500">English (United States) ▼</div>
                     </div>
                 </form>
 
-                {/* Bottom gradient pattern */}
                 <div
                     className="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]"
                     aria-hidden="true"

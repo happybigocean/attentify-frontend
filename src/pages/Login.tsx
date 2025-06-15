@@ -17,9 +17,11 @@ export default function Login() {
         setError(null);
         try {
             const data = await login(loginEmail, loginPassword);
-            localStorage.setItem("token", data.access_token);
+            const { token, user } = data;
+            localStorage.setItem("token", token);
+            localStorage.setItem('user', JSON.stringify(user));
             setMessage("Logged in! Redirecting...");
-            setTimeout(() => navigate("/"), 1000); // redirect after short delay
+            setTimeout(() => navigate("/dashboard"), 1000); // redirect after short delay
         } catch (err: any) {
             setError(err.message || "Login failed");
         } finally {
