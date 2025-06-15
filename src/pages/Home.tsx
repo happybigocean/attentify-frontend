@@ -40,7 +40,7 @@ export default function Home() {
               onClick={() => navigate('/login')}
               className="mr-4 text-sm font-semibold text-gray-900">Log in</a>
             <a
-              onClick={() => navigate('/login')}
+              onClick={() => navigate('/signup')}
               className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-indigo-600"
             >
               Start free trial
@@ -102,7 +102,7 @@ export default function Home() {
           </p>
           <div className="mt-10 flex flex-col sm:flex-row sm:justify-center sm:items-center gap-4">
             <a
-              onClick={() => navigate('/login')}
+              onClick={() => navigate('/signup')}
               className="rounded-md bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow hover:bg-indigo-500"
             >
               Start free trial

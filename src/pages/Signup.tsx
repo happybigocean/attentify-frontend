@@ -1,27 +1,29 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { login } from "../services/auth";
+import { Link } from "react-router-dom";
+import { register } from "../services/auth";
 
-export default function Login() {
+export default function Signup() {
     const [passwordVisible, setPasswordVisible] = useState(false);
-    const [loginEmail, setLoginEmail] = useState("");
-    const [loginPassword, setLoginPassword] = useState("");
+
+    const [registerEmail, setRegisterEmail] = useState("");
+    const [registerPassword, setRegisterPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [message, setMessage] = useState<string | null>(null);
-    const navigate = useNavigate();
 
-    const handleLogin = async (e: React.FormEvent) => {
+    const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
         try {
-            const data = await login(loginEmail, loginPassword);
+            const data = await register(registerEmail, registerPassword);
             localStorage.setItem("token", data.access_token);
-            setMessage("Logged in! Redirecting...");
-            setTimeout(() => navigate("/"), 1000); // redirect after short delay
+            setMessage("Registered! Redirecting...");
+            setTimeout(() => {
+                window.location.href = "/";
+            }, 1000);
         } catch (err: any) {
-            setError(err.message || "Login failed");
+            setError(err.message || "Registration failed");
         } finally {
             setLoading(false);
         }
@@ -29,9 +31,8 @@ export default function Login() {
 
     return (
         <div className="bg-white relative">
-            {/* Header */}
             <header className="absolute inset-x-0 top-0 z-50">
-                <nav className="flex items-center justify-between p-3 lg:px-8" aria-label="Global">
+                <nav className="flex items-center justify-between p-3 lg:px-8">
                     <div className="flex lg:flex-1">
                         <Link to="/" className="-m-1.5 p-1.5">
                             <span className="sr-only">Attentify</span>
@@ -41,9 +42,8 @@ export default function Login() {
                 </nav>
             </header>
 
-            {/* Login Form */}
-            <div className="relative isolate pt-36 flex flex-1 items-center justify-center px-4 lg:pt-48">
-                {/* Top Gradient Pattern */}
+            <div className="relative isolate pt-24 flex flex-1 items-center justify-center px-4 lg:pt-48">
+                {/* Top gradient pattern */}
                 <div
                     className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
                     aria-hidden="true"
@@ -57,24 +57,21 @@ export default function Login() {
                     />
                 </div>
 
-                <form
-                    onSubmit={handleLogin}
-                    className="bg-white rounded-xl shadow-lg w-full max-w-xl flex flex-col"
-                >
+                <form onSubmit={handleRegister} className="bg-white rounded-xl shadow-lg w-full max-w-xl flex flex-col">
                     <div className="w-full px-6 py-8 flex flex-col justify-center">
-                        <h2 className="text-xl font-semibold mb-4 text-center">Log in</h2>
+                        <h2 className="text-xl font-semibold mb-4 text-center">Sign Up</h2>
 
-                        {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
-                        {message && <div className="text-green-500 text-sm mb-2">{message}</div>}
+                        {error && <div className="text-red-500 text-sm mb-2 text-center">{error}</div>}
+                        {message && <div className="text-green-600 text-sm mb-2 text-center">{message}</div>}
 
                         <label className="text-sm text-gray-700 mb-1">Email address</label>
                         <input
                             type="email"
-                            value={loginEmail}
-                            onChange={(e) => setLoginEmail(e.target.value)}
-                            required
                             className="w-full border border-gray-300 rounded-md px-3 py-2 mb-4 focus:outline-none focus:ring focus:ring-indigo-200"
                             placeholder="you@example.com"
+                            value={registerEmail}
+                            onChange={(e) => setRegisterEmail(e.target.value)}
+                            required
                         />
 
                         <div className="flex justify-between items-center">
@@ -84,63 +81,76 @@ export default function Login() {
                                 onClick={() => setPasswordVisible(!passwordVisible)}
                                 className="text-sm text-gray-500 flex items-center gap-1"
                             >
-                                {passwordVisible ? "Hide" : "Show"}
+                                {passwordVisible ? (
+                                    <>
+                                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path d="M13.875 18.825A10.05 10.05 0 0112 19.5C7.5 19.5 3.5 16.5 1.5 12c.673-1.57 1.662-3.018 2.91-4.2M10.5 6.75a7.5 7.5 0 016 3.75m-3 2.25a2.25 2.25 0 11-3-3" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                            <path d="M3 3l18 18" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                        </svg>
+                                        Show
+                                    </>
+                                ) : (
+                                    <>
+                                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path
+                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                                                strokeWidth="1.5"
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                            />
+                                        </svg>
+                                        Hide
+                                    </>
+                                )}
                             </button>
                         </div>
 
                         <input
                             type={passwordVisible ? "text" : "password"}
-                            value={loginPassword}
-                            onChange={(e) => setLoginPassword(e.target.value)}
-                            required
                             className="w-full border border-gray-300 rounded-md px-3 py-2 mb-1 focus:outline-none focus:ring focus:ring-indigo-200"
                             placeholder="••••••••"
+                            value={registerPassword}
+                            onChange={(e) => setRegisterPassword(e.target.value)}
+                            required
                         />
-
-                        <div className="mb-4 text-right">
-                            <a href="#" className="text-sm text-indigo-600 underline">
-                                Forget your password?
-                            </a>
-                        </div>
 
                         <button
                             type="submit"
-                            className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2 rounded-full"
                             disabled={loading}
+                            className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2 mt-5 rounded-full disabled:opacity-50"
                         >
-                            {loading ? "Logging in..." : "Log in"}
+                            {loading ? "Signing Up..." : "Sign Up"}
                         </button>
 
-                        {/* Divider */}
                         <div className="block h-px bg-gray-200 mx-6 my-6"></div>
 
                         <button
                             type="button"
-                            className="w-full border mt-4 border-gray-300 rounded-full py-2 px-4 flex items-center justify-center gap-2 hover:bg-gray-50"
+                            className="w-full border border-gray-300 rounded-full py-2 px-4 flex items-center justify-center gap-2 hover:bg-gray-50"
                         >
-                            <img
-                                src="https://www.svgrepo.com/show/475656/google-color.svg"
-                                alt="Google"
-                                className="h-5 w-5"
-                            />
+                            <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="h-5 w-5" />
                             Continue with Google
                         </button>
                     </div>
-                    
+
                     {/* Already have an account? */}
                     <div className="text-center text-sm text-gray-600 mt-0">
-                        Don’t have an account?{" "}
-                        <Link to="/signup" className="text-indigo-600 hover:underline font-medium">
-                            Sign up
+                        Already have an account?{" "}
+                        <Link to="/login" className="text-indigo-600 hover:underline font-medium">
+                            Log in
                         </Link>
                     </div>
 
+                    {/* Divider + Language */}
                     <div className="border-t border-gray-200 mt-4 flex justify-center items-center px-4 py-2">
-                        <div className="text-sm text-gray-500">English (United States) ▼</div>
+                        <div className="text-sm text-gray-500">
+                            English (United States) ▼
+                        </div>
                     </div>
                 </form>
 
-                {/* Bottom Gradient Pattern */}
+                {/* Bottom gradient pattern */}
                 <div
                     className="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]"
                     aria-hidden="true"
