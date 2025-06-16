@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import Layout from "../../components/Layout";
+import Layout from "../../layouts/Layout";
 import {
   MagnifyingGlassIcon,
   ArrowPathIcon,
@@ -62,11 +62,12 @@ export default function InboxPage() {
       if (viewMode === "inbox") return !t.archived && !t.trashed;
       if (viewMode === "archived") return t.archived;
       if (viewMode === "trashed") return t.trashed;
+      return false;
     })
     .filter((t) => t.subject.toLowerCase().includes(search.toLowerCase()));
 
   const toggleSelectAll = () => {
-    if (selected.length === filteredTickets.length) {
+    if (selected.length === filteredTickets.length && filteredTickets.length > 0) {
       setSelected([]);
     } else {
       setSelected(filteredTickets.map((t) => t.id));
@@ -89,78 +90,90 @@ export default function InboxPage() {
   return (
     <Layout>
       <div className="p-6">
+        {/* Search Bar */}
+        <div className="relative mb-6">
+          <input
+            type="text"
+            placeholder="Search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full px-5 py-3 pl-12 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg"
+          />
+          <MagnifyingGlassIcon className="h-6 w-6 text-gray-500 absolute top-3 left-4" />
+        </div>
+
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-semibold text-gray-800">{viewLabel}</h1>
-          <div className="flex gap-3">
+          <div className="flex gap-6">
             <button
               onClick={() => setViewMode("inbox")}
-              className={`flex items-center gap-1 text-sm ${
+              className={`flex items-center gap-2 text-base ${
                 viewMode === "inbox"
                   ? "text-blue-600 font-semibold"
                   : "text-gray-500 hover:text-gray-700"
               }`}
             >
-              <InboxIcon className="w-4 h-4" />
+              <InboxIcon className="w-5 h-5" />
               Inbox
             </button>
             <button
               onClick={() => setViewMode("archived")}
-              className={`flex items-center gap-1 text-sm ${
+              className={`flex items-center gap-2 text-base ${
                 viewMode === "archived"
                   ? "text-blue-600 font-semibold"
                   : "text-gray-500 hover:text-gray-700"
               }`}
             >
-              <ArchiveBoxArrowDownIcon className="w-4 h-4" />
+              <ArchiveBoxArrowDownIcon className="w-5 h-5" />
               Archived
             </button>
             <button
               onClick={() => setViewMode("trashed")}
-              className={`flex items-center gap-1 text-sm ${
+              className={`flex items-center gap-2 text-base ${
                 viewMode === "trashed"
                   ? "text-blue-600 font-semibold"
                   : "text-gray-500 hover:text-gray-700"
               }`}
             >
-              <TrashIcon className="w-4 h-4" />
+              <TrashIcon className="w-5 h-5" />
               Trash
             </button>
           </div>
         </div>
 
-        {/* Search Bar */}
-        <div className="relative mb-4">
-          <input
-            type="text"
-            placeholder="Search emails..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <MagnifyingGlassIcon className="h-5 w-5 text-gray-500 absolute top-2.5 left-3" />
-        </div>
-
         {/* Toolbar */}
-        <div className="flex items-center justify-between px-4 py-2 bg-white border border-gray-200 rounded-t-lg">
-          <div className="flex items-center gap-4">
+        <div className="flex items-center justify-between px-5 py-3 bg-white border border-gray-200 rounded-t-lg">
+          <div className="flex items-center gap-6 ms-1">
             <input
               type="checkbox"
-              checked={selected.length === filteredTickets.length}
+              checked={selected.length === filteredTickets.length && filteredTickets.length > 0}
               onChange={toggleSelectAll}
-              className="h-4 w-4 text-blue-600 border-gray-300 rounded"
+              className="h-5 w-5 text-blue-600 border-gray-300 rounded cursor-pointer"
             />
-            <ArrowPathIcon className="h-5 w-5 text-gray-500 cursor-pointer" />
-            <EllipsisVerticalIcon className="h-5 w-5 text-gray-500 cursor-pointer" />
+            <button
+              className="hover:text-blue-600 transition-colors"
+              title="Refresh"
+              onClick={() => {
+                // TODO: add refresh logic here
+              }}
+            >
+              <ArrowPathIcon className="h-6 w-6 cursor-pointer" />
+            </button>
+            <button
+              className="hover:text-blue-600 transition-colors"
+              title="More options"
+            >
+              <EllipsisVerticalIcon className="h-6 w-6 cursor-pointer" />
+            </button>
           </div>
         </div>
 
         {/* Inbox Table */}
         <div className="bg-white border-x border-b border-gray-200 rounded-b-lg">
-          <table className="min-w-full divide-y divide-gray-200">
+          <table className="min-w-full divide-y divide-gray-200 text-lg">
             <tbody>
               {filteredTickets.length === 0 ? (
                 <tr>
-                  <td className="p-6 text-gray-400 text-center" colSpan={5}>
+                  <td className="p-8 text-gray-400 text-center" colSpan={5}>
                     No {viewLabel.toLowerCase()} emails found.
                   </td>
                 </tr>
@@ -170,26 +183,26 @@ export default function InboxPage() {
                     key={ticket.id}
                     className="hover:bg-gray-50 transition-all border-t border-gray-100"
                   >
-                    <td className="px-4 py-3 w-12">
+                    <td className="px-6 py-4 w-14">
                       <input
                         type="checkbox"
                         checked={selected.includes(ticket.id)}
                         onChange={() => toggleSelect(ticket.id)}
-                        className="h-4 w-4 text-blue-600 border-gray-300 rounded"
+                        className="h-5 w-5 text-blue-600 border-gray-300 rounded cursor-pointer"
                       />
                     </td>
-                    <td className="px-4 py-3 font-medium text-gray-700 w-1/4">
+                    <td className="px-6 py-4 font-medium text-gray-700 w-1/4">
                       {ticket.from}
                     </td>
-                    <td className="px-4 py-3 w-2/4 text-blue-700 hover:underline">
+                    <td className="px-6 py-4 w-2/4 text-blue-700 hover:underline">
                       <Link to={`/inbox/${ticket.id}`}>{ticket.subject}</Link>
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-500 text-right w-1/6">
+                    <td className="px-6 py-4 text-sm text-gray-500 text-right w-1/6">
                       {ticket.receivedAt}
                     </td>
-                    <td className="px-4 py-3 text-sm text-right">
+                    <td className="px-6 py-4 text-sm text-right">
                       <span
-                        className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
                           ticket.status === "solved"
                             ? "bg-green-100 text-green-700"
                             : "bg-yellow-100 text-yellow-700"
