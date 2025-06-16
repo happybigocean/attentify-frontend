@@ -4,6 +4,8 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/User/Dashboard";
+import Inbox from "./pages/User/Inbox";
+import Settings from "./pages/User/Settings";
 import ProtectedRoute from './routes/ProtectedRoute';
 import "./App.css";
 
@@ -20,6 +22,22 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={['admin', 'user']}>
               <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/inbox"
+          element={
+            <ProtectedRoute allowedRoles={['admin', 'user']}>
+              <Inbox />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute allowedRoles={['admin', 'user']}>
+              <Settings />
             </ProtectedRoute>
           }
         />
