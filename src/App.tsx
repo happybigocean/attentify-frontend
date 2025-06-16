@@ -4,7 +4,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/User/Dashboard";
-import Inbox from "./pages/User/Inbox";
+import InboxPage from "./pages/User/InboxPage";
 import Settings from "./pages/User/Settings";
 import ProtectedRoute from './routes/ProtectedRoute';
 import "./App.css";
@@ -30,7 +30,7 @@ function App() {
           path="/inbox"
           element={
             <ProtectedRoute allowedRoles={['admin', 'user']}>
-              <Inbox />
+              <InboxPage />
             </ProtectedRoute>
           }
         />
