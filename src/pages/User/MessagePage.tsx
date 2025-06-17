@@ -47,16 +47,25 @@ export default function MessagePage() {
   const [selected, setSelected] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<ViewMode>("inbox");
   const [messages, setMessages] = useState<Message[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const fetchMessages = async () => {
+    setLoading(true);
+    try {
+      await axios.post(`${import.meta.env.VITE_API_URL || ""}/message/fetch-all`);
+      const response = await axios.get<Message[]>(
+        `${import.meta.env.VITE_API_URL || ""}/message`
+      );
+      setMessages(response.data);
+    } catch (error) {
+      console.error("Failed to load messages:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    axios
-      .get<Message[]>(`${import.meta.env.VITE_API_URL || ""}/message`)
-      .then((response) => {
-        setMessages(response.data);
-      })
-      .catch((error) => {
-        console.error("Failed to fetch messages:", error);
-      });
+    fetchMessages();
   }, []);
 
   const filteredMessages = messages
@@ -115,7 +124,7 @@ export default function MessagePage() {
           <div className="flex gap-6">
             {modes.map(([mode, icon]) => (
               <button
-                key={mode} // now mode is known as string (ViewMode)
+                key={mode}
                 onClick={() => setViewMode(mode)}
                 className={`flex items-center gap-2 text-base ${
                   viewMode === mode
@@ -143,8 +152,11 @@ export default function MessagePage() {
               aria-label="Select all messages"
             />
             <ArrowPathIcon
-              className="h-6 w-6 cursor-pointer hover:text-blue-600"
+              className={`h-6 w-6 cursor-pointer hover:text-blue-600 ${
+                loading ? "animate-spin" : ""
+              }`}
               aria-hidden="true"
+              onClick={fetchMessages}
             />
             <EllipsisVerticalIcon
               className="h-6 w-6 cursor-pointer hover:text-blue-600"
@@ -153,61 +165,64 @@ export default function MessagePage() {
           </div>
         </div>
 
-        <div className="bg-white border-x border-b border-gray-200 rounded-b-lg">
-          <table className="min-w-full divide-y divide-gray-200 text-lg">
-            <tbody>
-              {filteredMessages.length === 0 ? (
-                <tr>
-                  <td
-                    className="p-8 text-gray-400 text-center"
-                    colSpan={5}
-                  >
-                    No {viewLabel.toLowerCase()} emails found.
-                  </td>
-                </tr>
-              ) : (
-                filteredMessages.map((msg) => (
-                  <tr
-                    key={msg._id}
-                    className="hover:bg-gray-50 transition-all border-t border-gray-100"
-                  >
-                    <td className="px-6 py-4 w-14">
-                      <input
-                        type="checkbox"
-                        checked={selected.includes(msg._id)}
-                        onChange={() => toggleSelect(msg._id)}
-                        className="h-5 w-5 text-blue-600 border-gray-300 rounded cursor-pointer"
-                        aria-label={`Select message ${msg.title ?? msg._id}`}
-                      />
-                    </td>
-                    <td className="px-6 py-4 font-medium text-gray-700 w-1/4">
-                      {msg.client_id}
-                    </td>
-                    <td className="px-6 py-4 w-2/4 text-blue-700 hover:underline">
-                      <Link to={`/inbox/${msg._id}`}>
-                        {msg.title ?? "(no subject)"}
-                      </Link>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 text-right w-1/6">
-                      {new Date(msg.last_updated).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-right">
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                          msg.status === "solved"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-yellow-100 text-yellow-700"
-                        }`}
-                      >
-                        {msg.status}
-                      </span>
+        {loading ? (
+          <div className="bg-white border-x border-b border-gray-200 rounded-b-lg py-12 text-center text-gray-500 text-lg">
+            Loading messages...
+          </div>
+        ) : (
+          <div className="bg-white border-x border-b border-gray-200 rounded-b-lg">
+            <table className="min-w-full divide-y divide-gray-200 text-lg">
+              <tbody>
+                {filteredMessages.length === 0 ? (
+                  <tr>
+                    <td className="p-8 text-gray-400 text-center" colSpan={5}>
+                      No {viewLabel.toLowerCase()} emails found.
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                ) : (
+                  filteredMessages.map((msg) => (
+                    <tr
+                      key={msg._id}
+                      className="hover:bg-gray-50 transition-all border-t border-gray-100"
+                    >
+                      <td className="px-6 py-4 w-14">
+                        <input
+                          type="checkbox"
+                          checked={selected.includes(msg._id)}
+                          onChange={() => toggleSelect(msg._id)}
+                          className="h-5 w-5 text-blue-600 border-gray-300 rounded cursor-pointer"
+                          aria-label={`Select message ${msg.title ?? msg._id}`}
+                        />
+                      </td>
+                      <td className="px-6 py-4 font-medium text-gray-700 w-1/4">
+                        {msg.client_id}
+                      </td>
+                      <td className="px-6 py-4 w-2/4 text-blue-700 hover:underline">
+                        <Link to={`/inbox/${msg._id}`}>
+                          {msg.title ?? "(no subject)"}
+                        </Link>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-500 text-right w-1/6">
+                        {new Date(msg.last_updated).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-right">
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                            msg.status === "solved"
+                              ? "bg-green-100 text-green-700"
+                              : "bg-yellow-100 text-yellow-700"
+                          }`}
+                        >
+                          {msg.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </Layout>
   );
