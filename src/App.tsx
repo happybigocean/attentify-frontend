@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/User/Dashboard";
 import MessagePage from "./pages/User/MessagePage";
+import MessageDetailPage from "./pages/User/MessageDetailPage";
 import Settings from "./pages/User/Settings";
 import ProtectedRoute from './routes/ProtectedRoute';
 import "./App.css";
@@ -27,10 +28,18 @@ function App() {
           }
         />
         <Route
-          path="/inbox"
+          path="/message"
           element={
             <ProtectedRoute allowedRoles={['admin', 'user']}>
               <MessagePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/message/:id"
+          element={
+            <ProtectedRoute allowedRoles={['admin', 'user']}>
+              <MessageDetailPage  />
             </ProtectedRoute>
           }
         />

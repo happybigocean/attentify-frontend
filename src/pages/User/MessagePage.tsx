@@ -56,6 +56,7 @@ export default function MessagePage() {
       const response = await axios.get<Message[]>(
         `${import.meta.env.VITE_API_URL || ""}/message`
       );
+      console.log(response.data)
       setMessages(response.data);
     } catch (error) {
       console.error("Failed to load messages:", error);
@@ -198,7 +199,7 @@ export default function MessagePage() {
                         {msg.client_id}
                       </td>
                       <td className="px-6 py-4 w-2/4 text-blue-700 hover:underline">
-                        <Link to={`/inbox/${msg._id}`}>
+                        <Link to={`/message/${msg._id}`}>
                           {msg.title ?? "(no subject)"}
                         </Link>
                       </td>

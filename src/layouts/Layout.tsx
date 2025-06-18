@@ -25,7 +25,7 @@ export default function Layout({ children }: LayoutProps) {
   }, []);
 
   return (
-    <div className="relative h-screen bg-gray-100">
+    <div className="relative min-h-screen bg-gray-100">
       <Sidebar
         mobileOpen={sidebarMobileOpen}
         setMobileOpen={setSidebarMobileOpen}
