@@ -18,12 +18,12 @@ const EmailViewer: React.FC<EmailViewerProps> = ({
   htmlBody,
 }) => {
   const sanitizedHtml = DOMPurify.sanitize(htmlBody);
-  console.log(htmlBody)
+
   return (
     <div className="bg-white rounded-lg shadow-md p-6 max-w-5xl mx-auto mt-6">
       <header className="mb-4 border-b pb-4">
         <h2 className="text-xl font-bold mb-2">{subject}</h2>
-        <div className="text-sm text-gray-600">
+        <div className="flex gap-3 text-sm text-gray-600">
           <div>
             <span className="font-semibold">From:</span>{" "}
             {formatEmailAddress(from)}
