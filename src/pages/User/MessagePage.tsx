@@ -52,11 +52,9 @@ export default function MessagePage() {
   const fetchMessages = async () => {
     setLoading(true);
     try {
-      await axios.post(`${import.meta.env.VITE_API_URL || ""}/message/fetch-all`);
       const response = await axios.get<Message[]>(
         `${import.meta.env.VITE_API_URL || ""}/message`
       );
-      console.log(response.data)
       setMessages(response.data);
     } catch (error) {
       console.error("Failed to load messages:", error);
@@ -68,6 +66,21 @@ export default function MessagePage() {
   useEffect(() => {
     fetchMessages();
   }, []);
+
+  const refreshMessages = async () => {
+    setLoading(true);
+    try {
+      await axios.post(`${import.meta.env.VITE_API_URL || ""}/message/fetch-all`);
+      const response = await axios.get<Message[]>(
+        `${import.meta.env.VITE_API_URL || ""}/message`
+      );
+      setMessages(response.data);
+    } catch (error) {
+      console.error("Failed to load messages:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredMessages = messages
     .filter((msg) => {
@@ -157,7 +170,7 @@ export default function MessagePage() {
                 loading ? "animate-spin" : ""
               }`}
               aria-hidden="true"
-              onClick={fetchMessages}
+              onClick={refreshMessages}
             />
             <EllipsisVerticalIcon
               className="h-6 w-6 cursor-pointer hover:text-blue-600"
