@@ -5,6 +5,7 @@ import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import type { Message } from "../../types";
 import Layout from "../../layouts/Layout";
 import EmailViewer from "../../components/EmailViewer";
+import { Editor } from "primereact/editor";
 
 // Dummy customer info
 const dummyCustomer = {
@@ -30,6 +31,7 @@ const MessageDetailPage = () => {
         const response = await axios.get(
           `${import.meta.env.VITE_API_URL || ""}/message/${id}`
         );
+        console.log(response.data);
         setMessage(response.data);
 
         // Expand only the last message by default
@@ -111,6 +113,10 @@ const MessageDetailPage = () => {
     }
   };
 
+  const isEditorEmpty = (html: string) => {
+    return !html || html.replace(/<(.|\n)*?>/g, '').trim() === '';
+  };
+
   if (loading) return <div className="p-6">Loading...</div>;
 
   return (
@@ -163,7 +169,7 @@ const MessageDetailPage = () => {
                         {/* Expanded: Show full EmailViewer or message */}
                         {isExpanded && (
                           <div className="">
-                            {entry.message_type === "text" ? (
+                            {entry.message_type === "html" ? (
                               <EmailViewer
                                 subject={entry.title || "No Subject"}
                                 from={entry.metadata?.from || "Unknown"}
@@ -195,23 +201,24 @@ const MessageDetailPage = () => {
               })}
 
               {/* Reply Section */}
-              <div className="mt-8 border-t pt-6">
-                <h3 className="text-lg font-semibold mb-2">Reply</h3>
-                <textarea
-                  className="w-full border rounded-lg p-3 mb-2"
-                  rows={4}
-                  value={reply}
-                  onChange={(e) => setReply(e.target.value)}
-                  placeholder="Type your reply here..."
-                  disabled={sending}
-                />
-                <button
-                  className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
-                  onClick={handleReply}
-                  disabled={sending || !reply.trim()}
-                >
-                  {sending ? "Sending..." : "Send Reply"}
-                </button>
+              <div className="">
+                <div className="bg-white rounded-lg p-4 shadow">
+                  <h3 className="text-lg font-semibold mb-2">Reply</h3>
+                  <div data-color-mode="light">
+                    <Editor
+                      value={reply}
+                      onTextChange={(e: any) => setReply(e.htmlValue)}
+                      style={{ height: '320px' }}
+                    />
+                  </div>
+                  <button
+                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 mt-2"
+                    onClick={handleReply}
+                    disabled={sending || isEditorEmpty(reply)}
+                  >
+                    {sending ? "Sending..." : "Send Reply"}
+                  </button>
+                </div>
               </div>
             </div>
           ) : (
