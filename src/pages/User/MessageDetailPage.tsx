@@ -31,6 +31,7 @@ const MessageDetailPage = () => {
         const response = await axios.get(
           `${import.meta.env.VITE_API_URL || ""}/message/${id}`
         );
+        console.log(response.data);
         setMessage(response.data);
 
         // Expand only the last message by default
@@ -168,7 +169,7 @@ const MessageDetailPage = () => {
                         {/* Expanded: Show full EmailViewer or message */}
                         {isExpanded && (
                           <div className="">
-                            {entry.message_type === "text" ? (
+                            {entry.message_type === "html" ? (
                               <EmailViewer
                                 subject={entry.title || "No Subject"}
                                 from={entry.metadata?.from || "Unknown"}
