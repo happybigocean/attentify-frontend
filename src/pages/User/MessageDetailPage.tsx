@@ -6,6 +6,7 @@ import type { Message } from "../../types";
 import Layout from "../../layouts/Layout";
 import EmailViewer from "../../components/EmailViewer";
 import { Editor } from "primereact/editor";
+import OrderInfoCard from "../../components/OrderInfoCard";
 
 // Dummy customer info
 const dummyCustomer = {
@@ -31,7 +32,6 @@ const MessageDetailPage = () => {
         const response = await axios.get(
           `${import.meta.env.VITE_API_URL || ""}/message/${id}`
         );
-        console.log(response.data);
         setMessage(response.data);
 
         // Expand only the last message by default
@@ -251,28 +251,7 @@ const MessageDetailPage = () => {
               </div>
             </div>
             {/* Order Info Card */}
-            <div className="w-[350px] bg-white rounded-lg shadow-lg p-8">
-              <h3 className="text-lg font-semibold mb-4">Order Information</h3>
-              {orderInfo ? (
-                <div>
-                  <div className="mb-2">
-                    <span className="font-semibold">Order ID: </span>
-                    {orderInfo.id}
-                  </div>
-                  <div className="mb-2">
-                    <span className="font-semibold">Status: </span>
-                    {orderInfo.status}
-                  </div>
-                  <div className="mb-2">
-                    <span className="font-semibold">Total: </span>
-                    {orderInfo.total_price}
-                  </div>
-                  {/* Add more order fields as needed */}
-                </div>
-              ) : (
-                <div className="text-gray-500">No order information found.</div>
-              )}
-            </div>
+            <OrderInfoCard messageId={id || ""} />
           </div>
         </div>
       </div>
