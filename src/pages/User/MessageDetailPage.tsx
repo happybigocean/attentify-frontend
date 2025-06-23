@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
@@ -16,18 +16,39 @@ const dummyCustomer = {
   address: "123 Main St, Springfield, USA",
 };
 
+type OrderInfo = {
+  order_id: string;
+  type: string;
+  status: number;
+  msg: string;
+};
+
 const MessageDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const [message, setMessage] = useState<Message | null>(null);
   const [loading, setLoading] = useState(true);
   const [expandedIndexes, setExpandedIndexes] = useState<number[]>([]);
-  const [orderInfo, setOrderInfo] = useState<any>(null);
   const [reply, setReply] = useState("");
   const [sending, setSending] = useState(false);
 
+  const [orderInfo, setOrderInfo] = useState<OrderInfo | null>(null);
+  const [loadingOrder, setLoadingOrder] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Prevent double-fetching caused by React 18 StrictMode or fast refreshes
+  const hasFetchedMessage = useRef(false);
+  const hasFetchedOrder = useRef(false);
+
   // Fetch message thread
   useEffect(() => {
+    // Reset the fetch flag if the ID changes
+    hasFetchedMessage.current = false;
+    setLoading(true);
+    setMessage(null);
+
     const fetchMessage = async () => {
+      if (hasFetchedMessage.current) return;
+      hasFetchedMessage.current = true;
       try {
         const response = await axios.get(
           `${import.meta.env.VITE_API_URL || ""}/message/${id}`
@@ -45,36 +66,45 @@ const MessageDetailPage = () => {
       }
     };
 
-    fetchMessage();
+    if (id) {
+      fetchMessage();
+    }
   }, [id]);
 
-  // Analyze email to get order ID and fetch order info
+  // Analyze email to get order info
   useEffect(() => {
+    // Reset the fetch flag if the message changes
+    hasFetchedOrder.current = false;
+    setOrderInfo(null);
+    setLoadingOrder(true);
+    setError(null);
+
     const fetchOrderInfo = async () => {
-      if (!message || !message.messages?.length) return;
-
-      // Use the latest message content for AI analysis
-      const lastMsg = message.messages[message.messages.length - 1];
-      try {
-        // 1. Analyze email to get order ID
-        const aiRes = await axios.post(
-          `${import.meta.env.VITE_API_URL || ""}/ai/extract-order-id`,
-          { content: lastMsg.content }
-        );
-        const orderId = aiRes.data?.orderId;
-        if (!orderId) return;
-
-        // 2. Fetch order info from Shopify
-        const shopifyRes = await axios.get(
-          `${import.meta.env.VITE_API_URL || ""}/shopify/order/${orderId}`
-        );
-        setOrderInfo(shopifyRes.data);
-      } catch (err) {
+      if (hasFetchedOrder.current) return;
+      hasFetchedOrder.current = true;
+      if (!message || !message.messages?.length) {
         setOrderInfo(null);
+        setLoadingOrder(false);
+        return;
+      }
+      try {
+        const response = await axios.post(
+          (import.meta.env.VITE_API_URL || "") + "/message/analyze",
+          { message_id: message._id }
+        );
+        setOrderInfo(response.data);
+        setReply(response.data?.msg || "");
+      } catch (err: any) {
+        setError(err.message || "Failed to fetch order info");
+        setOrderInfo(null);
+      } finally {
+        setLoadingOrder(false);
       }
     };
 
-    fetchOrderInfo();
+    if (message) {
+      fetchOrderInfo();
+    }
   }, [message]);
 
   // Toggle collapse/expand
@@ -98,6 +128,7 @@ const MessageDetailPage = () => {
       setReply("");
       // Optionally, refetch messages
       setLoading(true);
+      hasFetchedMessage.current = false; // allow refetch
       const response = await axios.get(
         `${import.meta.env.VITE_API_URL || ""}/message/${id}`
       );
@@ -145,7 +176,6 @@ const MessageDetailPage = () => {
                           className={`cursor-pointer select-none rounded-lg mb-2 shadow ${isExpanded ? "bg-white" : "bg-gray-50"}`}
                           onClick={() => handleToggle(index)}
                         >
-                          {/* Collapsed: Only show header info */}
                           {!isExpanded && (
                             <div className="bg-white rounded-lg shadow-md p-6 max-w-5xl mx-auto">
                               <header>
@@ -166,7 +196,6 @@ const MessageDetailPage = () => {
                               </header>
                             </div>
                           )}
-                          {/* Expanded: Show full EmailViewer or message */}
                           {isExpanded && (
                             <div className="">
                               {entry.message_type === "html" ? (
@@ -228,7 +257,6 @@ const MessageDetailPage = () => {
 
           {/* Sidebar */}
           <div className="flex flex-col justify-start ml-6 space-y-6">
-            {/* Sticky wrapper for both cards */}
             <div className="sticky top-19 flex flex-col space-y-6">
               {/* Customer Info Card */}
               <div className="w-[350px] bg-white rounded-lg shadow-lg p-8">
@@ -251,7 +279,7 @@ const MessageDetailPage = () => {
                 </div>
               </div>
               {/* Order Info Card */}
-              <OrderInfoCard messageId={id || ""} />
+              <OrderInfoCard order={orderInfo} loading={loadingOrder} error={error} />
             </div>
           </div>
         </div>

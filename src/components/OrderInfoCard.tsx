@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React from "react";
 
 type OrderInfo = {
   order_id: string;
@@ -9,60 +8,27 @@ type OrderInfo = {
 };
 
 interface OrderInfoCardProps {
-  messageId: string | undefined;
+  order: OrderInfo | null;
+  loading: boolean;
+  error: string | null;
 }
 
-const OrderInfoCard: React.FC<OrderInfoCardProps> = ({ messageId }) => {
-  const [orderList, setOrderList] = useState<OrderInfo[] | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!messageId) {
-      setOrderList(null);
-      setLoading(false);
-      return;
-    }
-    setLoading(true);
-    setError(null);
-    setOrderList(null);
-
-    const fetchOrderInfo = async () => {
-      try {
-        const response = await axios.post(
-          (import.meta.env.VITE_API_URL || "") + "/message/analyze",
-          { message_id: messageId }
-        );
-        setOrderList(response.data);
-      } catch (err: any) {
-        setError(err.message || "Failed to fetch order info");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchOrderInfo();
-  }, [messageId]);
-
+const OrderInfoCard: React.FC<OrderInfoCardProps> = ({ order, loading, error }) => {
   let content = null;
 
   if (loading) {
     content = <div className="text-gray-500">Loading...</div>;
   } else if (error) {
     content = <div className="text-red-500">{error}</div>;
-  } else if (orderList && orderList.length > 0) {
+  } else if (order) {
     content = (
       <div>
-        {orderList.map((order) => (
-          <div key={order.order_id}>
-            <div className="mb-2">
-              <span className="font-semibold">Order ID:</span> #{order.order_id}
-            </div>
-            <div className="mb-2">
-              <span className="font-semibold">Request Type:</span> {order.type}
-            </div>
-          </div>
-        ))}
+        <div className="mb-2">
+          <span className="font-semibold">Order ID:</span> #{order.order_id}
+        </div>
+        <div className="mb-2">
+          <span className="font-semibold">Request Type:</span> {order.type}
+        </div>
       </div>
     );
   } else {
