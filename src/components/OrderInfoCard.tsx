@@ -29,12 +29,6 @@ const OrderInfoCard: React.FC<OrderInfoCardProps> = ({ order, loading, error }) 
         <div className="mb-2">
           <span className="font-semibold">Request Type:</span> {order.type}
         </div>
-        <div className="mb-2">
-          <span className="font-semibold">Status:</span> {order.status}
-        </div>
-        <div className="mb-2">
-          <span className="font-semibold">Message:</span> {order.msg}
-        </div>
       </div>
     );
   } else {
