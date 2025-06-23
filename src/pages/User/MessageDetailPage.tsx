@@ -16,14 +16,24 @@ const dummyCustomer = {
   address: "123 Main St, Springfield, USA",
 };
 
+type OrderInfo = {
+  order_id: string;
+  type: string;
+  status: number;
+  msg: string;
+};
+
 const MessageDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const [message, setMessage] = useState<Message | null>(null);
   const [loading, setLoading] = useState(true);
   const [expandedIndexes, setExpandedIndexes] = useState<number[]>([]);
-  const [orderInfo, setOrderInfo] = useState<any>(null);
   const [reply, setReply] = useState("");
   const [sending, setSending] = useState(false);
+
+  const [orderInfo, setOrderInfo] = useState<any>(null);
+  const [loadingOrder, setLoadingOrder] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Fetch message thread
   useEffect(() => {
@@ -49,7 +59,7 @@ const MessageDetailPage = () => {
   }, [id]);
 
   // Analyze email to get order ID and fetch order info
-  useEffect(() => {
+  /*useEffect(() => {
     const fetchOrderInfo = async () => {
       if (!message || !message.messages?.length) return;
 
@@ -71,6 +81,33 @@ const MessageDetailPage = () => {
         setOrderInfo(shopifyRes.data);
       } catch (err) {
         setOrderInfo(null);
+      }
+    };
+
+    fetchOrderInfo();
+  }, [message]);*/
+
+  useEffect(() => {
+    if (!message || !message.messages?.length) {
+      setOrderInfo(null);
+      setLoadingOrder(false);
+      return;
+    }
+    setLoadingOrder(true);
+    setError(null);
+    setOrderInfo(null);
+
+    const fetchOrderInfo = async () => {
+      try {
+        const response = await axios.post(
+          (import.meta.env.VITE_API_URL || "") + "/message/analyze",
+          { message_id: message._id }
+        );
+        setOrderInfo(response.data);
+      } catch (err: any) {
+        setError(err.message || "Failed to fetch order info");
+      } finally {
+        setLoadingOrder(false);
       }
     };
 
@@ -251,7 +288,7 @@ const MessageDetailPage = () => {
                 </div>
               </div>
               {/* Order Info Card */}
-              <OrderInfoCard messageId={id || ""} />
+              <OrderInfoCard order={orderInfo} loading={loadingOrder} error={error} />
             </div>
           </div>
         </div>
