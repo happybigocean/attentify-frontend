@@ -75,6 +75,30 @@ export default function Sidebar({
                 </svg>
                 <span className="ml-3 text-base font-medium">Accounts</span>
               </a>
+
+              <a className="flex items-center w-full h-12 px-4 mt-2 rounded hover:bg-gray-700 hover:text-gray-300" href="/shopify">
+                <svg className="w-6 h-6" viewBox="0 0 32 32" fill="none">
+                  <path
+                    d="M8.5 10L6 26c-.1.6.3 1 .9 1h18.2c.6 0 1-.4.9-1L24 10H8.5z"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    fill="none"
+                  />
+                  <path
+                    d="M11 10V7a5 5 0 0110 0v3"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    fill="none"
+                  />
+                  <path
+                    d="M19 16c0-1.1-.9-2-2-2s-2 .9-2 2 .9 1.5 2 2 2 .9 2 2-.9 2-2 2-2-.9-2-2"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    fill="none"
+                  />
+                </svg>
+                <span className="ml-3 text-base font-medium">Shopify</span>
+              </a>
             </div>
 
             {/* Settings */}

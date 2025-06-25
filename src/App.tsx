@@ -1,4 +1,3 @@
-import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -8,8 +7,9 @@ import MessagePage from "./pages/User/MessagePage";
 import MessageDetailPage from "./pages/User/MessageDetailPage";
 import Settings from "./pages/User/Settings";
 import ProtectedRoute from './routes/ProtectedRoute';
-import "./App.css";
 import AccountsPage from "./pages/User/AccountsPage";
+import ShopifyPage from "./pages/User/ShopifyPage";
+import "./App.css";
 
 function App() {  
   return (
@@ -57,6 +57,15 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={['admin', 'user']}>
               <AccountsPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/shopify"
+          element={
+            <ProtectedRoute allowedRoles={['admin', 'user']}>
+              <ShopifyPage />
             </ProtectedRoute>
           }
         />
