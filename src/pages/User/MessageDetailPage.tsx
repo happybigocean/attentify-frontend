@@ -53,6 +53,7 @@ const MessageDetailPage = () => {
         const response = await axios.get(
           `${import.meta.env.VITE_API_URL || ""}/message/${id}`
         );
+        console.log(response.data);
         setMessage(response.data);
 
         // Expand only the last message by default
@@ -73,7 +74,6 @@ const MessageDetailPage = () => {
 
   // Analyze email to get order info
   useEffect(() => {
-    // Reset the fetch flag if the message changes
     hasFetchedOrder.current = false;
     setOrderInfo(null);
     setLoadingOrder(true);
@@ -121,18 +121,14 @@ const MessageDetailPage = () => {
     if (!reply.trim()) return;
     setSending(true);
     try {
-      await axios.post(
+      const response = await axios.post(
         `${import.meta.env.VITE_API_URL || ""}/message/${id}/reply`,
         { content: reply }
       );
       setReply("");
-      // Optionally, refetch messages
-      setLoading(true);
-      hasFetchedMessage.current = false; // allow refetch
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL || ""}/message/${id}`
-      );
       setMessage(response.data);
+
+      // Expand only the last message by default
       if (response.data?.messages?.length) {
         setExpandedIndexes([response.data.messages.length - 1]);
       }
