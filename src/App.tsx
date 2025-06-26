@@ -9,6 +9,7 @@ import Settings from "./pages/User/Settings";
 import ProtectedRoute from './routes/ProtectedRoute';
 import AccountsPage from "./pages/User/AccountsPage";
 import ShopifyPage from "./pages/User/ShopifyPage";
+import ShopifySuccess from "./pages/User/ShopifySuccess";
 import "./App.css";
 
 function App() {  
@@ -66,6 +67,15 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={['admin', 'user']}>
               <ShopifyPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/shopify/success"
+          element={
+            <ProtectedRoute allowedRoles={['admin', 'user']}>
+              <ShopifySuccess />
             </ProtectedRoute>
           }
         />
