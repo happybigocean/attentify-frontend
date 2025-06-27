@@ -26,7 +26,7 @@ interface Order {
   line_items?: LineItem[];
 }
 
-export default function ShopifyPage() {
+export default function OrderPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(false);
 
