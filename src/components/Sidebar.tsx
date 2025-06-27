@@ -69,6 +69,13 @@ export default function Sidebar({
                 <span className="absolute top-0 left-0 w-2 h-2 mt-2 ml-2 bg-indigo-500 rounded-full" />
               </a>
 
+              <a className="relative flex items-center w-full h-12 px-4 mt-2 rounded hover:bg-gray-700 hover:text-gray-300" href="/order">
+                <svg className="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7l1.664 12.131A2 2 0 006.65 21h10.7a2 2 0 001.986-1.869L21 7M16 7V5a4 4 0 00-8 0v2M5 7h14" />
+                </svg>
+                <span className="ml-3 text-base font-medium">Order</span>
+              </a>
+
               <a className="flex items-center w-full h-12 px-4 mt-2 rounded hover:bg-gray-700 hover:text-gray-300" href="/accounts">
                 <svg className="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a4 4 0 00-3-3.87M9 20h6M3 20h5v-2a4 4 0 00-3-3.87M9 10a4 4 0 100-8 4 4 0 000 8zm6 0a4 4 0 100-8 4 4 0 000 8z" />
