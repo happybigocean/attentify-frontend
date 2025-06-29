@@ -17,6 +17,7 @@ interface LineItem {
 
 interface Order {
   order_id: string;
+  name: string;
   shop: string;
   created_at?: string;
   customer?: Customer;
@@ -38,7 +39,7 @@ export default function OrderPage() {
     setLoading(true);
     try {
       const res = await axios.get(
-        `${import.meta.env.VITE_API_URL || ""}/orders`
+        `${import.meta.env.VITE_API_URL || ""}/shopify/orders`
       );
       setOrders(res.data);
     } catch (err) {
@@ -48,9 +49,19 @@ export default function OrderPage() {
     }
   };
 
-  const handleSyncOrders = () => {
-    // Implement order synchronization logic here
-    // e.g., POST to /orders/sync, then refetch orders
+  const handleSyncOrders = async () => {
+    setLoading(true);
+    try {
+      await axios.post(`${import.meta.env.VITE_API_URL || ""}/shopify/orders/sync`);
+      // Optionally, you can show a message to user: "Sync started"
+      // Refetch orders after sync (you may want to add a delay if sync takes time)
+      await fetchOrders();
+    } catch (err) {
+      console.error("Failed to sync orders", err);
+      // Optionally, show error to user
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -76,8 +87,8 @@ export default function OrderPage() {
               <table className="min-w-full text-sm divide-y divide-gray-200">
                 <thead>
                   <tr className="bg-gray-50">
-                    <th className="py-2 px-3 text-left font-semibold text-gray-600">Order ID</th>
-                    <th className="py-2 px-3 text-left font-semibold text-gray-600">Shop Domain</th>
+                    <th className="py-2 px-3 text-left font-semibold text-gray-600">Order</th>
+                    <th className="py-2 px-3 text-left font-semibold text-gray-600">Shop</th>
                     <th className="py-2 px-3 text-left font-semibold text-gray-600">Date</th>
                     <th className="py-2 px-3 text-left font-semibold text-gray-600">Customer</th>
                     <th className="py-2 px-3 text-left font-semibold text-gray-600">Total</th>
@@ -88,7 +99,7 @@ export default function OrderPage() {
                 <tbody className="bg-white divide-y divide-gray-100">
                   {orders.map((order) => (
                     <tr key={order.order_id}>
-                      <td className="py-2 px-3">{order.order_id}</td>
+                      <td className="py-2 px-3">{order.name}</td>
                       <td className="py-2 px-3">{order.shop}</td>
                       <td className="py-2 px-3">
                         {order.created_at

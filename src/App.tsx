@@ -29,6 +29,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/message"
           element={
@@ -37,6 +38,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+        
         <Route
           path="/message/:id"
           element={
