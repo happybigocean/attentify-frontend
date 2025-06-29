@@ -7,21 +7,7 @@ import Layout from "../../layouts/Layout";
 import EmailViewer from "../../components/EmailViewer";
 import { Editor } from "primereact/editor";
 import OrderInfoCard from "../../components/OrderInfoCard";
-
-// Dummy customer info
-const dummyCustomer = {
-  name: "Jane Doe",
-  email: "jane.doe@example.com",
-  phone: "+1 (555) 123-4567",
-  address: "123 Main St, Springfield, USA",
-};
-
-type OrderInfo = {
-  order_id: string;
-  type: string;
-  status: number;
-  msg: string;
-};
+import type { OrderInfo } from "../../types";
 
 const MessageDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -257,22 +243,26 @@ const MessageDetailPage = () => {
               {/* Customer Info Card */}
               <div className="w-[350px] bg-white rounded-lg shadow-lg p-8">
                 <h2 className="text-2xl font-bold mb-5">Customer Info</h2>
-                <div className="mb-4">
-                  <span className="font-semibold">Name: </span>
-                  {dummyCustomer.name}
-                </div>
-                <div className="mb-4">
-                  <span className="font-semibold">Email: </span>
-                  {dummyCustomer.email}
-                </div>
-                <div className="mb-4">
-                  <span className="font-semibold">Phone: </span>
-                  {dummyCustomer.phone}
-                </div>
-                <div>
-                  <span className="font-semibold">Address: </span>
-                  {dummyCustomer.address}
-                </div>
+                {orderInfo && orderInfo?.shopify_order && orderInfo?.shopify_order?.customer && (
+                  <>
+                    <div className="mb-4">
+                      <span className="font-semibold">Name: </span>
+                      {orderInfo?.shopify_order?.customer.name}
+                    </div>
+                    <div className="mb-4">
+                      <span className="font-semibold">Email: </span>
+                      {orderInfo?.shopify_order?.customer.email}
+                    </div>
+                    <div className="mb-4">
+                      <span className="font-semibold">Phone: </span>
+                      {orderInfo?.shopify_order?.customer.phone}
+                    </div>
+                    <div>
+                      <span className="font-semibold">Address: </span>
+                      {orderInfo?.shopify_order?.customer.default_address?.address1}
+                    </div>
+                  </>
+                )}
               </div>
               {/* Order Info Card */}
               <OrderInfoCard order={orderInfo} loading={loadingOrder} error={error} />

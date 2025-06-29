@@ -33,3 +33,55 @@ export type Message = {
   tags?: string[];
   resolved_by_ai?: boolean;
 };
+
+export interface OrderInfo {
+  order_id: string;
+  type: string;
+  status: number;
+  msg: string;
+  shopify_order?: ShopifyOrder;
+};
+
+export interface ShopifyAddress {
+  address1?: string;
+  address2?: string;
+  city?: string;
+  province?: string;
+  country?: string;
+  zip?: string;
+  [key: string]: any; // For any additional fields
+}
+
+export interface ShopifyCustomer {
+  id?: number | string;
+  email?: string;
+  name?: string;
+  phone?: string;
+  default_address?: ShopifyAddress;
+  [key: string]: any; // For any additional fields
+}
+
+export interface ShopifyLineItem {
+  product_id?: number | string;
+  name?: string;
+  quantity?: number;
+  price?: string | number;
+  [key: string]: any; // For extra line item properties
+}
+
+export interface ShopifyOrder {
+  order_id: number | string;
+  order_number?: number | string;
+  name?: string;
+  shop?: string;
+  created_at?: string;
+  customer?: ShopifyCustomer;
+  shipping_address?: ShopifyAddress;
+  billing_address?: ShopifyAddress;
+  total_price?: string | number;
+  payment_status?: string;
+  fulfillment_status?: string;
+  line_items?: ShopifyLineItem[];
+  updated_at?: string;
+  [key: string]: any; // For any additional properties
+}
