@@ -7,7 +7,8 @@ import MessagePage from "./pages/User/MessagePage";
 import MessageDetailPage from "./pages/User/MessageDetailPage";
 import Settings from "./pages/User/Settings";
 import ProtectedRoute from './routes/ProtectedRoute';
-import AccountsPage from "./pages/User/AccountsPage";
+import GmailAccountPage from "./pages/User/GmailAccountPage";
+import PhoneAccountPage from "./pages/User/PhoneAccountPage";
 import ShopifyPage from "./pages/User/ShopifyPage";
 import ShopifySuccess from "./pages/User/ShopifySuccess";
 import OrderPage from "./pages/User/OrderPage";
@@ -58,10 +59,19 @@ function App() {
         />
 
         <Route
-          path="/accounts"
+          path="/accounts/gmail"
           element={
             <ProtectedRoute allowedRoles={['admin', 'user']}>
-              <AccountsPage />
+              <GmailAccountPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/accounts/phone"
+          element={
+            <ProtectedRoute allowedRoles={['admin', 'user']}>
+              <PhoneAccountPage />
             </ProtectedRoute>
           }
         />
