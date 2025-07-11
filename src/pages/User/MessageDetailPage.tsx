@@ -6,17 +6,15 @@ import type { Message } from "../../types";
 import Layout from "../../layouts/Layout";
 import EmailViewer from "../../components/EmailViewer";
 import SMSViewer from "../../components/SMSViewer";
-import { Editor } from "primereact/editor";
 import OrderInfoCard from "../../components/OrderInfoCard";
 import type { OrderInfo } from "../../types";
 
 const MessageDetailPage = () => {
-  const { id } = useParams<{ id: string }>();
+  const { threadId } = useParams<{ threadId: string }>();
   const [message, setMessage] = useState<Message | null>(null);
   const [loading, setLoading] = useState(true);
   const [expandedIndexes, setExpandedIndexes] = useState<number[]>([]);
   const [reply, setReply] = useState("");
-  const [sending, setSending] = useState(false);
 
   const [orderInfo, setOrderInfo] = useState<OrderInfo | null>(null);
   const [loadingOrder, setLoadingOrder] = useState(true);
@@ -38,7 +36,7 @@ const MessageDetailPage = () => {
       hasFetchedMessage.current = true;
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL || ""}/message/${id}`
+          `${import.meta.env.VITE_API_URL || ""}/message/${threadId}`
         );
         console.log(response.data);
         setMessage(response.data);
@@ -54,10 +52,10 @@ const MessageDetailPage = () => {
       }
     };
 
-    if (id) {
+    if (threadId) {
       fetchMessage();
     }
-  }, [id]);
+  }, [threadId]);
 
   // Analyze email to get order info
   useEffect(() => {
@@ -103,34 +101,6 @@ const MessageDetailPage = () => {
     );
   };
 
-  // Handle reply submit
-  const handleReply = async () => {
-    if (!reply.trim()) return;
-    setSending(true);
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL || ""}/message/${id}/reply`,
-        { content: reply }
-      );
-      setReply("");
-      setMessage(response.data);
-
-      // Expand only the last message by default
-      if (response.data?.messages?.length) {
-        setExpandedIndexes([response.data.messages.length - 1]);
-      }
-    } catch (err) {
-      // Handle error
-    } finally {
-      setSending(false);
-      setLoading(false);
-    }
-  };
-
-  const isEditorEmpty = (html: string) => {
-    return !html || html.replace(/<(.|\n)*?>/g, '').trim() === '';
-  };
-
   return (
     <Layout>
       {loading && <div className="p-6">Loading...</div>}
@@ -156,7 +126,7 @@ const MessageDetailPage = () => {
                     >
                       <div className="w-full max-w-5xl">
                         <div
-                          className={`cursor-pointer select-none rounded-lg mb-2 shadow ${isExpanded ? "bg-white" : "bg-gray-50"}`}
+                          className={`cursor-pointer select-none rounded-lg mb-2`}
                           onClick={() => handleToggle(index)}
                         >
                           {entry.message_type === "html" && (
@@ -167,6 +137,10 @@ const MessageDetailPage = () => {
                               date={entry.timestamp}
                               htmlBody={entry.content}
                               isExpanded={isExpanded}
+                              replyFromParent={reply}
+                              OnHandleReply={() => {
+                                // Handle reply logic here
+                              }}
                             />
                           )}
 
@@ -185,26 +159,7 @@ const MessageDetailPage = () => {
                   );
                 })}
 
-                {/* Reply Section */}
-                <div className="">
-                  <div className="bg-white rounded-lg p-4 shadow">
-                    <h3 className="text-lg font-semibold mb-2">Reply</h3>
-                    <div data-color-mode="light">
-                      <Editor
-                        value={reply}
-                        onTextChange={(e: any) => setReply(e.htmlValue)}
-                        style={{ height: '320px' }}
-                      />
-                    </div>
-                    <button
-                      className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 mt-2"
-                      onClick={handleReply}
-                      disabled={sending || isEditorEmpty(reply)}
-                    >
-                      {sending ? "Sending..." : "Send Reply"}
-                    </button>
-                  </div>
-                </div>
+                
               </div>
             ) : (
               <div className="p-6 text-red-600">Message not found</div>
