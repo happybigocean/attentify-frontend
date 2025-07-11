@@ -5,6 +5,7 @@ import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import type { Message } from "../../types";
 import Layout from "../../layouts/Layout";
 import EmailViewer from "../../components/EmailViewer";
+import SMSViewer from "../../components/SMSViewer";
 import { Editor } from "primereact/editor";
 import OrderInfoCard from "../../components/OrderInfoCard";
 import type { OrderInfo } from "../../types";
@@ -158,52 +159,25 @@ const MessageDetailPage = () => {
                           className={`cursor-pointer select-none rounded-lg mb-2 shadow ${isExpanded ? "bg-white" : "bg-gray-50"}`}
                           onClick={() => handleToggle(index)}
                         >
-                          {!isExpanded && (
-                            <div className="bg-white rounded-lg shadow-md p-6 max-w-5xl mx-auto">
-                              <header>
-                                <h2 className="text-xl font-bold mb-2">{entry.title || "No Subject"}</h2>
-                                <div className="flex gap-3 text-sm text-gray-600">
-                                  <div>
-                                    <span className="font-semibold">From:</span>{" "}
-                                    {entry.metadata?.from || "Unknown"}
-                                  </div>
-                                  <div>
-                                    <span className="font-semibold">To:</span>{" "}
-                                    {entry.metadata?.to || "Unknown"}
-                                  </div>
-                                  <div>
-                                    <span className="font-semibold">Date:</span>  {new Date(entry.timestamp).toLocaleString()}
-                                  </div>
-                                </div>
-                              </header>
-                            </div>
+                          {entry.message_type === "html" && (
+                            <EmailViewer
+                              subject={entry.title || "No Subject"}
+                              from={entry.metadata?.from || "Unknown"}
+                              to={entry.metadata?.to || "Unknown"}
+                              date={entry.timestamp}
+                              htmlBody={entry.content}
+                              isExpanded={isExpanded}
+                            />
                           )}
-                          {isExpanded && (
-                            <div className="">
-                              {entry.message_type === "html" ? (
-                                <EmailViewer
-                                  subject={entry.title || "No Subject"}
-                                  from={entry.metadata?.from || "Unknown"}
-                                  to={entry.metadata?.to || "Unknown"}
-                                  date={entry.timestamp}
-                                  htmlBody={entry.content}
-                                />
-                              ) : (
-                                <div
-                                  className={`p-4 rounded-lg ${
-                                    entry.sender === "client"
-                                      ? "bg-blue-100 text-left"
-                                      : entry.sender === "agent"
-                                      ? "bg-green-100 text-right"
-                                      : "bg-gray-200 text-gray-800"
-                                  }`}
-                                >
-                                  <p className="whitespace-pre-wrap text-base">
-                                    {entry.content}
-                                  </p>
-                                </div>
-                              )}
-                            </div>
+
+                          {entry.message_type === "text" && (
+                            <SMSViewer
+                              from={entry.metadata?.from || "Unknown"}
+                              to={entry.metadata?.to || "Unknown"}
+                              date={entry.timestamp}
+                              body={entry.content}
+                              isExpanded={isExpanded}
+                            />
                           )}
                         </div>
                       </div>
