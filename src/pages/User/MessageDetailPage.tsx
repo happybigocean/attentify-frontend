@@ -8,7 +8,8 @@ import EmailViewer from "../../components/EmailViewer";
 import SMSViewer from "../../components/SMSViewer";
 import OrderInfoCard from "../../components/OrderInfoCard";
 import type { OrderInfo } from "../../types";
-import { Editor } from "primereact/editor";
+import EmailReplySection from "../../components/EmailReplySection";
+import SMSReplySection from "../../components/SMSReplySection";
 
 const MessageDetailPage = () => {
   const { threadId } = useParams<{ threadId: string }>();
@@ -16,7 +17,6 @@ const MessageDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [expandedIndexes, setExpandedIndexes] = useState<number[]>([]);
   const [reply, setReply] = useState("");
-  const [sending, setSending] = useState(false);
 
   const [orderInfo, setOrderInfo] = useState<OrderInfo | null>(null);
   const [loadingOrder, setLoadingOrder] = useState(true);
@@ -95,28 +95,7 @@ const MessageDetailPage = () => {
     }
   }, [message]);
 
-  // Handle reply submit
-  const handleReply = async () => {
-    if (!reply.trim()) return;
-    setSending(true);
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL || ""}/message/${threadId}/reply`,
-        { content: reply }
-      );
-      setReply("");
-      //setMessage(response.data);
-
-      // Expand only the last message by default
-      //if (response.data?.messages?.length) {
-        //setExpandedIndexes([response.data.messages.length - 1]);
-      //}
-    } catch (err) {
-      // Handle error
-    } finally {
-      setSending(false);
-    }
-  };
+  
 
   // Toggle collapse/expand
   const handleToggle = (idx: number) => {
@@ -190,26 +169,19 @@ const MessageDetailPage = () => {
                   );
                 })}
 
-                {/* Reply Section */}
-                <div className="mt-4">
-                  <div className="bg-white rounded-lg p-4 shadow">
-                    <h3 className="text-lg font-semibold mb-2">Reply</h3>
-                    <div data-color-mode="light">
-                      <Editor
-                        value={reply}
-                        onTextChange={(e: any) => setReply(e.htmlValue)}
-                        style={{ height: '320px' }}
-                      />
-                    </div>
-                    <button
-                      className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 mt-2"
-                      onClick={handleReply}
-                      disabled={sending || isEditorEmpty(reply)}
-                    >
-                      {sending ? "Sending..." : "Send Reply"}
-                    </button>
-                  </div>
-                </div>
+                {message.channel === "email" && (
+                  <EmailReplySection
+                  threadId={threadId}
+                  replyFromParent={reply}
+                  />
+                )}
+
+                {message.channel === "sms" && (
+                  <SMSReplySection
+                    threadId={threadId}
+                    replyFromParent={reply}
+                  />
+                )}
               </div>
             ) : (
               <div className="p-6 text-red-600">Message not found</div>
