@@ -11,9 +11,13 @@ const EmailReplySection: React.FC<EmailReplyProps> = ({
   replyFromParent,
   threadId
 }) => {
-  const [reply, setReply] = useState(replyFromParent);
+  const [reply, setReply] = useState("");
   const [sending, setSending] = useState(false);
 
+  useEffect(() => {
+    setReply(replyFromParent);
+  }, [replyFromParent]);
+  
   // Handle reply submit
     const handleReply = async () => {
       if (!reply.trim()) return;

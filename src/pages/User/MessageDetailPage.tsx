@@ -106,10 +106,6 @@ const MessageDetailPage = () => {
     );
   };
 
-  const isEditorEmpty = (html: string | undefined) => {
-    return !html || html.replace(/<(.|\n)*?>/g, '').trim() === '';
-  };
-
   return (
     <Layout>
       {loading && <div className="p-6">Loading...</div>}

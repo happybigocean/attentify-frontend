@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useState, useEffect} from "react";
 import axios from "axios";
 
 type SMSReplyProps = {
@@ -12,6 +12,10 @@ const SMSReplySection: React.FC<SMSReplyProps> = ({
 }) => {
   const [reply, setReply] = useState(replyFromParent);
   const [sending, setSending] = useState(false);
+
+  useEffect(() => {
+    setReply(replyFromParent);
+  }, [replyFromParent]);
 
   // Handle reply submit
   const handleReply = async () => {
