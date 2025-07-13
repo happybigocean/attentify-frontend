@@ -1,35 +1,27 @@
 import React, {useState, useEffect} from "react";
-import DOMPurify from "dompurify";
-import { formatEmailAddress } from "../utils/formatEmailAddress";
 
-type EmailViewerProps = {
-  subject: string;
+type SMSViewerProps = {
   from: string;
   to: string;
   date: string;
-  htmlBody: string;
-  threadId?: string;
+  body: string;
   isExpanded?: boolean;
-  replyFromParent?: string;
-  OnHandleReply?: () => void;
 };
 
-const EmailViewer: React.FC<EmailViewerProps> = ({
-  subject,
+const SMSViewer: React.FC<SMSViewerProps> = ({
   from,
   to,
   date,
-  htmlBody,
-  isExpanded,
+  body,
+  isExpanded
 }) => {
-  const sanitizedHtml = DOMPurify.sanitize(htmlBody);
 
   return (
     <div>
       {!isExpanded && (
         <div className="bg-white rounded-lg shadow-md p-6 max-w-5xl mx-auto">
           <header>
-            <h2 className="text-xl font-bold mb-2">{subject}</h2>
+            <h2 className="text-xl font-bold mb-2">SMS</h2>
             <div className="flex gap-3 text-sm text-gray-600">
               <div>
                 <span className="font-semibold">From:</span>{" "}
@@ -49,15 +41,15 @@ const EmailViewer: React.FC<EmailViewerProps> = ({
       {isExpanded && (
         <div className="bg-white rounded-lg shadow-md p-6 max-w-5xl mx-auto">
           <header className="mb-4 border-b pb-4">
-            <h2 className="text-xl font-bold mb-2">{subject}</h2>
+            <h2 className="text-xl font-bold mb-2">SMS</h2>
             <div className="flex gap-3 text-sm text-gray-600">
               <div>
                 <span className="font-semibold">From:</span>{" "}
-                {formatEmailAddress(from)}
+                {from}
               </div>
               <div>
                 <span className="font-semibold">To:</span>{" "}
-                {formatEmailAddress(to)}
+                {to}
               </div>
               <div>
                 <span className="font-semibold">Date:</span> {new Date(date).toLocaleString()}
@@ -65,7 +57,7 @@ const EmailViewer: React.FC<EmailViewerProps> = ({
             </div>
           </header>
           <section className="prose max-w-none">
-            <div dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />
+            <div className="whitespace-pre-wrap">{body}</div>
           </section>
         </div>
       )}
@@ -73,4 +65,4 @@ const EmailViewer: React.FC<EmailViewerProps> = ({
   );
 };
 
-export default EmailViewer;
+export default SMSViewer;

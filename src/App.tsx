@@ -41,7 +41,7 @@ function App() {
         />
         
         <Route
-          path="/message/:id"
+          path="/message/:threadId"
           element={
             <ProtectedRoute allowedRoles={['admin', 'user']}>
               <MessageDetailPage  />

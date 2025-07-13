@@ -5,17 +5,18 @@ import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import type { Message } from "../../types";
 import Layout from "../../layouts/Layout";
 import EmailViewer from "../../components/EmailViewer";
-import { Editor } from "primereact/editor";
+import SMSViewer from "../../components/SMSViewer";
 import OrderInfoCard from "../../components/OrderInfoCard";
 import type { OrderInfo } from "../../types";
+import EmailReplySection from "../../components/EmailReplySection";
+import SMSReplySection from "../../components/SMSReplySection";
 
 const MessageDetailPage = () => {
-  const { id } = useParams<{ id: string }>();
+  const { threadId } = useParams<{ threadId: string }>();
   const [message, setMessage] = useState<Message | null>(null);
   const [loading, setLoading] = useState(true);
   const [expandedIndexes, setExpandedIndexes] = useState<number[]>([]);
   const [reply, setReply] = useState("");
-  const [sending, setSending] = useState(false);
 
   const [orderInfo, setOrderInfo] = useState<OrderInfo | null>(null);
   const [loadingOrder, setLoadingOrder] = useState(true);
@@ -37,7 +38,7 @@ const MessageDetailPage = () => {
       hasFetchedMessage.current = true;
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL || ""}/message/${id}`
+          `${import.meta.env.VITE_API_URL || ""}/message/${threadId}`
         );
         console.log(response.data);
         setMessage(response.data);
@@ -53,10 +54,10 @@ const MessageDetailPage = () => {
       }
     };
 
-    if (id) {
+    if (threadId) {
       fetchMessage();
     }
-  }, [id]);
+  }, [threadId]);
 
   // Analyze email to get order info
   useEffect(() => {
@@ -73,6 +74,7 @@ const MessageDetailPage = () => {
         setLoadingOrder(false);
         return;
       }
+      console.log(message._id)
       try {
         const response = await axios.post(
           (import.meta.env.VITE_API_URL || "") + "/message/analyze",
@@ -93,6 +95,8 @@ const MessageDetailPage = () => {
     }
   }, [message]);
 
+  
+
   // Toggle collapse/expand
   const handleToggle = (idx: number) => {
     setExpandedIndexes((prev) =>
@@ -102,31 +106,7 @@ const MessageDetailPage = () => {
     );
   };
 
-  // Handle reply submit
-  const handleReply = async () => {
-    if (!reply.trim()) return;
-    setSending(true);
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL || ""}/message/${id}/reply`,
-        { content: reply }
-      );
-      setReply("");
-      setMessage(response.data);
-
-      // Expand only the last message by default
-      if (response.data?.messages?.length) {
-        setExpandedIndexes([response.data.messages.length - 1]);
-      }
-    } catch (err) {
-      // Handle error
-    } finally {
-      setSending(false);
-      setLoading(false);
-    }
-  };
-
-  const isEditorEmpty = (html: string) => {
+  const isEditorEmpty = (html: string | undefined) => {
     return !html || html.replace(/<(.|\n)*?>/g, '').trim() === '';
   };
 
@@ -155,55 +135,33 @@ const MessageDetailPage = () => {
                     >
                       <div className="w-full max-w-5xl">
                         <div
-                          className={`cursor-pointer select-none rounded-lg mb-2 shadow ${isExpanded ? "bg-white" : "bg-gray-50"}`}
+                          className={`cursor-pointer select-none rounded-lg mb-2`}
                           onClick={() => handleToggle(index)}
                         >
-                          {!isExpanded && (
-                            <div className="bg-white rounded-lg shadow-md p-6 max-w-5xl mx-auto">
-                              <header>
-                                <h2 className="text-xl font-bold mb-2">{entry.title || "No Subject"}</h2>
-                                <div className="flex gap-3 text-sm text-gray-600">
-                                  <div>
-                                    <span className="font-semibold">From:</span>{" "}
-                                    {entry.metadata?.from || "Unknown"}
-                                  </div>
-                                  <div>
-                                    <span className="font-semibold">To:</span>{" "}
-                                    {entry.metadata?.to || "Unknown"}
-                                  </div>
-                                  <div>
-                                    <span className="font-semibold">Date:</span>  {new Date(entry.timestamp).toLocaleString()}
-                                  </div>
-                                </div>
-                              </header>
-                            </div>
+                          {entry.message_type === "html" && (
+                            <EmailViewer
+                              subject={entry.title || "No Subject"}
+                              from={entry.metadata?.from || "Unknown"}
+                              to={entry.metadata?.to || "Unknown"}
+                              date={entry.timestamp}
+                              htmlBody={entry.content}
+                              threadId={threadId}
+                              isExpanded={isExpanded}
+                              replyFromParent={reply}
+                              OnHandleReply={() => {
+                                // Handle reply logic here
+                              }}
+                            />
                           )}
-                          {isExpanded && (
-                            <div className="">
-                              {entry.message_type === "html" ? (
-                                <EmailViewer
-                                  subject={entry.title || "No Subject"}
-                                  from={entry.metadata?.from || "Unknown"}
-                                  to={entry.metadata?.to || "Unknown"}
-                                  date={entry.timestamp}
-                                  htmlBody={entry.content}
-                                />
-                              ) : (
-                                <div
-                                  className={`p-4 rounded-lg ${
-                                    entry.sender === "client"
-                                      ? "bg-blue-100 text-left"
-                                      : entry.sender === "agent"
-                                      ? "bg-green-100 text-right"
-                                      : "bg-gray-200 text-gray-800"
-                                  }`}
-                                >
-                                  <p className="whitespace-pre-wrap text-base">
-                                    {entry.content}
-                                  </p>
-                                </div>
-                              )}
-                            </div>
+
+                          {entry.message_type === "text" && (
+                            <SMSViewer
+                              from={entry.metadata?.from || "Unknown"}
+                              to={entry.metadata?.to || "Unknown"}
+                              date={entry.timestamp}
+                              body={entry.content}
+                              isExpanded={isExpanded}
+                            />
                           )}
                         </div>
                       </div>
@@ -211,26 +169,19 @@ const MessageDetailPage = () => {
                   );
                 })}
 
-                {/* Reply Section */}
-                <div className="">
-                  <div className="bg-white rounded-lg p-4 shadow">
-                    <h3 className="text-lg font-semibold mb-2">Reply</h3>
-                    <div data-color-mode="light">
-                      <Editor
-                        value={reply}
-                        onTextChange={(e: any) => setReply(e.htmlValue)}
-                        style={{ height: '320px' }}
-                      />
-                    </div>
-                    <button
-                      className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 mt-2"
-                      onClick={handleReply}
-                      disabled={sending || isEditorEmpty(reply)}
-                    >
-                      {sending ? "Sending..." : "Send Reply"}
-                    </button>
-                  </div>
-                </div>
+                {message.channel === "email" && (
+                  <EmailReplySection
+                  threadId={threadId}
+                  replyFromParent={reply}
+                  />
+                )}
+
+                {message.channel === "sms" && (
+                  <SMSReplySection
+                    threadId={threadId}
+                    replyFromParent={reply}
+                  />
+                )}
               </div>
             ) : (
               <div className="p-6 text-red-600">Message not found</div>
