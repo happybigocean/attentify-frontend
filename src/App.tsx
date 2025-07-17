@@ -12,6 +12,8 @@ import PhoneAccountPage from "./pages/User/PhoneAccountPage";
 import ShopifyPage from "./pages/User/ShopifyPage";
 import ShopifySuccess from "./pages/User/ShopifySuccess";
 import OrderPage from "./pages/User/OrderPage";
+
+import UserManagement from "./pages/Admin/UserManagement";
 import "./App.css";
 
 function App() {  
@@ -23,9 +25,18 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         
         <Route
+          path="/user"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <UserManagement />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
           path="/dashboard"
           element={
-            <ProtectedRoute allowedRoles={['admin', 'user']}>
+            <ProtectedRoute allowedRoles={['admin', 'store_owner']}>
               <Dashboard />
             </ProtectedRoute>
           }
@@ -34,7 +45,7 @@ function App() {
         <Route
           path="/message"
           element={
-            <ProtectedRoute allowedRoles={['admin', 'user']}>
+            <ProtectedRoute allowedRoles={['admin', 'store_owner']}>
               <MessagePage />
             </ProtectedRoute>
           }
@@ -43,7 +54,7 @@ function App() {
         <Route
           path="/message/:threadId"
           element={
-            <ProtectedRoute allowedRoles={['admin', 'user']}>
+            <ProtectedRoute allowedRoles={['admin', 'store_owner']}>
               <MessageDetailPage  />
             </ProtectedRoute>
           }
@@ -52,7 +63,7 @@ function App() {
         <Route
           path="/order"
           element={
-            <ProtectedRoute allowedRoles={['admin', 'user']}>
+            <ProtectedRoute allowedRoles={['admin', 'store_owner']}>
               <OrderPage />
             </ProtectedRoute>
           }
@@ -61,7 +72,7 @@ function App() {
         <Route
           path="/accounts/gmail"
           element={
-            <ProtectedRoute allowedRoles={['admin', 'user']}>
+            <ProtectedRoute allowedRoles={['admin', 'store_owner']}>
               <GmailAccountPage />
             </ProtectedRoute>
           }
@@ -70,7 +81,7 @@ function App() {
         <Route
           path="/accounts/phone"
           element={
-            <ProtectedRoute allowedRoles={['admin', 'user']}>
+            <ProtectedRoute allowedRoles={['admin', 'store_owner']}>
               <PhoneAccountPage />
             </ProtectedRoute>
           }
@@ -79,7 +90,7 @@ function App() {
         <Route
           path="/shopify"
           element={
-            <ProtectedRoute allowedRoles={['admin', 'user']}>
+            <ProtectedRoute allowedRoles={['admin', 'store_owner']}>
               <ShopifyPage />
             </ProtectedRoute>
           }
@@ -88,7 +99,7 @@ function App() {
         <Route
           path="/shopify/success"
           element={
-            <ProtectedRoute allowedRoles={['admin', 'user']}>
+            <ProtectedRoute allowedRoles={['admin', 'store_owner']}>
               <ShopifySuccess />
             </ProtectedRoute>
           }
