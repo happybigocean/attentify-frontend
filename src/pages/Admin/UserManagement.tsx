@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import type { User } from "../../types/user";
 import { fetchUsers, createUser, updateUser, deleteUser } from "../../hooks/user";
-import Layout from "../../layouts/Layout";
+import Layout from "../../layouts/AdminLayout";
 
 const defaultNewUser: Omit<User, "id"> = {
   email: "",
