@@ -3,12 +3,12 @@ import type { User } from "../types/user";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
-export const fetchUsers = async (): Promise<User[]> => {
+export const fetchUsers = async (): Promise<any[]> => {
   const response = await axios.get(`${BASE_URL}/users/`);
   return response.data;
 };
 
-export const createUser = async (user: Omit<User, "id">): Promise<User> => {
+export const createUser = async (user: Omit<User, "_id">): Promise<User> => {
   const response = await axios.post(BASE_URL, user);
   return response.data;
 };
