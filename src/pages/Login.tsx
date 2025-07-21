@@ -17,11 +17,32 @@ export default function Login() {
         setError(null);
         try {
             const data = await login(loginEmail, loginPassword);
+            console.log("Login response:", data);
             const { token, user } = data;
             localStorage.setItem("token", token);
             localStorage.setItem('user', JSON.stringify(user));
             setMessage("Logged in! Redirecting...");
-            setTimeout(() => navigate("/dashboard"), 1000); // redirect after short delay
+
+            // Determine redirect path based on user.role
+            let redirectPath = "/dashboard";
+            switch (user.role) {
+                case "admin":
+                    redirectPath = "/admin/dashboard";
+                    break;
+                case "store_owner":
+                    redirectPath = "/dashboard";
+                    break;
+                case "agent":
+                    redirectPath = "/agent";
+                    break;
+                case "readonly":
+                    redirectPath = "/readonly";
+                    break;
+                default:
+                    redirectPath = "/dashboard";
+            }
+
+            setTimeout(() => navigate(redirectPath), 1000); // redirect after short delay
         } catch (err: any) {
             setError(err.message || "Login failed");
         } finally {
