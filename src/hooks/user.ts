@@ -9,15 +9,15 @@ export const fetchUsers = async (): Promise<any[]> => {
 };
 
 export const createUser = async (user: Omit<User, "_id">): Promise<User> => {
-  const response = await axios.post(BASE_URL, user);
+  const response = await axios.post(`${BASE_URL}/users/`, user);
   return response.data;
 };
 
 export const updateUser = async (id: string, user: Partial<User>): Promise<User> => {
-  const response = await axios.put(`${BASE_URL}/${id}`, user);
+  const response = await axios.put(`${BASE_URL}/users/${id}`, user);
   return response.data;
 };
 
 export const deleteUser = async (id: string): Promise<void> => {
-  await axios.delete(`${BASE_URL}/${id}`);
+  await axios.delete(`${BASE_URL}/users/${id}`);
 };
