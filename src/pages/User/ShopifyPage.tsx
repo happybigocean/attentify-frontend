@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Layout from "../../layouts/Layout";
+import { useUser } from "../../context/UserContext";
 
 interface ShopifyShop {
   id: string;
@@ -11,6 +12,7 @@ interface ShopifyShop {
 export default function ShopifyPage() {
   const [shops, setShops] = useState<ShopifyShop[]>([]);
   const [loading, setLoading] = useState(false);
+  const { user } = useUser();
 
   useEffect(() => {
     fetchShops();
@@ -34,8 +36,9 @@ export default function ShopifyPage() {
   };
 
   const handleConnect = () => {
-    // Typically redirects to Shopify OAuth flow (customize as needed)
-    const oauthUrl = `${import.meta.env.VITE_API_URL || ""}/shopify/auth`;
+    const user_id = user?.id || "";
+    const baseUrl = import.meta.env.VITE_API_URL || "";
+    const oauthUrl = `${baseUrl}/shopify/auth?user_id=${encodeURIComponent(user_id)}`;
     window.location.href = oauthUrl;
   };
 
