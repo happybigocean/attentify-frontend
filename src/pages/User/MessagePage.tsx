@@ -53,7 +53,10 @@ export default function MessagePage() {
     setLoading(true);
     try {
       const response = await axios.get<Message[]>(
-        `${import.meta.env.VITE_API_URL || ""}/message`
+        `${import.meta.env.VITE_API_URL || ""}/message`,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
       );
       setMessages(response.data);
       setTimeout(refreshMessages, 500);
@@ -67,10 +70,30 @@ export default function MessagePage() {
   const refreshMessages = async () => {
     setLoading(true);
     try {
-      await axios.post(`${import.meta.env.VITE_API_URL || ""}/message/fetch-all`);
-      const response = await axios.get<Message[]>(
-        `${import.meta.env.VITE_API_URL || ""}/message`
+      const token = localStorage.getItem("token");
+
+      // Ensure the token exists
+      if (!token) {
+        throw new Error("No auth token found");
+      }
+
+      const authHeader = {
+        headers: { Authorization: `Bearer ${token}` },
+      };
+
+      // Call fetch-all with auth header
+      await axios.post(
+        `${import.meta.env.VITE_API_URL || ""}/message/fetch-all`,
+        {},
+        authHeader
       );
+
+      // Fetch messages with auth header
+      const response = await axios.get<Message[]>(
+        `${import.meta.env.VITE_API_URL || ""}/message`,
+        authHeader
+      );
+
       setMessages(response.data);
     } catch (error) {
       console.error("Failed to load messages:", error);

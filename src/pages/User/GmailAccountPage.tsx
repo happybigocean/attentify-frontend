@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Layout from "../../layouts/Layout";
+import { useUser } from "../../context/UserContext";
 
 interface GmailAccount {
   id: string;
@@ -11,15 +12,23 @@ interface GmailAccount {
 export default function GmailAccountPage() {
   const [accounts, setAccounts] = useState<GmailAccount[]>([]);
   const [loading, setLoading] = useState(false);
+  const { user } = useUser();
 
   useEffect(() => {
     fetchAccounts();
-  }, []);
+  }, [user]);
 
   const fetchAccounts = async () => {
+    if (!user) {
+      console.error("User not logged in");
+      return;
+    }
+
     setLoading(true);
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL || ""}/gmail`);
+      const res = await axios.get(`${import.meta.env.VITE_API_URL || ""}/gmail`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
       setAccounts(res.data);
     } catch (err) {
       console.error("Failed to fetch Gmail accounts", err);
@@ -29,7 +38,12 @@ export default function GmailAccountPage() {
   };
 
   const handleConnect = () => {
-    const oauthUrl = `${import.meta.env.VITE_API_URL || ""}/gmail/oauth/login`;
+    if (!user) {
+      console.error("User not logged in");
+      return;
+    }
+
+    const oauthUrl = `${import.meta.env.VITE_API_URL || ""}/gmail/oauth/login?user_id=${user.id}`;
     window.location.href = oauthUrl;
   };
 
