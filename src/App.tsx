@@ -12,6 +12,7 @@ import PhoneAccountPage from "./pages/User/PhoneAccountPage";
 import ShopifyPage from "./pages/User/ShopifyPage";
 import ShopifySuccess from "./pages/User/ShopifySuccess";
 import OrderPage from "./pages/User/OrderPage";
+import { UserProvider } from "./context/UserContext";
 
 // admin pages
 import AdminDashboard from "./pages/Admin/Dashboard";
@@ -20,103 +21,105 @@ import "./App.css";
 
 function App() {  
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        
-        <Route
-          path="/admin/dashboard"
-          element={
-            <ProtectedRoute allowedRoles={['admin']}>
-              <AdminDashboard />
-            </ProtectedRoute>
-          }
-        />
+    <UserProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          
+          <Route
+            path="/admin/dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path="/admin/user"
-          element={
-            <ProtectedRoute allowedRoles={['admin']}>
-              <UserManagement />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/admin/user"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <UserManagement />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute allowedRoles={['store_owner']}>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['store_owner']}>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path="/message"
-          element={
-            <ProtectedRoute allowedRoles={['store_owner']}>
-              <MessagePage />
-            </ProtectedRoute>
-          }
-        />
-        
-        <Route
-          path="/message/:threadId"
-          element={
-            <ProtectedRoute allowedRoles={['store_owner']}>
-              <MessageDetailPage  />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/message"
+            element={
+              <ProtectedRoute allowedRoles={['store_owner']}>
+                <MessagePage />
+              </ProtectedRoute>
+            }
+          />
+          
+          <Route
+            path="/message/:threadId"
+            element={
+              <ProtectedRoute allowedRoles={['store_owner']}>
+                <MessageDetailPage  />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path="/order"
-          element={
-            <ProtectedRoute allowedRoles={['store_owner']}>
-              <OrderPage />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/order"
+            element={
+              <ProtectedRoute allowedRoles={['store_owner']}>
+                <OrderPage />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path="/accounts/gmail"
-          element={
-            <ProtectedRoute allowedRoles={['store_owner']}>
-              <GmailAccountPage />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/accounts/gmail"
+            element={
+              <ProtectedRoute allowedRoles={['store_owner']}>
+                <GmailAccountPage />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path="/accounts/phone"
-          element={
-            <ProtectedRoute allowedRoles={['store_owner']}>
-              <PhoneAccountPage />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/accounts/phone"
+            element={
+              <ProtectedRoute allowedRoles={['store_owner']}>
+                <PhoneAccountPage />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path="/shopify"
-          element={
-            <ProtectedRoute allowedRoles={['store_owner']}>
-              <ShopifyPage />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/shopify"
+            element={
+              <ProtectedRoute allowedRoles={['store_owner']}>
+                <ShopifyPage />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path="/shopify/success"
-          element={
-            <ProtectedRoute allowedRoles={['store_owner']}>
-              <ShopifySuccess />
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
-    </BrowserRouter>
+          <Route
+            path="/shopify/success"
+            element={
+              <ProtectedRoute allowedRoles={['store_owner']}>
+                <ShopifySuccess />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </BrowserRouter>
+    </UserProvider>
   );
 }
 

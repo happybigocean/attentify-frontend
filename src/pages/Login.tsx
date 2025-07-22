@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "../services/auth";
+import { useUser } from "../context/UserContext";
 
 export default function Login() {
+    const { setUser } = useUser();
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [loginEmail, setLoginEmail] = useState("");
     const [loginPassword, setLoginPassword] = useState("");
@@ -21,6 +23,8 @@ export default function Login() {
             const { token, user } = data;
             localStorage.setItem("token", token);
             localStorage.setItem('user', JSON.stringify(user));
+            setUser(user); 
+
             setMessage("Logged in! Redirecting...");
 
             // Determine redirect path based on user.role
