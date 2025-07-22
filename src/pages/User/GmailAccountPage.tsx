@@ -27,7 +27,6 @@ export default function GmailAccountPage() {
     setLoading(true);
     try {
       const res = await axios.get(`${import.meta.env.VITE_API_URL || ""}/gmail`, {
-        params: { user_id: user.id },
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       setAccounts(res.data);

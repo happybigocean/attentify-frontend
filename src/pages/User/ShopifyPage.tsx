@@ -19,7 +19,11 @@ export default function ShopifyPage() {
   const fetchShops = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL || ""}/shopify`);
+      const res = await axios.get(`${import.meta.env.VITE_API_URL || ""}/shopify`,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
       console.log(res.data);
       setShops(res.data);
     } catch (err) {
