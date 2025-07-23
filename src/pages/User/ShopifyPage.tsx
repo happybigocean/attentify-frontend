@@ -4,7 +4,8 @@ import Layout from "../../layouts/Layout";
 import { useUser } from "../../context/UserContext";
 
 interface ShopifyShop {
-  id: string;
+  _id: string;
+  user_id: string;
   shop: string;
   status: "connected" | "disconnected";
 }
@@ -45,7 +46,7 @@ export default function ShopifyPage() {
   const handleRemove = async (id: string) => {
     try {
       await axios.delete(`${import.meta.env.VITE_API_URL || ""}/shopify/${id}`);
-      setShops(prev => prev.filter(shop => shop.id !== id));
+      setShops(prev => prev.filter(shop => shop._id !== id));
     } catch (err) {
       console.error("Failed to remove Shopify shop", err);
     }
@@ -74,7 +75,7 @@ export default function ShopifyPage() {
           ) : (
             <ul className="divide-y divide-gray-200">
               {shops.map(shop => (
-                <li key={shop.id} className="py-3 flex items-center justify-between">
+                <li key={shop._id} className="py-3 flex items-center justify-between">
                   <div>
                     <p className="text-gray-800 font-medium">{shop.shop}</p>
                     <p className={`text-sm ${shop.status === "connected" ? "text-green-600" : "text-red-500"}`}>
@@ -82,7 +83,7 @@ export default function ShopifyPage() {
                     </p>
                   </div>
                   <button
-                    onClick={() => handleRemove(shop.id)}
+                    onClick={() => handleRemove(shop._id)}
                     className="text-sm text-red-500 hover:underline"
                   >
                     Remove
