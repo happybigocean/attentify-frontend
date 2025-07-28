@@ -2,23 +2,26 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Layout from "../../layouts/Layout";
 import { useUser } from "../../context/UserContext";
+import { useNotification } from "../../context/NotificationContext"; 
 
 interface GmailAccount {
   id: string;
   email: string;
   status: "connected" | "disconnected";
-}
+};
 
 export default function GmailAccountPage() {
   const [accounts, setAccounts] = useState<GmailAccount[]>([]);
   const [loading, setLoading] = useState(false);
   const { user } = useUser();
+  const { notify } = useNotification();
 
   useEffect(() => {
     fetchAccounts();
   }, [user]);
 
   const fetchAccounts = async () => {
+
     if (!user) {
       console.error("User not logged in");
       return;
@@ -32,6 +35,7 @@ export default function GmailAccountPage() {
       setAccounts(res.data);
     } catch (err) {
       console.error("Failed to fetch Gmail accounts", err);
+      notify("error", "Failed to fetch Gmail accounts");
     } finally {
       setLoading(false);
     }
@@ -51,8 +55,10 @@ export default function GmailAccountPage() {
     try {
       await axios.delete(`${import.meta.env.VITE_API_URL || ""}/gmail/${id}`);
       setAccounts(prev => prev.filter(account => account.id !== id));
+      notify("success", "Gmail account removed successfully");
     } catch (err) {
       console.error("Failed to remove Gmail account", err);
+      notify("error", "Failed to remove Gmail account");
     }
   };
 
