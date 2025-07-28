@@ -94,6 +94,7 @@ const UserManagement: React.FC = () => {
       setUsers(users.map((u) => (u._id === editingUserId ? updated : u)));
       setEditingUserId(null);
       setEditForm(null);
+      notify("success", "User updated successfully.");
     } catch (err) {
       console.error(err);
       notify("error", "Failed to update user.");
@@ -334,7 +335,7 @@ const UserManagement: React.FC = () => {
           </table>
         </div>
       </div>
-      
+
       <ConfirmDialog
         isOpen={confirmState.isOpen}
         title="Delete user"
