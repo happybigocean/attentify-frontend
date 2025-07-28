@@ -3,6 +3,7 @@ import type { User } from "../../types/user";
 import { fetchUsers, createUser, updateUser, deleteUser } from "../../hooks/user";
 import Layout from "../../layouts/AdminLayout";
 import { useNotification } from "../../context/NotificationContext";
+import ConfirmDialog from "../../components/ConfirmDialog";
 
 const defaultNewUser: Omit<User, "_id"> = {
   email: "",
@@ -32,6 +33,10 @@ const UserManagement: React.FC = () => {
   const [editForm, setEditForm] = useState<Omit<User, "_id"> | null>(null);
   const [showCreate, setShowCreate] = useState(false);
   const { notify } = useNotification();
+  const [ confirmState, setConfirmState ] = useState<{
+    isOpen: boolean,
+    userId: string | null;    
+  }>({isOpen: false, userId: null});
 
   useEffect(() => {
     fetchUsers().then(setUsers);
@@ -53,14 +58,19 @@ const UserManagement: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this user?")) return;
+  const handleConfirmedDelete = async () => {
+    const id = confirmState.userId;
+    if (!id) return;
+
     try {
       await deleteUser(id);
-      setUsers(users.filter((u) => u._id !== id));
+      setUsers((prev) => prev.filter((u) => u._id !== id));
+      notify("success", "User deleted successfully.");
     } catch (err) {
       console.error(err);
       notify("error", "Failed to delete user.");
+    } finally {
+      closeConfirm();
     }
   };
 
@@ -84,6 +94,7 @@ const UserManagement: React.FC = () => {
       setUsers(users.map((u) => (u._id === editingUserId ? updated : u)));
       setEditingUserId(null);
       setEditForm(null);
+      notify("success", "User updated successfully.");
     } catch (err) {
       console.error(err);
       notify("error", "Failed to update user.");
@@ -93,6 +104,14 @@ const UserManagement: React.FC = () => {
   const handleCancelEdit = () => {
     setEditingUserId(null);
     setEditForm(null);
+  };
+
+   const openConfirm = (id: string) => {
+    setConfirmState({ isOpen: true, userId: id });
+  };
+
+  const closeConfirm = () => {
+    setConfirmState({ isOpen: false, userId: null });
   };
 
   return (
@@ -295,7 +314,7 @@ const UserManagement: React.FC = () => {
                           </button>
                           <button
                             className="px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600"
-                            onClick={() => handleDelete(u._id)}
+                            onClick={() => openConfirm(u._id)}
                           >
                             Delete
                           </button>
@@ -316,6 +335,14 @@ const UserManagement: React.FC = () => {
           </table>
         </div>
       </div>
+
+      <ConfirmDialog
+        isOpen={confirmState.isOpen}
+        title="Delete user"
+        message="Are you sure you want to delete this user?"
+        onConfirm={handleConfirmedDelete}
+        onCancel={closeConfirm}
+      />
     </Layout>
   );
 };
