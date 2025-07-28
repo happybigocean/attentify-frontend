@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Layout from "../../layouts/Layout";
 import { useUser } from "../../context/UserContext";
+import { useNotification } from "../../context/NotificationContext";
 
 interface ShopifyShop {
   _id: string;
@@ -14,6 +15,7 @@ export default function ShopifyPage() {
   const [shops, setShops] = useState<ShopifyShop[]>([]);
   const [loading, setLoading] = useState(false);
   const { user } = useUser();
+  const { notify } = useNotification();
 
   useEffect(() => {
     fetchShops();
@@ -27,10 +29,10 @@ export default function ShopifyPage() {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
-      console.log(res.data);
       setShops(res.data);
     } catch (err) {
       console.error("Failed to fetch Shopify shops", err);
+      notify("error", "Failed to fetch Shopify shops")
     } finally {
       setLoading(false);
     }
@@ -49,6 +51,7 @@ export default function ShopifyPage() {
       setShops(prev => prev.filter(shop => shop._id !== id));
     } catch (err) {
       console.error("Failed to remove Shopify shop", err);
+      notify("error", "Failed to remove Shopify shop");
     }
   };
 
