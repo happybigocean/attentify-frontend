@@ -74,7 +74,7 @@ const MessageDetailPage = () => {
         setLoadingOrder(false);
         return;
       }
-      console.log(message._id)
+
       try {
         const response = await axios.post(
           (import.meta.env.VITE_API_URL || "") + "/message/analyze",
@@ -94,8 +94,6 @@ const MessageDetailPage = () => {
       fetchOrderInfo();
     }
   }, [message]);
-
-  
 
   // Toggle collapse/expand
   const handleToggle = (idx: number) => {

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import type { User } from "../../types/user";
 import { fetchUsers, createUser, updateUser, deleteUser } from "../../hooks/user";
 import Layout from "../../layouts/AdminLayout";
+import { useNotification } from "../../context/NotificationContext";
 
 const defaultNewUser: Omit<User, "_id"> = {
   email: "",
@@ -27,10 +28,10 @@ const STATUSES = [
 const UserManagement: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [newUser, setNewUser] = useState(defaultNewUser);
-  // Instead of global editForm, keep per-row edit state for the currently edited row only
   const [editingUserId, setEditingUserId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Omit<User, "_id"> | null>(null);
   const [showCreate, setShowCreate] = useState(false);
+  const { notify } = useNotification();
 
   useEffect(() => {
     fetchUsers().then(setUsers);
@@ -38,7 +39,7 @@ const UserManagement: React.FC = () => {
 
   const handleCreate = async () => {
     if (!newUser.email || !newUser.first_name || !newUser.last_name) {
-      alert("Please fill all required fields.");
+      notify("error", "Please fill all required fields.");
       return;
     }
     try {
@@ -48,7 +49,7 @@ const UserManagement: React.FC = () => {
       setShowCreate(false);
     } catch (err) {
       console.error(err);
-      alert("Failed to create user.");
+      notify("error", "Failed to create user.");
     }
   };
 
@@ -59,7 +60,7 @@ const UserManagement: React.FC = () => {
       setUsers(users.filter((u) => u._id !== id));
     } catch (err) {
       console.error(err);
-      alert("Failed to delete user.");
+      notify("error", "Failed to delete user.");
     }
   };
 
@@ -85,7 +86,7 @@ const UserManagement: React.FC = () => {
       setEditForm(null);
     } catch (err) {
       console.error(err);
-      alert("Failed to update user.");
+      notify("error", "Failed to update user.");
     }
   };
 

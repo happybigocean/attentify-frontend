@@ -11,6 +11,7 @@ import {
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import axios from "axios";
+import { useNotification } from "../../context/NotificationContext";
 
 interface ChatEntry {
   sender: string;
@@ -48,6 +49,7 @@ export default function MessagePage() {
   const [viewMode, setViewMode] = useState<ViewMode>("inbox");
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const { notify } = useNotification();
 
   const fetchMessages = async () => {
     setLoading(true);
@@ -62,6 +64,7 @@ export default function MessagePage() {
       setTimeout(refreshMessages, 500);
     } catch (error) {
       console.error("Failed to load messages:", error);
+      notify("error", "Failed to load messages");
     } finally {
       setLoading(false);
     }
@@ -72,8 +75,8 @@ export default function MessagePage() {
     try {
       const token = localStorage.getItem("token");
 
-      // Ensure the token exists
       if (!token) {
+        notify("error", "No authentication token found");
         throw new Error("No auth token found");
       }
 
@@ -81,14 +84,12 @@ export default function MessagePage() {
         headers: { Authorization: `Bearer ${token}` },
       };
 
-      // Call fetch-all with auth header
       await axios.post(
         `${import.meta.env.VITE_API_URL || ""}/message/fetch-all`,
         {},
         authHeader
       );
 
-      // Fetch messages with auth header
       const response = await axios.get<Message[]>(
         `${import.meta.env.VITE_API_URL || ""}/message`,
         authHeader
@@ -97,6 +98,7 @@ export default function MessagePage() {
       setMessages(response.data);
     } catch (error) {
       console.error("Failed to load messages:", error);
+      notify("error", "Failed to load messages");
     } finally {
       setLoading(false);
     }

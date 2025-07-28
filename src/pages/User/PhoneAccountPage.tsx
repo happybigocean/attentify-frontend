@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import Layout from "../../layouts/Layout";
+import { useNotification } from "../../context/NotificationContext";
 
 interface PhoneAccount {
   id: string;
@@ -15,6 +15,7 @@ const phoneNumbers = [
 export default function PhoneAccountPage() {
   const [accounts, setAccounts] = useState<PhoneAccount[]>([]);
   const [loading, setLoading] = useState(false);
+  const { notify } = useNotification();
 
   useEffect(() => {
     fetchAccounts();
@@ -29,13 +30,13 @@ export default function PhoneAccountPage() {
       setAccounts(phoneNumbers);
     } catch (err) {
       console.error("Failed to fetch phone accounts", err);
+      notify("error", "Failed to fetch phone accounts");
     } finally {
       setLoading(false);
     }
   };
 
   const handleConnect = () => {
-    // This could be an OAuth, Twilio Connect, or your own onboarding flow
     const connectUrl = `${import.meta.env.VITE_API_URL || ""}/phone/connect`;
     window.location.href = connectUrl;
   };
@@ -47,6 +48,7 @@ export default function PhoneAccountPage() {
       setAccounts(prev => prev.filter(account => account.id !== id));
     } catch (err) {
       console.error("Failed to remove phone account", err);
+      notify("error", "Failed to remove phone account");
     }
   };
 
