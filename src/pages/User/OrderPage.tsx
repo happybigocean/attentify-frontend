@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Layout from "../../layouts/Layout";
+import { useNotification } from "../../context/NotificationContext"; 
 
 interface Customer {
   id?: string;
@@ -30,6 +31,7 @@ interface Order {
 export default function OrderPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(false);
+  const { notify } = useNotification();
 
   useEffect(() => {
     fetchOrders();
@@ -44,6 +46,7 @@ export default function OrderPage() {
       setOrders(res.data);
     } catch (err) {
       console.error("Failed to fetch orders", err);
+      notify("error", "Failed to fetch orders");
     } finally {
       setLoading(false);
     }
@@ -53,12 +56,10 @@ export default function OrderPage() {
     setLoading(true);
     try {
       await axios.post(`${import.meta.env.VITE_API_URL || ""}/shopify/orders/sync`);
-      // Optionally, you can show a message to user: "Sync started"
-      // Refetch orders after sync (you may want to add a delay if sync takes time)
       await fetchOrders();
     } catch (err) {
       console.error("Failed to sync orders", err);
-      // Optionally, show error to user
+      notify("error", "Failed to sync orders");
     } finally {
       setLoading(false);
     }
