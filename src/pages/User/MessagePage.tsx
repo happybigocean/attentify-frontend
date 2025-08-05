@@ -155,7 +155,7 @@ export default function MessagePage() {
             placeholder="Search"
             value={search}
             onChange={onSearchChange}
-            className="w-full px-5 py-3 pl-12 border border-gray-300 rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg"
+            className="w-full px-5 py-3 pl-12 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg"
           />
           <MagnifyingGlassIcon className="h-6 w-6 text-gray-500 absolute top-3 left-4" />
         </div>

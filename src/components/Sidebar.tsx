@@ -87,19 +87,19 @@ export default function Sidebar({
       {/* Sidebar */}
       <div
         className={`
-          z-40 text-gray-900 shadow-lg transition-all duration-300 ease-in-out border-r border-gray-300
+          z-40 text-gray-900 transition-all duration-300 ease-in-out border-r border-gray-300
           ${mobileOpen ? "block fixed w-full" : "hidden"}
           lg:fixed lg:block lg:w-56 lg:h-full
         `}
       >
         <div className="flex flex-col h-full">
-          <a className="flex items-center w-full px-4 pt-1" href="/dashboard">
-            <img className="h-12 w-auto" src="/logo.png" alt="Attentify logo" />
+          <a className="flex items-center w-full px-4 pt-3 pb-3 border-b border-gray-300" href="/dashboard">
+            <img className="h-10 w-auto" src="/logo.png" alt="Attentify logo" />
           </a>
 
           <div className="flex-1 w-full px-2 overflow-y-auto max-h-screen">
             {/* Top menu */}
-            <div className="flex flex-col items-start w-full mt-3 border-t border-gray-300">
+            <div className="flex flex-col items-start w-full mt-3">
               <a
                 className="flex items-center w-full h-12 px-4 mt-2 rounded-md transition hover:bg-gray-100 focus:outline-none"
                 href="/dashboard"
@@ -221,7 +221,7 @@ export default function Sidebar({
               </svg>
             </button>
             {accountOpen && (
-              <div className="absolute bottom-12 left-0 mb-2 w-full bg-gray-100 border border-gray-300 rounded-md shadow-lg z-50 animate-fade-in">
+              <div className="absolute bottom-12 left-0 w-full bg-gray-100 border border-gray-300 rounded-md z-50 animate-fade-in">
                 <div className="flex flex-col py-2">
                   <div className="px-4 py-2 text-gray-900 font-semibold border-b border-gray-300">
                     {userName}
