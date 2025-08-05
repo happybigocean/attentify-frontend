@@ -148,14 +148,14 @@ export default function MessagePage() {
 
   return (
     <Layout>
-      <div className="p-6">
+      <div className="p-3">
         <div className="relative mb-6">
           <input
             type="text"
             placeholder="Search"
             value={search}
             onChange={onSearchChange}
-            className="w-full px-5 py-3 pl-12 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg"
+            className="w-full px-5 py-3 pl-12 border border-gray-300 rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg"
           />
           <MagnifyingGlassIcon className="h-6 w-6 text-gray-500 absolute top-3 left-4" />
         </div>
@@ -179,7 +179,7 @@ export default function MessagePage() {
           </div>
         </div>
 
-        <div className="flex items-center justify-between px-5 py-3 bg-white border border-gray-200 rounded-t-lg">
+        <div className="flex items-center justify-between px-5 py-3 bg-white border border-gray-200 rounded-sm">
           <div className="flex items-center gap-6 ms-1">
             <input
               type="checkbox"
@@ -205,7 +205,7 @@ export default function MessagePage() {
           </div>
         </div>
 
-        <div className="bg-white border-x border-b border-gray-200 rounded-b-lg">
+        <div className="bg-white border-x border-b border-gray-200 rounded-sm">
           <table className="min-w-full divide-y divide-gray-200 text-lg">
             <tbody>
               {filteredMessages.length === 0 ? (

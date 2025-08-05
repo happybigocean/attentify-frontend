@@ -87,21 +87,21 @@ export default function Sidebar({
       {/* Sidebar */}
       <div
         className={`
-          z-40 bg-gray-900 text-gray-400 shadow-lg transition-all duration-300 ease-in-out
+          z-40 text-gray-900 shadow-lg transition-all duration-300 ease-in-out border-r border-gray-300
           ${mobileOpen ? "block fixed w-full" : "hidden"}
           lg:fixed lg:block lg:w-56 lg:h-full
         `}
       >
         <div className="flex flex-col h-full">
-          <a className="flex items-center w-full px-4 py-3" href="/dashboard">
+          <a className="flex items-center w-full px-4 pt-1" href="/dashboard">
             <img className="h-12 w-auto" src="/logo.png" alt="Attentify logo" />
           </a>
 
           <div className="flex-1 w-full px-2 overflow-y-auto max-h-screen">
             {/* Top menu */}
-            <div className="flex flex-col items-start w-full mt-3 border-t border-gray-700">
+            <div className="flex flex-col items-start w-full mt-3 border-t border-gray-300">
               <a
-                className="flex items-center w-full h-12 px-4 mt-2 rounded-md transition hover:bg-gray-700 hover:text-gray-300 focus:outline-none"
+                className="flex items-center w-full h-12 px-4 mt-2 rounded-md transition hover:bg-gray-100 focus:outline-none"
                 href="/dashboard"
               >
                 <svg className="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -111,7 +111,7 @@ export default function Sidebar({
               </a>
 
               <a
-                className="relative flex items-center w-full h-12 px-4 mt-2 rounded-md transition hover:bg-gray-700 hover:text-gray-300 focus:outline-none"
+                className="relative flex items-center w-full h-12 px-4 mt-2 rounded-md transition hover:bg-gray-100 focus:outline-none"
                 href="/message"
               >
                 <svg className="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -123,7 +123,7 @@ export default function Sidebar({
 
               { false && (
                 <a
-                  className="flex items-center w-full h-12 px-4 mt-2 rounded-md transition hover:bg-gray-700 hover:text-gray-300 focus:outline-none"
+                  className="flex items-center w-full h-12 px-4 mt-2 rounded-md transition hover:bg-gray-100  focus:outline-none"
                   href="/order"
                 >
                   <svg className="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -136,7 +136,7 @@ export default function Sidebar({
               {/* Accounts submenu */}
               <div className="w-full">
                 <details className="w-full group">
-                  <summary className="flex items-center w-full h-12 px-4 mt-2 rounded-md cursor-pointer transition hover:bg-gray-700 hover:text-gray-300 list-none focus:outline-none">
+                  <summary className="flex items-center w-full h-12 px-4 mt-2 rounded-md cursor-pointer transition hover:bg-gray-100  list-none focus:outline-none">
                     <svg className="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a4 4 0 00-3-3.87M9 20h6M3 20h5v-2a4 4 0 00-3-3.87M9 10a4 4 0 100-8 4 4 0 000 8zm6 0a4 4 0 100-8 4 4 0 000 8z" />
                     </svg>
@@ -146,13 +146,13 @@ export default function Sidebar({
                     </svg>
                   </summary>
                   <div className="pl-5 py-1 flex flex-col gap-1">
-                    <a href="/accounts/gmail" className="flex items-center h-10 px-2 rounded-md hover:bg-gray-700 hover:text-gray-300 transition focus:outline-none">
+                    <a href="/accounts/gmail" className="flex items-center h-10 px-2 rounded-md hover:bg-gray-100  transition focus:outline-none">
                       <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z" />
                       </svg>
                       <span>Gmail</span>
                     </a>
-                    <a href="/accounts/phone" className="flex items-center h-10 px-2 rounded-md hover:bg-gray-700 hover:text-gray-300 transition focus:outline-none">
+                    <a href="/accounts/phone" className="flex items-center h-10 px-2 rounded-md hover:bg-gray-100  transition focus:outline-none">
                         <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h2a2 2 0 012 2v3a2 2 0 01-.59 1.41l-1.3 1.3a16 16 0 006.59 6.59l1.3-1.3A2 2 0 0116 14h3a2 2 0 012 2v2a2 2 0 01-2 2A18 18 0 013 5z"/>
                         </svg>
@@ -163,7 +163,7 @@ export default function Sidebar({
               </div>
 
               <a
-                className="flex items-center w-full h-12 px-4 mt-2 rounded-md hover:bg-gray-700 hover:text-gray-300 transition focus:outline-none"
+                className="flex items-center w-full h-12 px-4 mt-2 rounded-md hover:bg-gray-100  transition focus:outline-none"
                 href="/shopify"
               >
                 <svg className="w-6 h-6" viewBox="0 0 32 32" fill="none">
@@ -186,9 +186,9 @@ export default function Sidebar({
             </div>
 
             {/* Settings */}
-            <div className="flex flex-col items-start w-full mt-2 border-t border-gray-700">
+            <div className="flex flex-col items-start w-full mt-2 border-t border-gray-300">
               <a
-                className="flex items-center w-full h-12 px-4 mt-2 rounded-md hover:bg-gray-700 hover:text-gray-300 transition focus:outline-none"
+                className="flex items-center w-full h-12 px-4 mt-2 rounded-md hover:bg-gray-100  transition focus:outline-none"
                 href="/settings"
               >
                 <svg className="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -200,9 +200,9 @@ export default function Sidebar({
           </div>
 
           {/* Account (pinned bottom) */}
-          <div className="border-t border-gray-700 w-full relative" ref={accountMenuRef}>
+          <div className="border-t border-gray-300 w-full relative" ref={accountMenuRef}>
             <button
-              className="flex items-center w-full h-12 px-4 hover:bg-gray-800 hover:text-gray-300 focus:outline-none relative"
+              className="flex items-center w-full h-12 px-4 hover:bg-gray-100  focus:outline-none relative"
               onClick={() => setAccountOpen((o) => !o)}
               aria-haspopup="true"
               aria-expanded={accountOpen}
@@ -221,20 +221,20 @@ export default function Sidebar({
               </svg>
             </button>
             {accountOpen && (
-              <div className="absolute bottom-12 left-0 mb-2 w-full bg-gray-800 border border-gray-700 rounded-md shadow-lg z-50 animate-fade-in">
+              <div className="absolute bottom-12 left-0 mb-2 w-full bg-gray-100 border border-gray-300 rounded-md shadow-lg z-50 animate-fade-in">
                 <div className="flex flex-col py-2">
-                  <div className="px-4 py-2 text-gray-300 font-semibold border-b border-gray-700">
+                  <div className="px-4 py-2 text-gray-900 font-semibold border-b border-gray-300">
                     {userName}
                   </div>
-                  <div className="px-4 py-1 text-sm text-gray-400 border-b border-gray-700">
+                  <div className="px-4 py-1 text-sm text-gray-900 border-b border-gray-300">
                     {userRole}
                   </div>
-                  <div className="px-4 py-1 text-sm text-gray-400 border-b border-gray-700">
+                  <div className="px-4 py-1 text-sm text-gray-900 border-b border-gray-300">
                     {userEmail}
                   </div>
                   <button
                     onClick={handleLogout}
-                    className="px-4 py-2 text-left text-red-500 hover:bg-gray-700 hover:text-red-400 transition"
+                    className="px-4 py-2 text-left text-red-500 hover:bg-gray-300 hover:text-red-400 transition"
                   >
                     Logout
                   </button>
