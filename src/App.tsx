@@ -14,6 +14,7 @@ import ShopifySuccess from "./pages/User/ShopifySuccess";
 import OrderPage from "./pages/User/OrderPage";
 import { UserProvider } from "./context/UserContext";
 import { NotificationProvider } from "./context/NotificationContext";
+import RegisterCompany from "./pages/User/RegisterCompany";
 
 // admin pages
 import AdminDashboard from "./pages/Admin/Dashboard";
@@ -117,6 +118,13 @@ function App() {
                 <ProtectedRoute allowedRoles={['store_owner']}>
                   <ShopifySuccess />
                 </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/register-company"
+              element={
+                  <RegisterCompany />
               }
             />
           </Routes>

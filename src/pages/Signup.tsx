@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { register } from "../services/auth";
 
 export default function Signup() {
+    const navigate = useNavigate();
     const [passwordVisible, setPasswordVisible] = useState(false);
-
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [registerEmail, setRegisterEmail] = useState("");
@@ -24,7 +24,7 @@ export default function Signup() {
             localStorage.setItem('user', JSON.stringify(user));
             setMessage("Registered! Redirecting...");
             setTimeout(() => {
-                window.location.href = "/dashboard";
+                navigate("/register-company");
             }, 1000);
         } catch (err: any) {
             setError(err.message || "Registration failed");

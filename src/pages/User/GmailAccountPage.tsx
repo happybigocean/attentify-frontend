@@ -21,7 +21,6 @@ export default function GmailAccountPage() {
   }, [user]);
 
   const fetchAccounts = async () => {
-
     if (!user) {
       console.error("User not logged in");
       return;
