@@ -8,7 +8,7 @@ interface HeaderBarProps {
 
 export default function HeaderBar({ onMenuClick, isMobile }: HeaderBarProps) {
   return (
-    <header className="flex items-center justify-between px-8 py-3 h-16 border-b border-gray-300 bg-white">
+    <header className="flex items-center justify-between px-5 h-15 border-b border-gray-300 bg-white">
       {isMobile && (
         <button
           onClick={onMenuClick}

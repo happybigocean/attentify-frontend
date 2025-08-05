@@ -93,7 +93,7 @@ export default function Sidebar({
         `}
       >
         <div className="flex flex-col h-full">
-          <a className="flex items-center w-full px-4 pt-3 pb-3 border-b border-gray-300" href="/dashboard">
+          <a className="h-15 flex items-center w-full pl-5 border-b border-gray-300" href="/dashboard">
             <img className="h-10 w-auto" src="/logo.png" alt="Attentify logo" />
           </a>
 
