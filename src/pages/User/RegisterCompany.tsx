@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1";
 
 export default function RegisterCompany() {
     const navigate = useNavigate();
@@ -14,25 +17,27 @@ export default function RegisterCompany() {
         setLoading(true);
 
         try {
-            // TODO: Replace with actual API call
             const token = localStorage.getItem("token");
-            const response = await fetch("/api/companies", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({ company_name: companyName, site: siteName }),
-            });
 
-            if (!response.ok) {
-                const { detail } = await response.json();
-                throw new Error(detail || "Failed to register company");
-            }
+            const response = await axios.post(
+                `${API_URL}/company/create`,
+                {
+                    name: companyName,        
+                    site_url: siteName,      
+                },
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
 
             navigate("/dashboard");
         } catch (err: any) {
-            setError(err.message);
+            const message =
+                err.response?.data?.detail || err.message || "Failed to register company";
+            setError(message);
         } finally {
             setLoading(false);
         }

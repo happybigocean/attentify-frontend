@@ -3,7 +3,7 @@ export type User = {
     email: string,
     first_name: string;
     last_name: string;
-    role: "admin" | "store_owner" | "agent" | "readonly";
+    role: "admin" | "company_owner" | "store_owner" | "agent" | "readonly";
     status: "active" | "invited" | "suspended";
     team_id?: string;
     created_at?: string;
