@@ -122,6 +122,15 @@ function App() {
             />
 
             <Route
+              path="/settings"
+              element={
+                <ProtectedRoute allowedRoles={['company_owner', 'store_owner']}>
+                  <Settings />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
               path="/register-company"
               element={
                   <RegisterCompany />
