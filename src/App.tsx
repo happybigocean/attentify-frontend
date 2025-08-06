@@ -15,6 +15,7 @@ import OrderPage from "./pages/User/OrderPage";
 import { UserProvider } from "./context/UserContext";
 import { NotificationProvider } from "./context/NotificationContext";
 import RegisterCompany from "./pages/User/RegisterCompany";
+import { PageTitleProvider } from "./context/PageTitleContext";
 
 // admin pages
 import AdminDashboard from "./pages/Admin/Dashboard";
@@ -25,110 +26,121 @@ function App() {
   return (
     <NotificationProvider>
       <UserProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            
-            <Route
-              path="/admin/dashboard"
-              element={
-                <ProtectedRoute allowedRoles={['admin']}>
-                  <AdminDashboard />
-                </ProtectedRoute>
-              }
-            />
+        <PageTitleProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              
+              <Route
+                path="/admin/dashboard"
+                element={
+                  <ProtectedRoute allowedRoles={['admin']}>
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                }
+              />
 
-            <Route
-              path="/admin/user"
-              element={
-                <ProtectedRoute allowedRoles={['admin']}>
-                  <UserManagement />
-                </ProtectedRoute>
-              }
-            />
+              <Route
+                path="/admin/user"
+                element={
+                  <ProtectedRoute allowedRoles={['admin']}>
+                    <UserManagement />
+                  </ProtectedRoute>
+                }
+              />
 
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute allowedRoles={['company_owner', 'store_owner']}>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute allowedRoles={['company_owner', 'store_owner']}>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
 
-            <Route
-              path="/message"
-              element={
-                <ProtectedRoute allowedRoles={['company_owner', 'store_owner']}>
-                  <MessagePage />
-                </ProtectedRoute>
-              }
-            />
-            
-            <Route
-              path="/message/:threadId"
-              element={
-                <ProtectedRoute allowedRoles={['company_owner', 'store_owner']}>
-                  <MessageDetailPage  />
-                </ProtectedRoute>
-              }
-            />
+              <Route
+                path="/message"
+                element={
+                  <ProtectedRoute allowedRoles={['company_owner', 'store_owner']}>
+                    <MessagePage />
+                  </ProtectedRoute>
+                }
+              />
+              
+              <Route
+                path="/message/:threadId"
+                element={
+                  <ProtectedRoute allowedRoles={['company_owner', 'store_owner']}>
+                    <MessageDetailPage  />
+                  </ProtectedRoute>
+                }
+              />
 
-            <Route
-              path="/order"
-              element={
-                <ProtectedRoute allowedRoles={['company_owner', 'store_owner']}>
-                  <OrderPage />
-                </ProtectedRoute>
-              }
-            />
+              <Route
+                path="/order"
+                element={
+                  <ProtectedRoute allowedRoles={['company_owner', 'store_owner']}>
+                    <OrderPage />
+                  </ProtectedRoute>
+                }
+              />
 
-            <Route
-              path="/accounts/gmail"
-              element={
-                <ProtectedRoute allowedRoles={['company_owner', 'store_owner']}>
-                  <GmailAccountPage />
-                </ProtectedRoute>
-              }
-            />
+              <Route
+                path="/accounts/gmail"
+                element={
+                  <ProtectedRoute allowedRoles={['company_owner', 'store_owner']}>
+                    <GmailAccountPage />
+                  </ProtectedRoute>
+                }
+              />
 
-            <Route
-              path="/accounts/phone"
-              element={
-                <ProtectedRoute allowedRoles={['company_owner', 'store_owner']}>
-                  <PhoneAccountPage />
-                </ProtectedRoute>
-              }
-            />
+              <Route
+                path="/accounts/phone"
+                element={
+                  <ProtectedRoute allowedRoles={['company_owner', 'store_owner']}>
+                    <PhoneAccountPage />
+                  </ProtectedRoute>
+                }
+              />
 
-            <Route
-              path="/shopify"
-              element={
-                <ProtectedRoute allowedRoles={['company_owner', 'store_owner']}>
-                  <ShopifyPage />
-                </ProtectedRoute>
-              }
-            />
+              <Route
+                path="/shopify"
+                element={
+                  <ProtectedRoute allowedRoles={['company_owner', 'store_owner']}>
+                    <ShopifyPage />
+                  </ProtectedRoute>
+                }
+              />
 
-            <Route
-              path="/shopify/success"
-              element={
-                <ProtectedRoute allowedRoles={['company_owner', 'store_owner']}>
-                  <ShopifySuccess />
-                </ProtectedRoute>
-              }
-            />
+              <Route
+                path="/shopify/success"
+                element={
+                  <ProtectedRoute allowedRoles={['company_owner', 'store_owner']}>
+                    <ShopifySuccess />
+                  </ProtectedRoute>
+                }
+              />
 
-            <Route
-              path="/register-company"
-              element={
-                  <RegisterCompany />
-              }
-            />
-          </Routes>
-        </BrowserRouter>
+              <Route
+                path="/settings"
+                element={
+                  <ProtectedRoute allowedRoles={['company_owner', 'store_owner']}>
+                    <Settings />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/register-company"
+                element={
+                    <RegisterCompany />
+                }
+              />
+            </Routes>
+          </BrowserRouter>
+        </PageTitleProvider>
       </UserProvider>
     </NotificationProvider>
   );

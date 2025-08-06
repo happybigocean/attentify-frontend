@@ -3,6 +3,7 @@ import axios from "axios";
 import Layout from "../../layouts/Layout";
 import { useUser } from "../../context/UserContext";
 import { useNotification } from "../../context/NotificationContext";
+import { usePageTitle } from "../../context/PageTitleContext";
 
 interface ShopifyShop {
   _id: string;
@@ -16,6 +17,11 @@ export default function ShopifyPage() {
   const [loading, setLoading] = useState(false);
   const { user } = useUser();
   const { notify } = useNotification();
+  const { setTitle } = usePageTitle();
+
+  useEffect(() => {
+    setTitle("Shopify");
+  }, [setTitle]);
 
   useEffect(() => {
     fetchShops();

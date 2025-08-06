@@ -10,6 +10,7 @@ import OrderInfoCard from "../../components/OrderInfoCard";
 import type { OrderInfo } from "../../types";
 import EmailReplySection from "../../components/EmailReplySection";
 import SMSReplySection from "../../components/SMSReplySection";
+import { usePageTitle } from "../../context/PageTitleContext";
 
 const MessageDetailPage = () => {
   const { threadId } = useParams<{ threadId: string }>();
@@ -25,6 +26,11 @@ const MessageDetailPage = () => {
   // Prevent double-fetching caused by React 18 StrictMode or fast refreshes
   const hasFetchedMessage = useRef(false);
   const hasFetchedOrder = useRef(false);
+  const { setTitle } = usePageTitle();
+
+  useEffect(() => {
+    setTitle("Message Detail");
+  }, [setTitle]);
 
   // Fetch message thread
   useEffect(() => {
