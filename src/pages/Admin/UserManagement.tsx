@@ -4,6 +4,7 @@ import { fetchUsers, createUser, updateUser, deleteUser } from "../../hooks/user
 import Layout from "../../layouts/AdminLayout";
 import { useNotification } from "../../context/NotificationContext";
 import ConfirmDialog from "../../components/ConfirmDialog";
+import { usePageTitle } from "../../context/PageTitleContext";
 
 const defaultNewUser: Omit<User, "_id"> = {
   email: "",
@@ -37,6 +38,11 @@ const UserManagement: React.FC = () => {
     isOpen: boolean,
     userId: string | null;    
   }>({isOpen: false, userId: null});
+  const { setTitle } = usePageTitle();
+
+  useEffect(() => {
+    setTitle("Users");
+  }, [setTitle]);
 
   useEffect(() => {
     fetchUsers().then(setUsers);

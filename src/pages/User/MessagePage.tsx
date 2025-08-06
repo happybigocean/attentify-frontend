@@ -12,6 +12,7 @@ import {
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useNotification } from "../../context/NotificationContext";
+import { usePageTitle } from "../../context/PageTitleContext";
 
 interface ChatEntry {
   sender: string;
@@ -50,6 +51,11 @@ export default function MessagePage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const { notify } = useNotification();
+  const { setTitle } = usePageTitle();
+
+  useEffect(() => {
+    setTitle("Messages");
+  }, [setTitle]);
 
   const fetchMessages = async () => {
     setLoading(true);

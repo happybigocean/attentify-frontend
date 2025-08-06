@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Layout from "../../layouts/Layout";
 import { useNotification } from "../../context/NotificationContext";
+import { usePageTitle } from "../../context/PageTitleContext";
 
 interface PhoneAccount {
   id: string;
@@ -16,6 +17,11 @@ export default function PhoneAccountPage() {
   const [accounts, setAccounts] = useState<PhoneAccount[]>([]);
   const [loading, setLoading] = useState(false);
   const { notify } = useNotification();
+  const { setTitle } = usePageTitle();
+
+  useEffect(() => {
+    setTitle("Accounts/Phone");
+  }, [setTitle]);
 
   useEffect(() => {
     fetchAccounts();
