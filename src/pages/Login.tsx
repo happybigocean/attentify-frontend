@@ -33,6 +33,9 @@ export default function Login() {
                 case "admin":
                     redirectPath = "/admin/dashboard";
                     break;
+                case "company_owner":
+                    redirectPath = "/dashboard";
+                    break;
                 case "store_owner":
                     redirectPath = "/dashboard";
                     break;

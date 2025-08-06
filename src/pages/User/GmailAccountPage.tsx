@@ -21,7 +21,6 @@ export default function GmailAccountPage() {
   }, [user]);
 
   const fetchAccounts = async () => {
-
     if (!user) {
       console.error("User not logged in");
       return;
@@ -64,10 +63,8 @@ export default function GmailAccountPage() {
 
   return (
     <Layout>
-      <div className="p-6">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Accounts</h2>
-
-        <div className="bg-white shadow rounded-lg p-4">
+      <div className="p-3">
+        <div className="border border-gray-300 rounded-sm p-4">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-medium text-gray-700">Gmail Accounts</h3>
             <button
