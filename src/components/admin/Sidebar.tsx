@@ -2,14 +2,9 @@ import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   HomeIcon,
-  ChatBubbleBottomCenterTextIcon,
-  Squares2X2Icon,
-  ShoppingBagIcon,
-  EnvelopeIcon,
-  DevicePhoneMobileIcon,
-  Cog6ToothIcon,
   UserCircleIcon,
-  ChevronRightIcon
+  ChevronRightIcon,
+  UsersIcon
 } from "@heroicons/react/24/outline";
 
 interface SidebarProps {
@@ -125,20 +120,9 @@ export default function Sidebar({
                 className="flex items-center w-full h-12 px-4 mt-2 rounded-md transition hover:bg-gray-100 focus:outline-none"
                 href="/admin/user"
               >
-                <svg
-                  className="w-6 h-6 stroke-current"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  {/* Updated User Icon: simple user silhouette */}
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-4 0-8 2-8 4v2h16v-2c0-2-4-4-8-4z"
-                  />
-                </svg>
+                <UsersIcon
+                  className="w-6 h-6"
+                />
                 <span className="ml-3 text-base font-medium">User</span>
               </a>
             </div>
