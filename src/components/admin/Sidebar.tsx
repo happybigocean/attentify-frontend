@@ -1,4 +1,16 @@
 import React, { useState, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
+import {
+  HomeIcon,
+  ChatBubbleBottomCenterTextIcon,
+  Squares2X2Icon,
+  ShoppingBagIcon,
+  EnvelopeIcon,
+  DevicePhoneMobileIcon,
+  Cog6ToothIcon,
+  UserCircleIcon,
+  ChevronRightIcon
+} from "@heroicons/react/24/outline";
 
 interface SidebarProps {
   mobileOpen: boolean;
@@ -86,42 +98,31 @@ export default function Sidebar({
       {/* Sidebar */}
       <div
         className={`
-          z-40 bg-gray-900 text-gray-400 shadow-lg transition-all duration-300 ease-in-out
+          z-40 text-gray-900 transition-all duration-300 ease-in-out border-r border-gray-300
           ${mobileOpen ? "block fixed w-full" : "hidden"}
           lg:fixed lg:block lg:w-56 lg:h-full
         `}
       >
         <div className="flex flex-col h-full">
-          <a className="flex items-center w-full px-4 py-3" href="/dashboard">
-            <img className="h-12 w-auto" src="/logo.png" alt="Attentify logo" />
+          <a className="h-15 flex items-center w-full pl-5 border-b border-gray-300" href="/dashboard">
+            <img className="h-10 w-auto" src="/logo.png" alt="Attentify logo" />
           </a>
 
           <div className="flex-1 w-full px-2 overflow-y-auto max-h-screen">
             {/* Top menu */}
-            <div className="flex flex-col items-start w-full mt-3 border-t border-gray-700">
+            <div className="flex flex-col items-start w-full mt-3">
               <a
-                className="flex items-center w-full h-12 px-4 mt-2 rounded-md transition hover:bg-gray-700 hover:text-gray-300 focus:outline-none"
+                className="flex items-center w-full h-12 px-4 mt-2 rounded-md transition hover:bg-gray-100 focus:outline-none"
                 href="/admin/dashboard"
               >
-                <svg
-                  className="w-6 h-6 stroke-current"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  {/* Home Icon */}
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 12l9-9 9 9M4 10v10a1 1 0 001 1h5a1 1 0 001-1v-4h2v4a1 1 0 001 1h5a1 1 0 001-1V10"
-                  />
-                </svg>
+                <HomeIcon className="w-6 h-6"/>
                 <span className="ml-3 text-base font-medium">Dashboard</span>
               </a>
-              
+
+
+
               <a
-                className="flex items-center w-full h-12 px-4 mt-2 rounded-md transition hover:bg-gray-700 hover:text-gray-300 focus:outline-none"
+                className="flex items-center w-full h-12 px-4 mt-2 rounded-md transition hover:bg-gray-100 focus:outline-none"
                 href="/admin/user"
               >
                 <svg
@@ -144,41 +145,32 @@ export default function Sidebar({
           </div>
 
           {/* Account (pinned bottom) */}
-          <div className="border-t border-gray-700 w-full relative" ref={accountMenuRef}>
+          <div className="border-t border-gray-300 w-full relative" ref={accountMenuRef}>
             <button
-              className="flex items-center w-full h-12 px-4 hover:bg-gray-800 hover:text-gray-300 focus:outline-none relative"
+              className="flex items-center w-full h-12 px-4 hover:bg-gray-100  focus:outline-none relative"
               onClick={() => setAccountOpen((o) => !o)}
               aria-haspopup="true"
               aria-expanded={accountOpen}
             >
-              <svg className="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+              <UserCircleIcon className="w-6 h-6" />
               <span className="ml-3 text-base font-medium truncate max-w-[90px]">{userName}</span>
-              <svg
-                className={`ml-auto w-4 h-4 transition-transform duration-200 ${accountOpen ? "rotate-180" : ""}`}
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
+              <ChevronRightIcon className={`ml-auto w-4 h-4 transition-transform duration-200 ${accountOpen ? "rotate-90" : ""}`}/>
             </button>
             {accountOpen && (
-              <div className="absolute bottom-12 left-0 mb-2 w-full bg-gray-800 border border-gray-700 rounded-md shadow-lg z-50 animate-fade-in">
+              <div className="absolute bottom-12 left-0 w-full bg-gray-100 border border-gray-300 rounded-md z-50 animate-fade-in">
                 <div className="flex flex-col py-2">
-                  <div className="px-4 py-2 text-gray-300 font-semibold border-b border-gray-700">
+                  <div className="px-4 py-2 text-gray-900 font-semibold border-b border-gray-300">
                     {userName}
                   </div>
-                  <div className="px-4 py-1 text-sm text-gray-400 border-b border-gray-700">
+                  <div className="px-4 py-1 text-sm text-gray-900 border-b border-gray-300">
                     {userRole}
                   </div>
-                  <div className="px-4 py-1 text-sm text-gray-400 border-b border-gray-700">
+                  <div className="px-4 py-1 text-sm text-gray-900 border-b border-gray-300">
                     {userEmail}
                   </div>
                   <button
                     onClick={handleLogout}
-                    className="px-4 py-2 text-left text-red-500 hover:bg-gray-700 hover:text-red-400 transition"
+                    className="px-4 py-2 text-left text-red-500 hover:bg-gray-300 hover:text-red-400 transition"
                   >
                     Logout
                   </button>

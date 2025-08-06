@@ -25,7 +25,7 @@ export default function AdminLayout({ children }: LayoutProps) {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-gray-100">
+    <div className="relative min-h-screen">
       <Sidebar
         mobileOpen={sidebarMobileOpen}
         setMobileOpen={setSidebarMobileOpen}
