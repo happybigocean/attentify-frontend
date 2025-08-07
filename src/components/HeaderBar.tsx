@@ -1,5 +1,4 @@
-// components/HeaderBar.tsx
-import React from "react";
+import { useCompany } from "../context/CompanyContext";
 import { usePageTitle } from "../context/PageTitleContext";
 
 interface HeaderBarProps {
@@ -8,21 +7,37 @@ interface HeaderBarProps {
 }
 
 export default function HeaderBar({ onMenuClick, isMobile }: HeaderBarProps) {
-    const { title } = usePageTitle();
+  const { companies, currentCompanyId, setCurrentCompanyId } = useCompany();
+  const { title } = usePageTitle();
 
-    return (
-        <header className="flex items-center justify-between px-5 h-15 border-b border-gray-300 bg-white">
-            {isMobile && (
-                <button
-                onClick={onMenuClick}
-                className="text-gray-700 focus:outline-none"
-                aria-label="Toggle sidebar"
-                >
-                ☰ {/* You can use an icon like Lucide or Heroicons */}
-                </button>
-            )}
-            <p className="text-md font-semibold">{title}</p>
-            <div>{/* User menu / notifications can go here */}</div>
-        </header>
-    );
+  return (
+    <header className="flex items-center justify-between px-5 h-15 border-b border-gray-300 bg-white">
+      <div className="flex items-center gap-4">
+        {isMobile && (
+          <button
+            onClick={onMenuClick}
+            className="text-gray-700 focus:outline-none"
+            aria-label="Toggle sidebar"
+          >
+            ☰
+          </button>
+        )}
+        <p className="text-md font-semibold">{title}</p>
+      </div>
+
+      <div className="flex items-center gap-4">
+        <select
+          value={currentCompanyId}
+          onChange={(e) => setCurrentCompanyId(e.target.value)}
+          className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring focus:border-blue-300"
+        >
+          {companies.map((company) => (
+            <option key={company.id} value={company.id}>
+              {company.name}
+            </option>
+          ))}
+        </select>
+      </div>
+    </header>
+  );
 }
