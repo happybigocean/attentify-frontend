@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "../services/auth";
 import { useUser } from "../context/UserContext";
+import { useCompany } from "../context/CompanyContext"; // adjust path if needed
 
 export default function Login() {
     const { setUser } = useUser();
@@ -12,6 +13,7 @@ export default function Login() {
     const [error, setError] = useState<string | null>(null);
     const [message, setMessage] = useState<string | null>(null);
     const navigate = useNavigate();
+    const { setCompanies, setCurrentCompanyId } = useCompany();
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -24,6 +26,11 @@ export default function Login() {
             localStorage.setItem("token", token);
             localStorage.setItem('user', JSON.stringify(user));
             setUser(user); 
+
+            if (user.companies?.length) {
+                setCompanies(user.companies);
+                setCurrentCompanyId(user.company_id); // default company from login
+            }
 
             setMessage("Logged in! Redirecting...");
 

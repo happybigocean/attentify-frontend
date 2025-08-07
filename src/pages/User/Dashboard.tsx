@@ -1,10 +1,12 @@
 import { useEffect } from "react";
 import Layout from "../../layouts/Layout";
 import { usePageTitle } from "../../context/PageTitleContext";
+import { useCompany } from '../../context/CompanyContext'; // adjust path
 
 export default function Dashboard() {
   const { setTitle } = usePageTitle();
-
+  const companyContext = useCompany();
+console.log("CompanyContext", companyContext)
   useEffect(() => {
     setTitle("Dashboard");
   }, [setTitle]);
