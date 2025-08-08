@@ -135,7 +135,7 @@ const MessageDetailPage = () => {
                     >
                       <div className="w-full max-w-5xl">
                         <div
-                          className={`cursor-pointer select-none rounded-lg mb-2`}
+                          className={`cursor-pointer select-none  mb-2`}
                           onClick={() => handleToggle(index)}
                         >
                           {entry.message_type === "html" && (
@@ -192,7 +192,7 @@ const MessageDetailPage = () => {
           <div className="flex flex-col justify-start ml-6 space-y-6">
             <div className="sticky top-19 flex flex-col space-y-6">
               {/* Customer Info Card */}
-              <div className="w-[350px] bg-white rounded-lg shadow-lg p-8">
+              <div className="w-[350px] bg-white  shadow-lg p-8">
                 <h2 className="text-2xl font-bold mb-5">Customer Info</h2>
                 {orderInfo && orderInfo?.shopify_order && orderInfo?.shopify_order?.customer && (
                   <>

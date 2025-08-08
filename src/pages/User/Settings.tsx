@@ -6,7 +6,7 @@ export default function Settings() {
   const { setTitle } = usePageTitle();
 
   useEffect(() => {
-    setTitle("Tickets");
+    setTitle("Settings");
   }, [setTitle]);
 
   return (

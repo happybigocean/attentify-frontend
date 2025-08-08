@@ -49,14 +49,14 @@ export default function RegisterCompany() {
 
             {error && <div className="text-red-600 text-sm text-center mb-3">{error}</div>}
 
-            <form onSubmit={handleSubmit} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            <form onSubmit={handleSubmit} className="bg-white shadow-md  px-8 pt-6 pb-8 mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2">Company Name</label>
                 <input
                     type="text"
                     value={companyName}
                     onChange={(e) => setCompanyName(e.target.value)}
                     required
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-4 focus:outline-none focus:shadow-outline"
+                    className="shadow appearance-none border  w-full py-2 px-3 text-gray-700 mb-4 focus:outline-none focus:shadow-outline"
                     placeholder="Acme Inc."
                 />
 
@@ -66,14 +66,14 @@ export default function RegisterCompany() {
                     value={siteName}
                     onChange={(e) => setSiteName(e.target.value)}
                     required
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-6 focus:outline-none focus:shadow-outline"
+                    className="shadow appearance-none border  w-full py-2 px-3 text-gray-700 mb-6 focus:outline-none focus:shadow-outline"
                     placeholder="acme-site"
                 />
 
                 <button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2 rounded-full disabled:opacity-50"
+                    className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2  disabled:opacity-50"
                 >
                     {loading ? "Submitting..." : "Create Company"}
                 </button>

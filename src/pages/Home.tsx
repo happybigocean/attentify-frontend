@@ -20,7 +20,7 @@ export default function Home() {
             <button
               type="button"
               onClick={() => setMobileMenuOpen(true)}
-              className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
+              className="-m-2.5 inline-flex items-center justify-center  p-2.5 text-gray-700"
             >
               <span className="sr-only">Open main menu</span>
               <svg className="size-6" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
@@ -41,7 +41,7 @@ export default function Home() {
               className="mr-4 text-sm font-semibold text-gray-900">Log in</a>
             <a
               onClick={() => navigate('/signup')}
-              className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-indigo-600"
+              className=" bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-indigo-600"
             >
               Start free trial
             </a>
@@ -60,7 +60,7 @@ export default function Home() {
             </a>
             <button
               type="button"
-              className="-m-2.5 rounded-md p-2.5 text-gray-700"
+              className="-m-2.5  p-2.5 text-gray-700"
               onClick={() => setMobileMenuOpen(false)}
             >
               <svg className="size-6" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
@@ -103,7 +103,7 @@ export default function Home() {
           <div className="mt-10 flex flex-col sm:flex-row sm:justify-center sm:items-center gap-4">
             <a
               onClick={() => navigate('/signup')}
-              className="rounded-md bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow hover:bg-indigo-500"
+              className=" bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow hover:bg-indigo-500"
             >
               Start free trial
             </a>
@@ -117,7 +117,7 @@ export default function Home() {
             <img
               src="/image.png"
               alt="Dashboard"
-              className="mx-auto w-full max-w-xl rounded-lg shadow-md"
+              className="mx-auto w-full max-w-xl  shadow-md"
             />
           </div>
         </div>
@@ -139,7 +139,7 @@ export default function Home() {
         {/* Feature 1 */}
         <div className="flex flex-col-reverse lg:flex-row items-center gap-10">
           <div className="w-full lg:w-1/2">
-            <img src="/image_1.png" alt="Feature 1" className="rounded-xl shadow-md w-full h-auto object-cover" />
+            <img src="/image_1.png" alt="Feature 1" className=" shadow-md w-full h-auto object-cover" />
           </div>
           <div className="w-full lg:w-1/2 text-center lg:text-left">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Feature Title 1</h2>
@@ -150,7 +150,7 @@ export default function Home() {
         {/* Feature 2 */}
         <div className="flex flex-col-reverse lg:flex-row-reverse items-center gap-10">
           <div className="w-full lg:w-1/2">
-            <img src="/image_2.png" alt="Feature 2" className="rounded-xl shadow-md w-full h-auto object-cover" />
+            <img src="/image_2.png" alt="Feature 2" className=" shadow-md w-full h-auto object-cover" />
           </div>
           <div className="w-full lg:w-1/2 text-center lg:text-left">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Feature Title 2</h2>
@@ -161,7 +161,7 @@ export default function Home() {
         {/* Feature 3 */}
         <div className="flex flex-col-reverse lg:flex-row items-center gap-10">
           <div className="w-full lg:w-1/2">
-            <img src="/image_3.png" alt="Feature 3" className="rounded-xl shadow-md w-full h-auto object-cover" />
+            <img src="/image_3.png" alt="Feature 3" className=" shadow-md w-full h-auto object-cover" />
           </div>
           <div className="w-full lg:w-1/2 text-center lg:text-left">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Feature Title 3</h2>

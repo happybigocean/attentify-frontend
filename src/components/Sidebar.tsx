@@ -71,7 +71,7 @@ export default function Sidebar({
     <>
       {/* Mobile hamburger button */}
       <button
-        className="fixed top-4 right-4 z-50 p-2 bg-white text-black rounded-full shadow-lg focus:outline-none block lg:hidden"
+        className="fixed top-4 right-4 z-50 p-2 bg-white text-black  shadow-lg focus:outline-none block lg:hidden"
         onClick={() => setMobileOpen(!mobileOpen)}
         aria-label={mobileOpen ? "Close sidebar" : "Open sidebar"}
       >
@@ -100,7 +100,7 @@ export default function Sidebar({
         className={`
           z-40 text-gray-900 transition-all duration-300 ease-in-out border-r border-gray-300
           ${mobileOpen ? "block fixed w-full" : "hidden"}
-          lg:fixed lg:block lg:w-56 lg:h-full
+          lg:fixed lg:block lg:w-72 lg:h-full
         `}
       >
         <div className="flex flex-col h-full">
@@ -112,7 +112,7 @@ export default function Sidebar({
             {/* Top menu */}
             <div className="flex flex-col items-start w-full mt-2">
               <a
-                className="flex items-center w-full h-12 px-4 mt-2 rounded-md transition hover:bg-gray-100 focus:outline-none"
+                className="flex items-center w-full h-12 px-4 mt-2 transition hover:bg-gray-100 focus:outline-none"
                 href="/dashboard"
               >
                 <HomeIcon className="w-6 h-6"/>
@@ -120,17 +120,16 @@ export default function Sidebar({
               </a>
 
               <a
-                className="relative flex items-center w-full h-12 px-4 mt-2 rounded-md transition hover:bg-gray-100 focus:outline-none"
+                className="relative flex items-center w-full h-12 px-4 mt-2  transition hover:bg-gray-100 focus:outline-none"
                 href="/message"
               >
                 <ChatBubbleBottomCenterTextIcon className="w-6 h-6"/>
                 <span className="ml-3 text-base font-medium">Message</span>
-                <span className="absolute top-0 left-0 w-2 h-2 mt-2 ml-2 bg-indigo-500 rounded-full" />
               </a>
 
               { false && (
                 <a
-                  className="flex items-center w-full h-12 px-4 mt-2 rounded-md transition hover:bg-gray-100  focus:outline-none"
+                  className="flex items-center w-full h-12 px-4 mt-2  transition hover:bg-gray-100  focus:outline-none"
                   href="/order"
                 >
                   <svg className="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -143,17 +142,17 @@ export default function Sidebar({
               {/* Accounts submenu */}
               <div className="w-full">
                 <details className="w-full group">
-                  <summary className="flex items-center w-full h-12 px-4 mt-2 rounded-md cursor-pointer transition hover:bg-gray-100  list-none focus:outline-none">
+                  <summary className="flex items-center w-full h-12 px-4 mt-2  cursor-pointer transition hover:bg-gray-100  list-none focus:outline-none">
                     <Squares2X2Icon className="w-6 h-6"/>
                     <span className="ml-3 text-base font-medium">Accounts</span>
                     <ChevronRightIcon className="ml-auto w-4 h-4 transition-transform duration-200 group-open:rotate-90"/>
                   </summary>
                   <div className="pl-5 py-1 flex flex-col gap-1">
-                    <a href="/accounts/gmail" className="flex items-center h-10 px-2 rounded-md hover:bg-gray-100  transition focus:outline-none">
+                    <a href="/accounts/gmail" className="flex items-center h-10 px-2  hover:bg-gray-100  transition focus:outline-none">
                       <EnvelopeIcon className="w-5 h-5 mr-2" />
                       <span>Gmail</span>
                     </a>
-                    <a href="/accounts/phone" className="flex items-center h-10 px-2 rounded-md hover:bg-gray-100  transition focus:outline-none">
+                    <a href="/accounts/phone" className="flex items-center h-10 px-2  hover:bg-gray-100  transition focus:outline-none">
                         <DevicePhoneMobileIcon className="w-5 h-5 mr-2" />
                       <span>Phone</span>
                     </a>
@@ -162,7 +161,7 @@ export default function Sidebar({
               </div>
 
               <a
-                className="flex items-center w-full h-12 px-4 mt-2 rounded-md hover:bg-gray-100  transition focus:outline-none"
+                className="flex items-center w-full h-12 px-4 mt-2  hover:bg-gray-100  transition focus:outline-none"
                 href="/shopify"
               >
                 <ShoppingBagIcon className="w-6 h-6" />
@@ -173,7 +172,7 @@ export default function Sidebar({
             {/* Settings */}
             <div className="flex flex-col items-start w-full mt-2 border-t border-gray-300">
               <a
-                className="flex items-center w-full h-12 px-4 mt-2 rounded-md hover:bg-gray-100  transition focus:outline-none"
+                className="flex items-center w-full h-12 px-4 mt-2  hover:bg-gray-100  transition focus:outline-none"
                 href="/settings"
               >
                 <Cog6ToothIcon className="w-6 h-6" />
@@ -195,7 +194,7 @@ export default function Sidebar({
               <ChevronRightIcon className={`ml-auto w-4 h-4 transition-transform duration-200 ${accountOpen ? "rotate-90" : ""}`}/>
             </button>
             {accountOpen && (
-              <div className="absolute bottom-12 left-0 w-full bg-gray-100 border border-gray-300 rounded-md z-50 animate-fade-in">
+              <div className="absolute bottom-12 left-0 w-full bg-gray-100 border border-gray-300  z-50 animate-fade-in">
                 <div className="flex flex-col py-2">
                   <div className="px-4 py-2 text-gray-900 font-semibold border-b border-gray-300">
                     {userName}

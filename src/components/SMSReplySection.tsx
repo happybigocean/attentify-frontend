@@ -40,16 +40,16 @@ const SMSReplySection: React.FC<SMSReplyProps> = ({
 
   return (
     <div className="mt-4">
-      <div className="bg-white rounded-lg p-4 shadow">
+      <div className="bg-white  p-4 shadow">
         <h3 className="text-lg font-semibold mb-2">Reply</h3>
         <textarea
           value={reply}
           onChange={(e) => setReply(e.target.value)}
-          className="w-full h-40 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+          className="w-full h-40 p-3 border border-gray-300  focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
           placeholder="Type your reply here..."
         />
         <button
-          className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 mt-2"
+          className="bg-blue-600 text-white px-6 py-2  hover:bg-blue-700 disabled:opacity-50 mt-2"
           onClick={handleReply}
           disabled={sending || isEditorEmpty(reply)}
         >

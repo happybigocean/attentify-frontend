@@ -64,12 +64,12 @@ export default function ShopifyPage() {
   return (
     <Layout>
       <div className="p-3">
-        <div className="border border-gray-300 rounded-sm p-4">
+        <div className="border border-gray-300  p-4">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-medium text-gray-700">Your Shopify Stores</h3>
             <button
               onClick={handleConnect}
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2  text-sm font-medium"
             >
               + Connect Shopify
             </button>

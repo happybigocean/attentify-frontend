@@ -47,7 +47,7 @@ const EmailReplySection: React.FC<EmailReplyProps> = ({
 
   return (
     <div className="mt-4">
-      <div className="bg-white rounded-lg p-4 shadow">
+      <div className="bg-white  p-4 shadow">
         <h3 className="text-lg font-semibold mb-2">Reply</h3>
         <div data-color-mode="light">
           <Editor
@@ -57,7 +57,7 @@ const EmailReplySection: React.FC<EmailReplyProps> = ({
           />
         </div>
         <button
-          className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 mt-2"
+          className="bg-blue-600 text-white px-6 py-2  hover:bg-blue-700 disabled:opacity-50 mt-2"
           onClick={handleReply}
           disabled={sending || isEditorEmpty(reply)}
         >

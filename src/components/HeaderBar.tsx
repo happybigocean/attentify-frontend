@@ -29,7 +29,7 @@ export default function HeaderBar({ onMenuClick, isMobile }: HeaderBarProps) {
         <select
           value={currentCompanyId}
           onChange={(e) => setCurrentCompanyId(e.target.value)}
-          className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring focus:border-blue-300"
+          className="border border-gray-300  px-2 py-1 text-sm focus:outline-none focus:ring focus:border-blue-300"
         >
           {companies.map((company) => (
             <option key={company.id} value={company.id}>

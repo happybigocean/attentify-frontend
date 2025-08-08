@@ -60,7 +60,7 @@ export default function Signup() {
                     />
                 </div>
 
-                <form onSubmit={handleRegister} className="bg-white rounded-xl shadow-lg w-full max-w-xl flex flex-col">
+                <form onSubmit={handleRegister} className="bg-white  shadow-lg w-full max-w-xl flex flex-col">
                     <div className="w-full px-6 py-8 flex flex-col justify-center">
                         <h2 className="text-xl font-semibold mb-4 text-center">Sign Up</h2>
 
@@ -70,7 +70,7 @@ export default function Signup() {
                         <label className="text-sm text-gray-700 mb-1">First Name</label>
                         <input
                             type="text"
-                            className="w-full border border-gray-300 rounded-md px-3 py-2 mb-4 focus:outline-none focus:ring focus:ring-indigo-200"
+                            className="w-full border border-gray-300  px-3 py-2 mb-4 focus:outline-none focus:ring focus:ring-indigo-200"
                             placeholder="John"
                             value={firstName}
                             onChange={(e) => setFirstName(e.target.value)}
@@ -80,7 +80,7 @@ export default function Signup() {
                         <label className="text-sm text-gray-700 mb-1">Last Name</label>
                         <input
                             type="text"
-                            className="w-full border border-gray-300 rounded-md px-3 py-2 mb-4 focus:outline-none focus:ring focus:ring-indigo-200"
+                            className="w-full border border-gray-300  px-3 py-2 mb-4 focus:outline-none focus:ring focus:ring-indigo-200"
                             placeholder="Doe"
                             value={lastName}
                             onChange={(e) => setLastName(e.target.value)}
@@ -90,7 +90,7 @@ export default function Signup() {
                         <label className="text-sm text-gray-700 mb-1">Email address</label>
                         <input
                             type="email"
-                            className="w-full border border-gray-300 rounded-md px-3 py-2 mb-4 focus:outline-none focus:ring focus:ring-indigo-200"
+                            className="w-full border border-gray-300  px-3 py-2 mb-4 focus:outline-none focus:ring focus:ring-indigo-200"
                             placeholder="you@example.com"
                             value={registerEmail}
                             onChange={(e) => setRegisterEmail(e.target.value)}
@@ -131,7 +131,7 @@ export default function Signup() {
 
                         <input
                             type={passwordVisible ? "text" : "password"}
-                            className="w-full border border-gray-300 rounded-md px-3 py-2 mb-1 focus:outline-none focus:ring focus:ring-indigo-200"
+                            className="w-full border border-gray-300  px-3 py-2 mb-1 focus:outline-none focus:ring focus:ring-indigo-200"
                             placeholder="••••••••"
                             value={registerPassword}
                             onChange={(e) => setRegisterPassword(e.target.value)}
@@ -141,7 +141,7 @@ export default function Signup() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2 mt-5 rounded-full disabled:opacity-50"
+                            className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2 mt-5  disabled:opacity-50"
                         >
                             {loading ? "Signing Up..." : "Sign Up"}
                         </button>
@@ -150,7 +150,7 @@ export default function Signup() {
 
                         <button
                             type="button"
-                            className="w-full border border-gray-300 rounded-full py-2 px-4 flex items-center justify-center gap-2 hover:bg-gray-50"
+                            className="w-full border border-gray-300  py-2 px-4 flex items-center justify-center gap-2 hover:bg-gray-50"
                         >
                             <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="h-5 w-5" />
                             Continue with Google

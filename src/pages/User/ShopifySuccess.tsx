@@ -10,7 +10,7 @@ const Success: React.FC = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-green-100 to-blue-100">
-      <div className="bg-white shadow-xl rounded-lg p-8 max-w-md w-full text-center">
+      <div className="bg-white shadow-xl  p-8 max-w-md w-full text-center">
         <svg
           className="mx-auto mb-4 h-16 w-16 text-green-500"
           fill="none"
@@ -31,7 +31,7 @@ const Success: React.FC = () => {
         </p>
         <a
           href="/shopify"
-          className="inline-block px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+          className="inline-block px-6 py-2 bg-blue-600 text-white  hover:bg-blue-700 transition"
         >
           Go Back
         </a>

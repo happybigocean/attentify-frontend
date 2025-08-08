@@ -161,7 +161,7 @@ export default function MessagePage() {
             placeholder="Search"
             value={search}
             onChange={onSearchChange}
-            className="w-full px-5 py-3 pl-12 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-md"
+            className="w-full px-5 py-3 pl-12 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-md"
           />
           <MagnifyingGlassIcon className="h-6 w-6 text-gray-500 absolute top-3 left-4" />
         </div>
@@ -185,7 +185,7 @@ export default function MessagePage() {
           </div>
         </div>
 
-        <div className="flex items-center justify-between px-5 py-3 bg-white border border-gray-300 rounded-t-sm">
+        <div className="flex items-center justify-between px-5 py-3 bg-white border border-gray-300">
           <div className="flex items-center gap-6 ms-1">
             <input
               type="checkbox"
@@ -194,7 +194,7 @@ export default function MessagePage() {
                 filteredMessages.length > 0
               }
               onChange={toggleSelectAll}
-              className="h-5 w-5 text-blue-600 border-gray-300 rounded cursor-pointer"
+              className="h-5 w-5 text-blue-600 border-gray-300 cursor-pointer"
               aria-label="Select all messages"
             />
             <ArrowPathIcon
@@ -211,7 +211,7 @@ export default function MessagePage() {
           </div>
         </div>
 
-        <div className="bg-white border-x border-b border-gray-300 rounded-b-sm">
+        <div className="bg-white border-x border-b border-gray-300">
           <table className="min-w-full divide-y divide-gray-200 text-lg">
             <tbody>
               {filteredMessages.length === 0 ? (
@@ -231,7 +231,7 @@ export default function MessagePage() {
                         type="checkbox"
                         checked={selected.includes(msg._id)}
                         onChange={() => toggleSelect(msg._id)}
-                        className="h-5 w-5 text-blue-600 border-gray-300 rounded cursor-pointer"
+                        className="h-5 w-5 text-blue-600 border-gray-300 cursor-pointer"
                         aria-label={`Select message ${msg.title ?? msg._id}`}
                       />
                     </td>
@@ -248,7 +248,7 @@ export default function MessagePage() {
                     </td>
                     <td className="px-6 py-4 text-sm text-right">
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                        className={`px-3 py-1 text-xs font-semibold ${
                           msg.status === "solved"
                             ? "bg-green-100 text-green-700"
                             : "bg-yellow-100 text-yellow-700"

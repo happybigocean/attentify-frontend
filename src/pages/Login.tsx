@@ -96,7 +96,7 @@ export default function Login() {
 
                 <form
                     onSubmit={handleLogin}
-                    className="bg-white rounded-xl shadow-lg w-full max-w-xl flex flex-col"
+                    className="bg-white  shadow-lg w-full max-w-xl flex flex-col"
                 >
                     <div className="w-full px-6 py-8 flex flex-col justify-center">
                         <h2 className="text-xl font-semibold mb-4 text-center">Log in</h2>
@@ -110,7 +110,7 @@ export default function Login() {
                             value={loginEmail}
                             onChange={(e) => setLoginEmail(e.target.value)}
                             required
-                            className="w-full border border-gray-300 rounded-md px-3 py-2 mb-4 focus:outline-none focus:ring focus:ring-indigo-200"
+                            className="w-full border border-gray-300  px-3 py-2 mb-4 focus:outline-none focus:ring focus:ring-indigo-200"
                             placeholder="you@example.com"
                         />
 
@@ -130,7 +130,7 @@ export default function Login() {
                             value={loginPassword}
                             onChange={(e) => setLoginPassword(e.target.value)}
                             required
-                            className="w-full border border-gray-300 rounded-md px-3 py-2 mb-1 focus:outline-none focus:ring focus:ring-indigo-200"
+                            className="w-full border border-gray-300  px-3 py-2 mb-1 focus:outline-none focus:ring focus:ring-indigo-200"
                             placeholder="••••••••"
                         />
 
@@ -142,7 +142,7 @@ export default function Login() {
 
                         <button
                             type="submit"
-                            className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2 rounded-full"
+                            className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2 "
                             disabled={loading}
                         >
                             {loading ? "Logging in..." : "Log in"}
@@ -153,7 +153,7 @@ export default function Login() {
 
                         <button
                             type="button"
-                            className="w-full border mt-4 border-gray-300 rounded-full py-2 px-4 flex items-center justify-center gap-2 hover:bg-gray-50"
+                            className="w-full border mt-4 border-gray-300  py-2 px-4 flex items-center justify-center gap-2 hover:bg-gray-50"
                         >
                             <img
                                 src="https://www.svgrepo.com/show/475656/google-color.svg"

@@ -69,12 +69,12 @@ export default function OrderPage() {
     <Layout>
       <div className="p-6">
         <h2 className="text-2xl font-semibold text-gray-800 mb-4">Orders</h2>
-        <div className="bg-white shadow rounded-lg p-4">
+        <div className="bg-white shadow  p-4">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-medium text-gray-700">Your Orders</h3>
             <button
               onClick={handleSyncOrders}
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2  text-sm font-medium"
             >
               + Sync Orders
             </button>
