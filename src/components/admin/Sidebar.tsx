@@ -95,7 +95,7 @@ export default function Sidebar({
         className={`
           z-40 text-gray-900 transition-all duration-300 ease-in-out border-r border-gray-300
           ${mobileOpen ? "block fixed w-full" : "hidden"}
-          lg:fixed lg:block lg:w-56 lg:h-full
+          lg:fixed lg:block lg:w-72 lg:h-full
         `}
       >
         <div className="flex flex-col h-full">
@@ -113,8 +113,6 @@ export default function Sidebar({
                 <HomeIcon className="w-6 h-6"/>
                 <span className="ml-3 text-base font-medium">Dashboard</span>
               </a>
-
-
 
               <a
                 className="flex items-center w-full h-12 px-4 mt-2  transition hover:bg-gray-100 focus:outline-none"

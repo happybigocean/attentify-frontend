@@ -33,7 +33,7 @@ export default function AdminLayout({ children }: LayoutProps) {
       <div
         className="flex flex-col transition-all duration-600"
         style={{
-          marginLeft: isDesktop ? 224 : 0,
+          marginLeft: isDesktop ? 288 : 0,
           transition: "margin-left 0.6s cubic-bezier(.77,0,.18,1)",
           filter:
             !isDesktop && sidebarMobileOpen ? "blur(2px) brightness(0.8)" : undefined,
