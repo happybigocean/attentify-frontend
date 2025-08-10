@@ -63,7 +63,7 @@ export default function ShopifyPage() {
 
   return (
     <Layout>
-      <div className="p-3">
+      <div className="p-4">
         <div className="border border-gray-300  p-4">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-medium text-gray-700">Your Shopify Stores</h3>

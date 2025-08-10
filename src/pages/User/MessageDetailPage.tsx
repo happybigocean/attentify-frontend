@@ -112,9 +112,9 @@ const MessageDetailPage = () => {
 
   return (
     <Layout>
-      {loading && <div className="p-6">Loading...</div>}
+      {loading && <div className="p-4">Loading...</div>}
       {!loading &&
-        <div className="flex min-h-screen w-full px-8 py-8">
+        <div className="flex min-h-screen w-full p-4">
           {/* Main Email Thread */}
           <div className="flex-1 max-w-4xl">
             <Link
@@ -192,7 +192,7 @@ const MessageDetailPage = () => {
           <div className="flex flex-col justify-start ml-6 space-y-6">
             <div className="sticky top-19 flex flex-col space-y-6">
               {/* Customer Info Card */}
-              <div className="w-[350px] bg-white  shadow-lg p-8">
+              <div className="w-[350px] bg-white p-8">
                 <h2 className="text-2xl font-bold mb-5">Customer Info</h2>
                 {orderInfo && orderInfo?.shopify_order && orderInfo?.shopify_order?.customer && (
                   <>

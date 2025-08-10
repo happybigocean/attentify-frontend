@@ -154,7 +154,7 @@ export default function MessagePage() {
 
   return (
     <Layout>
-      <div className="p-3">
+      <div className="p-4">
         <div className="relative mb-6">
           <input
             type="text"

@@ -13,8 +13,8 @@ export default function Settings() {
 
   return (
     <Layout>
-      <div className="px-8 pt-10 max-w-5xl">
-        <div className="border border-gray-300 p-8 mb-10">
+      <div className="p-4 max-w-5xl">
+        <div className="border border-gray-300 p-8 mb-5">
           <GeneralSettings />
         </div>
 
