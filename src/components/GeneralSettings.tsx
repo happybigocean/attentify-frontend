@@ -2,14 +2,16 @@ import { useState, useEffect } from "react";
 import { PencilIcon, XMarkIcon, CheckIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useCompany } from "../context/CompanyContext";
+import { useNotification } from "../context/NotificationContext";
 
 export default function GeneralSettings() {
   const { currentCompanyId } = useCompany();
+  const { notify } = useNotification();
 
   // Initial states — you can replace with real fetched data or empty strings
-  const [companyName, setCompanyName] = useState("Example Company");
-  const [siteUrl, setSiteUrl] = useState("https://example.com");
-  const [email, setEmail] = useState("contact@example.com");
+  const [companyName, setCompanyName] = useState("");
+  const [siteUrl, setSiteUrl] = useState("");
+  const [email, setEmail] = useState("");
 
   // Draft states and edit mode states for each field
   const [companyNameDraft, setCompanyNameDraft] = useState(companyName);
@@ -31,14 +33,19 @@ export default function GeneralSettings() {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         const data = response.data;
-        console.log(data);
         if (data) {
-          setCompanyName(data.name || "Example Company");
-          setSiteUrl(data.site_url || "https://example.com");
-          setEmail(data.email || "contact@example.com");
+          setCompanyName(data.name || "");
+          setCompanyNameDraft(data.name || "");
+
+          setSiteUrl(data.site_url || "");
+          setSiteUrlDraft(data.site_url || "");
+
+          setEmail(data.email || "");
+          setEmailDraft(data.email || "");
         }
       } catch (error) {
         console.error("Error fetching company settings:", error);
+        notify("error", "Error fetching company settings");
       }
     };
 
@@ -88,7 +95,7 @@ export default function GeneralSettings() {
       }
     } catch (error) {
       console.error(`Failed to save ${field}:`, error);
-      alert(`Failed to save ${field}. Please try again.`);
+      notify("error", `Failed to save ${field}. Please try again.`);
     }
   };
 
