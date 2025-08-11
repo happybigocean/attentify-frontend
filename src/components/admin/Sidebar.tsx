@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   HomeIcon,
   UserCircleIcon,
@@ -23,6 +23,8 @@ export default function Sidebar({
   mobileOpen,
   setMobileOpen,
 }: SidebarProps) {
+  const location = useLocation();
+
   // Get user from localStorage
   let user: User | null = null;
   try {
@@ -62,21 +64,44 @@ export default function Sidebar({
     window.location.href = "/login";
   };
 
+  // Function to check if link is active
+  const isActive = (path: string) => location.pathname === path;
+
   return (
     <>
       {/* Mobile hamburger button */}
       <button
-        className="fixed top-4 right-4 z-50 p-2 bg-white text-black  shadow-lg focus:outline-none block lg:hidden"
+        className="fixed top-4 right-4 z-50 p-2 bg-white text-black shadow-lg focus:outline-none block lg:hidden"
         onClick={() => setMobileOpen(!mobileOpen)}
         aria-label={mobileOpen ? "Close sidebar" : "Open sidebar"}
       >
         {mobileOpen ? (
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         ) : (
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M4 6h16M4 12h16M4 18h16"
+            />
           </svg>
         )}
       </button>
@@ -99,47 +124,65 @@ export default function Sidebar({
         `}
       >
         <div className="flex flex-col h-full">
-          <a className="h-15 flex items-center w-full pl-5 border-b border-gray-300" href="/dashboard">
+          <a
+            className="h-15 flex items-center w-full pl-5 border-b border-gray-300"
+            href="/dashboard"
+          >
             <img className="h-10 w-auto" src="/logo.png" alt="Attentify logo" />
           </a>
 
           <div className="flex-1 w-full px-2 overflow-y-auto max-h-screen">
             {/* Top menu */}
             <div className="flex flex-col items-start w-full mt-3">
-              <a
-                className="flex items-center w-full h-12 px-4 mt-2  transition hover:bg-gray-100 focus:outline-none"
-                href="/admin/dashboard"
+              <Link
+                to="/admin/dashboard"
+                className={`flex items-center w-full h-12 px-4 mt-2 transition focus:outline-none ${
+                  isActive("/admin/dashboard")
+                    ? "bg-gray-200"
+                    : "hover:bg-gray-100"
+                }`}
+                onClick={() => setMobileOpen(false)}
               >
-                <HomeIcon className="w-6 h-6"/>
+                <HomeIcon className="w-6 h-6" />
                 <span className="ml-3 text-base font-medium">Dashboard</span>
-              </a>
+              </Link>
 
-              <a
-                className="flex items-center w-full h-12 px-4 mt-2  transition hover:bg-gray-100 focus:outline-none"
-                href="/admin/user"
+              <Link
+                to="/admin/user"
+                className={`flex items-center w-full h-12 px-4 mt-2 transition focus:outline-none ${
+                  isActive("/admin/user") ? "bg-gray-200" : "hover:bg-gray-100"
+                }`}
+                onClick={() => setMobileOpen(false)}
               >
-                <UsersIcon
-                  className="w-6 h-6"
-                />
+                <UsersIcon className="w-6 h-6" />
                 <span className="ml-3 text-base font-medium">User</span>
-              </a>
+              </Link>
             </div>
           </div>
 
           {/* Account (pinned bottom) */}
-          <div className="border-t border-gray-300 w-full relative" ref={accountMenuRef}>
+          <div
+            className="border-t border-gray-300 w-full relative"
+            ref={accountMenuRef}
+          >
             <button
-              className="flex items-center w-full h-12 px-4 hover:bg-gray-100  focus:outline-none relative"
+              className="flex items-center w-full h-12 px-4 hover:bg-gray-100 focus:outline-none relative"
               onClick={() => setAccountOpen((o) => !o)}
               aria-haspopup="true"
               aria-expanded={accountOpen}
             >
               <UserCircleIcon className="w-6 h-6" />
-              <span className="ml-3 text-base font-medium truncate max-w-[90px]">{userName}</span>
-              <ChevronRightIcon className={`ml-auto w-4 h-4 transition-transform duration-200 ${accountOpen ? "rotate-90" : ""}`}/>
+              <span className="ml-3 text-base font-medium truncate max-w-[90px]">
+                {userName}
+              </span>
+              <ChevronRightIcon
+                className={`ml-auto w-4 h-4 transition-transform duration-200 ${
+                  accountOpen ? "rotate-90" : ""
+                }`}
+              />
             </button>
             {accountOpen && (
-              <div className="absolute bottom-12 left-0 w-full bg-gray-100 border border-gray-300  z-50 animate-fade-in">
+              <div className="absolute bottom-12 left-0 w-full bg-gray-100 border border-gray-300 z-50 animate-fade-in">
                 <div className="flex flex-col py-2">
                   <div className="px-4 py-2 text-gray-900 font-semibold border-b border-gray-300">
                     {userName}
