@@ -1,5 +1,5 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import axios from "axios";
+import { createContext, useContext, useState } from "react";
+import React from "react";
 
 interface Company {
   id: string;
@@ -21,45 +21,24 @@ export const useCompany = () => {
   return context;
 };
 
-export const CompanyProvider = ({ children }: { children: React.ReactNode }) => {
-  const [companies, setCompanies] = useState<Company[]>([]);
-  const [currentCompanyId, setCurrentCompanyId] = useState("");
+interface CompanyProviderProps {
+  children: React.ReactNode;
+  initialCompanies?: Company[];
+  initialCurrentCompanyId?: string;
+}
 
-  useEffect(() => {
-    const fetchCompanies = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          console.error("No token found");
-          return;
-        }
-
-        const res = await axios.get(
-          `${import.meta.env.VITE_API_URL ?? ""}/company`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        const companyList = res.data || [];
-        setCompanies(companyList);
-
-        if (companyList.length > 0) {
-          // Auto-select first company or add your logic here
-          setCurrentCompanyId(companyList[0]._id); // or `.id` if your backend uses that
-        } 
-      } catch (error) {
-        console.error("Failed to fetch companies", error);
-      }
-    };
-
-    fetchCompanies();
-  }, []);
+export const CompanyProvider = ({
+  children,
+  initialCompanies = [],
+  initialCurrentCompanyId = "",
+}: CompanyProviderProps) => {
+  const [companies, setCompanies] = useState<Company[]>(initialCompanies);
+  const [currentCompanyId, setCurrentCompanyId] = useState(initialCurrentCompanyId);
 
   return (
-    <CompanyContext.Provider value={{ companies, currentCompanyId, setCurrentCompanyId, setCompanies }}>
+    <CompanyContext.Provider
+      value={{ companies, currentCompanyId, setCurrentCompanyId, setCompanies }}
+    >
       {children}
     </CompanyContext.Provider>
   );
