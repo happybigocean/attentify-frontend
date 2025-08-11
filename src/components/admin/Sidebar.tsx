@@ -138,7 +138,7 @@ export default function Sidebar({
                 to="/admin/dashboard"
                 className={`flex items-center w-full h-12 px-4 mt-2 transition focus:outline-none ${
                   isActive("/admin/dashboard")
-                    ? "bg-gray-200"
+                    ? "bg-gray-100"
                     : "hover:bg-gray-100"
                 }`}
                 onClick={() => setMobileOpen(false)}
@@ -150,7 +150,7 @@ export default function Sidebar({
               <Link
                 to="/admin/user"
                 className={`flex items-center w-full h-12 px-4 mt-2 transition focus:outline-none ${
-                  isActive("/admin/user") ? "bg-gray-200" : "hover:bg-gray-100"
+                  isActive("/admin/user") ? "bg-gray-100" : "hover:bg-gray-100"
                 }`}
                 onClick={() => setMobileOpen(false)}
               >
