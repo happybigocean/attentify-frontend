@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PencilIcon, XMarkIcon, CheckIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
+import { useCompany } from "../context/CompanyContext";
 
 export default function GeneralSettings() {
+  const { currentCompanyId } = useCompany();
+
   // Initial states — you can replace with real fetched data or empty strings
   const [companyName, setCompanyName] = useState("Example Company");
   const [siteUrl, setSiteUrl] = useState("https://example.com");
@@ -17,6 +20,30 @@ export default function GeneralSettings() {
 
   const [emailDraft, setEmailDraft] = useState(email);
   const [emailEdit, setEmailEdit] = useState(false);
+
+  useEffect(() => {
+    if (!currentCompanyId) return;
+
+    const fetchSettings = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL || ""}/company/${currentCompanyId}`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        const data = response.data;
+        console.log(data);
+        if (data) {
+          setCompanyName(data.name || "Example Company");
+          setSiteUrl(data.site_url || "https://example.com");
+          setEmail(data.email || "contact@example.com");
+        }
+      } catch (error) {
+        console.error("Error fetching company settings:", error);
+      }
+    };
+
+    fetchSettings();
+  }, [currentCompanyId]);
 
   // Save function with API call placeholders
   const saveField = async (field: string) => {
