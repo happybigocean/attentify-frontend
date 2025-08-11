@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import React from "react";
 
 interface Company {
@@ -23,17 +23,28 @@ export const useCompany = () => {
 
 interface CompanyProviderProps {
   children: React.ReactNode;
-  initialCompanies?: Company[];
-  initialCurrentCompanyId?: string;
 }
 
-export const CompanyProvider = ({
-  children,
-  initialCompanies = [],
-  initialCurrentCompanyId = "",
-}: CompanyProviderProps) => {
-  const [companies, setCompanies] = useState<Company[]>(initialCompanies);
-  const [currentCompanyId, setCurrentCompanyId] = useState(initialCurrentCompanyId);
+export const CompanyProvider = ({ children }: CompanyProviderProps) => {
+  // Load initial state from localStorage or defaults
+  const [companies, setCompanies] = useState<Company[]>(() => {
+    const stored = localStorage.getItem("companies");
+    return stored ? JSON.parse(stored) : [];
+  });
+
+  const [currentCompanyId, setCurrentCompanyId] = useState<string>(() => {
+    return localStorage.getItem("currentCompanyId") || "";
+  });
+
+  // Sync companies to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem("companies", JSON.stringify(companies));
+  }, [companies]);
+
+  // Sync currentCompanyId to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("currentCompanyId", currentCompanyId);
+  }, [currentCompanyId]);
 
   return (
     <CompanyContext.Provider
