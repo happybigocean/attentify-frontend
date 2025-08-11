@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useCompany } from "../context/CompanyContext";
+import { useNotification } from "../context/NotificationContext";
+import axios from "axios";
 
-type Role = "owner" | "agent" | "readonly";
+type Role = "company_owner" | "store_owner" | "agent" | "readonly";
 
 interface Member {
   email: string;
@@ -8,11 +11,32 @@ interface Member {
 }
 
 export default function TeamMembers() {
-  const [members, setMembers] = useState<Member[]>([
-    { email: "owner@example.com", role: "owner" },
-    { email: "agent@example.com", role: "agent" },
-    { email: "readonly@example.com", role: "readonly" },
-  ]);
+  const { currentCompanyId } = useCompany();
+  const { notify } = useNotification();
+
+  const [members, setMembers] = useState<Member[]>([]);
+
+  useEffect(() => {
+    if (!currentCompanyId) return;
+
+    const fetchMembers = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL || ""}/company/${currentCompanyId}/members`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        const data = response.data;
+        if (data) {
+          setMembers(data || []);
+        }
+      } catch (error) {
+        console.error("Error fetching members:", error);
+        notify("error", "Error fetching members");
+      }
+    };
+
+    fetchMembers();
+  }, [currentCompanyId]);
 
   const handleRoleChange = (index: number, newRole: Role) => {
     const updated = [...members];
@@ -70,7 +94,8 @@ export default function TeamMembers() {
                     onChange={(e) => handleRoleChange(index, e.target.value as Role)}
                     className="border border-gray-300 px-2 py-1"
                   >
-                    <option value="owner">Owner</option>
+                    <option value="company_owner">Owner</option>
+                    <option value="store_owner">Store Owner</option>
                     <option value="agent">Agent</option>
                     <option value="readonly">Read-only</option>
                   </select>
