@@ -70,12 +70,12 @@ export default function GmailAccountPage() {
   return (
     <Layout>
       <div className="p-3">
-        <div className="border border-gray-300 rounded-sm p-4">
+        <div className="border border-gray-300  p-4">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-medium text-gray-700">Gmail Accounts</h3>
             <button
               onClick={handleConnect}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2  text-sm font-medium"
             >
               + Connect Gmail
             </button>

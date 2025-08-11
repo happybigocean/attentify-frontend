@@ -33,19 +33,26 @@ export default function AdminLayout({ children }: LayoutProps) {
       <div
         className="flex flex-col transition-all duration-600"
         style={{
-          marginLeft: isDesktop ? 224 : 0,
+          marginLeft: isDesktop ? 288 : 0,
           transition: "margin-left 0.6s cubic-bezier(.77,0,.18,1)",
           filter:
-            !isDesktop && sidebarMobileOpen ? "blur(2px) brightness(0.8)" : undefined,
+            !isDesktop && sidebarMobileOpen
+              ? "blur(2px) brightness(0.8)"
+              : undefined,
           pointerEvents:
             !isDesktop && sidebarMobileOpen ? "none" : undefined,
         }}
       >
-        <HeaderBar
-          isMobile={!isDesktop}
-          onMenuClick={() => setSidebarMobileOpen(true)}
-        />
-        <main className="flex-1 p-2">{children}</main>
+        {/* Fixed Header */}
+        <div className="fixed top-0 left-0 right-0 z-50" style={{ marginLeft: isDesktop ? 288 : 0 }}>
+          <HeaderBar
+            isMobile={!isDesktop}
+            onMenuClick={() => setSidebarMobileOpen(true)}
+          />
+        </div>
+
+        {/* Add padding-top to prevent content from hiding behind the header */}
+        <main className="flex-1 p-2 pt-16">{children}</main>
       </div>
     </div>
   );

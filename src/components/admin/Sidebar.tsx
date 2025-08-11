@@ -66,7 +66,7 @@ export default function Sidebar({
     <>
       {/* Mobile hamburger button */}
       <button
-        className="fixed top-4 right-4 z-50 p-2 bg-white text-black rounded-full shadow-lg focus:outline-none block lg:hidden"
+        className="fixed top-4 right-4 z-50 p-2 bg-white text-black  shadow-lg focus:outline-none block lg:hidden"
         onClick={() => setMobileOpen(!mobileOpen)}
         aria-label={mobileOpen ? "Close sidebar" : "Open sidebar"}
       >
@@ -95,7 +95,7 @@ export default function Sidebar({
         className={`
           z-40 text-gray-900 transition-all duration-300 ease-in-out border-r border-gray-300
           ${mobileOpen ? "block fixed w-full" : "hidden"}
-          lg:fixed lg:block lg:w-56 lg:h-full
+          lg:fixed lg:block lg:w-72 lg:h-full
         `}
       >
         <div className="flex flex-col h-full">
@@ -107,17 +107,15 @@ export default function Sidebar({
             {/* Top menu */}
             <div className="flex flex-col items-start w-full mt-3">
               <a
-                className="flex items-center w-full h-12 px-4 mt-2 rounded-md transition hover:bg-gray-100 focus:outline-none"
+                className="flex items-center w-full h-12 px-4 mt-2  transition hover:bg-gray-100 focus:outline-none"
                 href="/admin/dashboard"
               >
                 <HomeIcon className="w-6 h-6"/>
                 <span className="ml-3 text-base font-medium">Dashboard</span>
               </a>
 
-
-
               <a
-                className="flex items-center w-full h-12 px-4 mt-2 rounded-md transition hover:bg-gray-100 focus:outline-none"
+                className="flex items-center w-full h-12 px-4 mt-2  transition hover:bg-gray-100 focus:outline-none"
                 href="/admin/user"
               >
                 <UsersIcon
@@ -141,7 +139,7 @@ export default function Sidebar({
               <ChevronRightIcon className={`ml-auto w-4 h-4 transition-transform duration-200 ${accountOpen ? "rotate-90" : ""}`}/>
             </button>
             {accountOpen && (
-              <div className="absolute bottom-12 left-0 w-full bg-gray-100 border border-gray-300 rounded-md z-50 animate-fade-in">
+              <div className="absolute bottom-12 left-0 w-full bg-gray-100 border border-gray-300  z-50 animate-fade-in">
                 <div className="flex flex-col py-2">
                   <div className="px-4 py-2 text-gray-900 font-semibold border-b border-gray-300">
                     {userName}

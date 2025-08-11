@@ -122,11 +122,10 @@ const UserManagement: React.FC = () => {
 
   return (
     <Layout>
-      <div className="p-6">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-semibold">User Management</h1>
+      <div className="p-4">
+        <div className="flex items-center justify-end mb-6">
           <button
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+            className="bg-blue-600 text-white px-4 py-2  hover:bg-blue-700 transition"
             onClick={() => setShowCreate(true)}
           >
             + Create New User
@@ -136,7 +135,7 @@ const UserManagement: React.FC = () => {
         {/* Modal for creating user */}
         {showCreate && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50">
-            <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md relative">
+            <div className="bg-white  shadow-lg p-8 w-full max-w-md relative">
               <button
                 className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
                 onClick={() => setShowCreate(false)}
@@ -149,27 +148,27 @@ const UserManagement: React.FC = () => {
                 <input
                   type="email"
                   placeholder="Email"
-                  className="w-full px-3 py-2 border rounded focus:outline-none focus:ring"
+                  className="w-full px-3 py-2 border  focus:outline-none focus:ring"
                   value={newUser.email}
                   onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
                   required
                 />
                 <input
                   placeholder="First Name"
-                  className="w-full px-3 py-2 border rounded focus:outline-none focus:ring"
+                  className="w-full px-3 py-2 border  focus:outline-none focus:ring"
                   value={newUser.first_name}
                   onChange={(e) => setNewUser({ ...newUser, first_name: e.target.value })}
                   required
                 />
                 <input
                   placeholder="Last Name"
-                  className="w-full px-3 py-2 border rounded focus:outline-none focus:ring"
+                  className="w-full px-3 py-2 border  focus:outline-none focus:ring"
                   value={newUser.last_name}
                   onChange={(e) => setNewUser({ ...newUser, last_name: e.target.value })}
                   required
                 />
                 <select
-                  className="w-full px-3 py-2 border rounded focus:outline-none focus:ring"
+                  className="w-full px-3 py-2 border  focus:outline-none focus:ring"
                   value={newUser.role}
                   onChange={(e) => setNewUser({ ...newUser, role: e.target.value as User["role"] })}
                 >
@@ -178,7 +177,7 @@ const UserManagement: React.FC = () => {
                   ))}
                 </select>
                 <select
-                  className="w-full px-3 py-2 border rounded focus:outline-none focus:ring"
+                  className="w-full px-3 py-2 border  focus:outline-none focus:ring"
                   value={newUser.status}
                   onChange={(e) => setNewUser({ ...newUser, status: e.target.value as User["status"] })}
                 >
@@ -188,20 +187,20 @@ const UserManagement: React.FC = () => {
                 </select>
                 <input
                   placeholder="Team ID"
-                  className="w-full px-3 py-2 border rounded focus:outline-none focus:ring"
+                  className="w-full px-3 py-2 border  focus:outline-none focus:ring"
                   value={newUser.team_id || ""}
                   onChange={(e) => setNewUser({ ...newUser, team_id: e.target.value })}
                 />
               </div>
               <div className="mt-6 flex justify-end gap-3">
                 <button
-                  className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300"
+                  className="px-4 py-2  bg-gray-200 hover:bg-gray-300"
                   onClick={() => setShowCreate(false)}
                 >
                   Cancel
                 </button>
                 <button
-                  className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+                  className="px-4 py-2  bg-blue-600 text-white hover:bg-blue-700"
                   onClick={handleCreate}
                 >
                   Create
@@ -212,7 +211,7 @@ const UserManagement: React.FC = () => {
         )}
 
         {/* User Table */}
-        <div className="overflow-x-auto bg-white rounded-lg shadow">
+        <div className="overflow-x-auto bg-white  shadow">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-100">
@@ -232,7 +231,7 @@ const UserManagement: React.FC = () => {
                     <>
                       <td className="px-4 py-2">
                         <input
-                          className="w-full px-2 py-1 border rounded focus:outline-none focus:ring"
+                          className="w-full px-2 py-1 border  focus:outline-none focus:ring"
                           value={editForm?.email || ""}
                           onChange={(e) => setEditForm({ ...editForm!, email: e.target.value })}
                         />
@@ -240,13 +239,13 @@ const UserManagement: React.FC = () => {
                       <td className="px-4 py-2">
                         <div className="flex gap-2">
                           <input
-                            className="w-1/2 px-2 py-1 border rounded focus:outline-none focus:ring"
+                            className="w-1/2 px-2 py-1 border  focus:outline-none focus:ring"
                             value={editForm?.first_name || ""}
                             onChange={(e) => setEditForm({ ...editForm!, first_name: e.target.value })}
                             placeholder="First Name"
                           />
                           <input
-                            className="w-1/2 px-2 py-1 border rounded focus:outline-none focus:ring"
+                            className="w-1/2 px-2 py-1 border  focus:outline-none focus:ring"
                             value={editForm?.last_name || ""}
                             onChange={(e) => setEditForm({ ...editForm!, last_name: e.target.value })}
                             placeholder="Last Name"
@@ -255,7 +254,7 @@ const UserManagement: React.FC = () => {
                       </td>
                       <td className="px-4 py-2">
                         <select
-                          className="w-full px-2 py-1 border rounded focus:outline-none focus:ring"
+                          className="w-full px-2 py-1 border  focus:outline-none focus:ring"
                           value={editForm?.role || "readonly"}
                           onChange={(e) => setEditForm({ ...editForm!, role: e.target.value as User["role"] })}
                         >
@@ -266,7 +265,7 @@ const UserManagement: React.FC = () => {
                       </td>
                       <td className="px-4 py-2">
                         <select
-                          className="w-full px-2 py-1 border rounded focus:outline-none focus:ring"
+                          className="w-full px-2 py-1 border  focus:outline-none focus:ring"
                           value={editForm?.status || "invited"}
                           onChange={(e) => setEditForm({ ...editForm!, status: e.target.value as User["status"] })}
                         >
@@ -277,7 +276,7 @@ const UserManagement: React.FC = () => {
                       </td>
                       <td className="px-4 py-2">
                         <input
-                          className="w-full px-2 py-1 border rounded focus:outline-none focus:ring"
+                          className="w-full px-2 py-1 border  focus:outline-none focus:ring"
                           value={editForm?.team_id || ""}
                           onChange={(e) => setEditForm({ ...editForm!, team_id: e.target.value })}
                         />
@@ -288,13 +287,13 @@ const UserManagement: React.FC = () => {
                       <td className="px-4 py-2 text-center">
                         <div className="flex gap-2 justify-center">
                           <button
-                            className="px-3 py-1 rounded bg-green-500 text-white hover:bg-green-600"
+                            className="px-3 py-1  bg-green-500 text-white hover:bg-green-600"
                             onClick={handleUpdate}
                           >
                             Save
                           </button>
                           <button
-                            className="px-3 py-1 rounded bg-gray-300 text-gray-700 hover:bg-gray-400"
+                            className="px-3 py-1  bg-gray-300 text-gray-700 hover:bg-gray-400"
                             onClick={handleCancelEdit}
                           >
                             Cancel
@@ -313,13 +312,13 @@ const UserManagement: React.FC = () => {
                       <td className="px-4 py-2 text-center">
                         <div className="flex gap-2 justify-center">
                           <button
-                            className="px-3 py-1 rounded bg-yellow-500 text-white hover:bg-yellow-600"
+                            className="px-3 py-1  bg-yellow-500 text-white hover:bg-yellow-600"
                             onClick={() => handleEdit(u)}
                           >
                             Edit
                           </button>
                           <button
-                            className="px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600"
+                            className="px-3 py-1  bg-red-500 text-white hover:bg-red-600"
                             onClick={() => openConfirm(u._id)}
                           >
                             Delete
