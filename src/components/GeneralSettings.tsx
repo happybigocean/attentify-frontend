@@ -52,47 +52,46 @@ export default function GeneralSettings() {
     fetchSettings();
   }, [currentCompanyId]);
 
-  // Save function with API call placeholders
+  // Save function with unified update-company API call
   const saveField = async (field: string) => {
     try {
+      let payload: Record<string, string> = { company_id: currentCompanyId };
+
       switch (field) {
         case "companyName":
-          // Example API call for updating company name
-          await axios.post(
-            `${import.meta.env.VITE_API_URL || ""}/company/update-name`,
-            { name: companyNameDraft },
-            {
-              headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-            }
-          );
-          setCompanyName(companyNameDraft.trim());
-          setCompanyNameEdit(false);
+          payload.name = companyNameDraft.trim();
           break;
-
         case "siteUrl":
-          await axios.post(
-            `${import.meta.env.VITE_API_URL || ""}/company/update-site-url`,
-            { site_url: siteUrlDraft },
-            {
-              headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-            }
-          );
-          setSiteUrl(siteUrlDraft.trim());
-          setSiteUrlEdit(false);
+          payload.site_url = siteUrlDraft.trim();
           break;
-
         case "email":
-          await axios.post(
-            `${import.meta.env.VITE_API_URL || ""}/company/update-email`,
-            { email: emailDraft },
-            {
-              headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-            }
-          );
-          setEmail(emailDraft.trim());
-          setEmailEdit(false);
+          payload.email = emailDraft.trim();
           break;
+        default:
+          console.error(`Unknown field: ${field}`);
+          return;
       }
+
+      await axios.post(
+        `${import.meta.env.VITE_API_URL || ""}/company/update-company`,
+        payload,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
+
+      // Update state locally
+      if (field === "companyName") {
+        setCompanyName(companyNameDraft.trim());
+        setCompanyNameEdit(false);
+      } else if (field === "siteUrl") {
+        setSiteUrl(siteUrlDraft.trim());
+        setSiteUrlEdit(false);
+      } else if (field === "email") {
+        setEmail(emailDraft.trim());
+        setEmailEdit(false);
+      }
+
     } catch (error) {
       console.error(`Failed to save ${field}:`, error);
       notify("error", `Failed to save ${field}. Please try again.`);
