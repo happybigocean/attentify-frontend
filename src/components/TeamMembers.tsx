@@ -6,6 +6,7 @@ import axios from "axios";
 type Role = "company_owner" | "store_owner" | "agent" | "readonly";
 
 interface Member {
+  membership_id: string, 
   email: string;
   role: Role;
 }
@@ -38,21 +39,42 @@ export default function TeamMembers() {
     fetchMembers();
   }, [currentCompanyId]);
 
-  const handleRoleChange = (index: number, newRole: Role) => {
-    const updated = [...members];
-    updated[index].role = newRole;
+  const handleRoleChange = async (index: number, newRole: Role) => {
+    // Create a deep copy to avoid mutating state directly
+    const updated = members.map((m, i) =>
+      i === index ? { ...m, role: newRole } : m
+    );
+
+    // Optimistically update UI
     setMembers(updated);
 
-    // TODO: Call your API to update member role
-    // await axios.put(`/api/members/${updated[index].email}`, { role: newRole });
+    try {
+      await axios.post(
+        `${import.meta.env.VITE_API_URL}/membership/update`,
+        {
+          membership_id: updated[index].membership_id,
+          role: newRole,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+    } catch (error) {
+      console.error("Failed to update role:", error);
+
+      // Revert UI if request fails
+      setMembers(members);
+    }
   };
 
   const handleAddMember = () => {
-    const email = window.prompt("Enter new member's email:");
-    if (!email) return;
+    //const email = window.prompt("Enter new member's email:");
+    //if (!email) return;
 
-    const newMember: Member = { email, role: "agent" };
-    setMembers((prev) => [...prev, newMember]);
+    //const newMember: Member = { email, role: "agent" };
+    //setMembers((prev) => [...prev, newMember]);
 
     // TODO: Call your API to add member
     // await axios.post("/api/members", newMember);
