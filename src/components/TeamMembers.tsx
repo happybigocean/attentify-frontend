@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useCompany } from "../context/CompanyContext";
 import { useNotification } from "../context/NotificationContext";
 import axios from "axios";
@@ -14,6 +15,7 @@ interface Member {
 export default function TeamMembers() {
   const { currentCompanyId } = useCompany();
   const { notify } = useNotification();
+  const navigate = useNavigate();
 
   const [members, setMembers] = useState<Member[]>([]);
 
@@ -70,14 +72,7 @@ export default function TeamMembers() {
   };
 
   const handleAddMember = () => {
-    //const email = window.prompt("Enter new member's email:");
-    //if (!email) return;
-
-    //const newMember: Member = { email, role: "agent" };
-    //setMembers((prev) => [...prev, newMember]);
-
-    // TODO: Call your API to add member
-    // await axios.post("/api/members", newMember);
+    navigate("/invite");
   };
 
   return (

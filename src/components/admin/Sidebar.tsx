@@ -131,7 +131,7 @@ export default function Sidebar({
             <img className="h-10 w-auto" src="/logo.png" alt="Attentify logo" />
           </a>
 
-          <div className="flex-1 w-full px-2 overflow-y-auto max-h-screen">
+          <div className="flex-1 w-full overflow-y-auto max-h-screen">
             {/* Top menu */}
             <div className="flex flex-col items-start w-full mt-3">
               <Link
