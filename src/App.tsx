@@ -13,6 +13,7 @@ import ShopifyPage from "./pages/User/ShopifyPage";
 import ShopifySuccess from "./pages/User/ShopifySuccess";
 import OrderPage from "./pages/User/OrderPage";
 import RegisterCompany from "./pages/User/RegisterCompany";
+import InvitationPage from "./pages/User/InvitationPage";
 import { UserProvider } from "./context/UserContext";
 import { NotificationProvider } from "./context/NotificationContext";
 import { CompanyProvider } from "./context/CompanyContext";
@@ -130,6 +131,15 @@ function App() {
                   element={
                     <ProtectedRoute allowedRoles={['company_owner', 'store_owner']}>
                       <Settings />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/invite"
+                  element={
+                    <ProtectedRoute allowedRoles={['company_owner', 'store_owner']}>
+                      <InvitationPage />
                     </ProtectedRoute>
                   }
                 />
