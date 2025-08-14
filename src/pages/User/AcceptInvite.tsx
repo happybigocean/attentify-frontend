@@ -2,115 +2,97 @@ import React, { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-interface InviteDetails {
+interface InvitationDetails {
   email: string;
   role: string;
+  expires_at: string;
 }
 
-const AcceptInvite: React.FC = () => {
+const AcceptInvitePage: React.FC = () => {
+  const [invitation, setInvitation] = useState<InvitationDetails | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [accepting, setAccepting] = useState(false);
+  const [success, setSuccess] = useState(false);
+
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
   const navigate = useNavigate();
 
-  const [invite, setInvite] = useState<InviteDetails | null>(null);
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
   useEffect(() => {
     if (!token) {
-      setError("Invalid invitation link.");
+      setError("Invitation token is missing.");
       setLoading(false);
       return;
     }
 
-    const fetchInvite = async () => {
+    const fetchInvitation = async () => {
       try {
         const res = await axios.get(
           `${import.meta.env.VITE_API_URL}/invitations/${token}`
         );
-        setInvite(res.data);
-      } catch (err) {
-        setError("Invitation link is invalid or expired.");
+        setInvitation(res.data);
+      } catch (err: any) {
+        setError(err.response?.data?.detail || "Failed to load invitation.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchInvite();
+    fetchInvitation();
   }, [token]);
 
-  const handleAccept = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (password !== confirmPassword) {
-      setError("Passwords do not match.");
-      return;
-    }
-
+  const handleAccept = async () => {
+    if (!token) return;
+    setAccepting(true);
     try {
-      setError("");
-      await axios.post(`${import.meta.env.VITE_API_URL}/api/invitations/accept`, {
-        token,
-        password,
-      });
-      navigate("/login");
-    } catch (err) {
-      setError("Failed to accept invitation. Please try again.");
+        const res = await axios.post(
+            `${import.meta.env.VITE_API_URL}/invitations/accept`,
+            { token: token },
+            {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+            }
+        );
+        setSuccess(true);
+        setTimeout(() => navigate(res.data.redirect_url), 1500);
+    } catch (err: any) {
+      setError(err.response?.data?.detail || "Failed to accept invitation.");
+    } finally {
+      setAccepting(false);
     }
   };
 
-  if (loading) {
-    return <div className="text-center mt-10">Loading invitation...</div>;
-  }
-
-  if (error) {
-    return <div className="text-center text-red-500 mt-10">{error}</div>;
-  }
+  if (loading) return <div className="p-6 text-center">Loading...</div>;
+  if (error) return <div className="p-6 text-red-500 text-center">{error}</div>;
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-4 text-center">Accept Invitation</h2>
-        <p className="text-gray-700 text-center mb-6">
-          You are invited as <strong>{invite?.role}</strong> for{" "}
-          <span className="font-medium">{invite?.email}</span>.
-        </p>
-        <form onSubmit={handleAccept} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-1">Password</label>
-            <input
-              type="password"
-              className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:ring-blue-200"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Confirm Password
-            </label>
-            <input
-              type="password"
-              className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:ring-blue-200"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-            />
-          </div>
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+    <div className="max-w-md mx-auto mt-20 p-6 border rounded shadow">
+      <h1 className="text-xl font-bold mb-4">Invitation</h1>
+      {invitation && (
+        <>
+          <p>
+            <span className="font-semibold">Email:</span> {invitation.email}
+          </p>
+          <p>
+            <span className="font-semibold">Role:</span> {invitation.role}
+          </p>
           <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
+            onClick={handleAccept}
+            disabled={accepting || success}
+            className={`mt-6 w-full py-2 px-4 rounded ${
+              accepting || success
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700 text-white"
+            }`}
           >
-            Accept Invitation
+            {accepting ? "Accepting..." : success ? "Accepted!" : "Accept Invitation"}
           </button>
-        </form>
-      </div>
+        </>
+      )}
     </div>
   );
 };
 
-export default AcceptInvite;
+export default AcceptInvitePage;
