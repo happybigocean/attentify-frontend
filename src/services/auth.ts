@@ -19,7 +19,30 @@ export async function login(email: string, password: string) {
   }
 }
 
-export async function register(email: string, password: string, firstName: string, lastName: string) {
+export async function register(email: string, password: string, firstName: string, lastName: string, invitation_token: string | null = null) {
+  try {
+    const response = await axios.post(
+      `${API_URL}/auth/register`,
+      { 
+        email, 
+        password,
+        first_name: firstName,
+        last_name: lastName,
+        invitation_token
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error?.response?.data?.detail || "Register failed");
+  }
+}
+
+export async function registerWithToken(email: string, password: string, firstName: string, lastName: string) {
   try {
     const response = await axios.post(
       `${API_URL}/auth/register`,

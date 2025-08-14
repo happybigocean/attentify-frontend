@@ -4,6 +4,7 @@ import axios from "axios";
 
 interface InvitationDetails {
   email: string;
+  company_id: string;
   role: string;
   expires_at: string;
 }

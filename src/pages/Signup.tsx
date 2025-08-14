@@ -1,9 +1,13 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { register } from "../services/auth";
+import { useUser } from "../context/UserContext";
+import { useCompany } from "../context/CompanyContext"; // adjust path if needed
 
 export default function Signup() {
     const navigate = useNavigate();
+    const { setUser } = useUser();
+    const { setCompanies, setCurrentCompanyId } = useCompany();
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
@@ -13,18 +17,27 @@ export default function Signup() {
     const [error, setError] = useState<string | null>(null);
     const [message, setMessage] = useState<string | null>(null);
 
+    const [searchParams] =useSearchParams();
+    const invitation_token = searchParams.get("token");
+    
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
         try {
-            const data = await register(registerEmail, registerPassword, firstName, lastName);
-            const { token, user } = data;
-            localStorage.setItem("token", token);
-            localStorage.setItem('user', JSON.stringify(user));
+            const data = await register(registerEmail, registerPassword, firstName, lastName, invitation_token);
+            localStorage.setItem("token", data?.token);
+            localStorage.setItem('user', JSON.stringify(data?.user));
+            setUser(data?.user);
+
+            if (data?.user.companies?.length) {
+                setCompanies(data?.user.companies);
+                setCurrentCompanyId(data?.user.company_id); // default company from login
+            }
+            
             setMessage("Registered! Redirecting...");
             setTimeout(() => {
-                navigate("/register-company");
+                navigate(data?.redirect_url || "/login");
             }, 1000);
         } catch (err: any) {
             setError(err.message || "Registration failed");

@@ -58,7 +58,7 @@ function App() {
                 <Route
                   path="/dashboard"
                   element={
-                    <ProtectedRoute allowedRoles={['company_owner', 'store_owner']}>
+                    <ProtectedRoute allowedRoles={['company_owner', 'store_owner', 'agent', 'readonly']}>
                       <Dashboard />
                     </ProtectedRoute>
                   }
@@ -67,7 +67,7 @@ function App() {
                 <Route
                   path="/message"
                   element={
-                    <ProtectedRoute allowedRoles={['company_owner', 'store_owner']}>
+                    <ProtectedRoute allowedRoles={['company_owner', 'store_owner', 'agent', 'readonly']}>
                       <MessagePage />
                     </ProtectedRoute>
                   }
@@ -76,7 +76,7 @@ function App() {
                 <Route
                   path="/message/:threadId"
                   element={
-                    <ProtectedRoute allowedRoles={['company_owner', 'store_owner']}>
+                    <ProtectedRoute allowedRoles={['company_owner', 'store_owner', 'agent', 'readonly']}>
                       <MessageDetailPage  />
                     </ProtectedRoute>
                   }
@@ -85,7 +85,7 @@ function App() {
                 <Route
                   path="/order"
                   element={
-                    <ProtectedRoute allowedRoles={['company_owner', 'store_owner']}>
+                    <ProtectedRoute allowedRoles={['company_owner', 'store_owner', 'agent', 'readonly']}>
                       <OrderPage />
                     </ProtectedRoute>
                   }
@@ -94,7 +94,7 @@ function App() {
                 <Route
                   path="/accounts/gmail"
                   element={
-                    <ProtectedRoute allowedRoles={['company_owner', 'store_owner']}>
+                    <ProtectedRoute allowedRoles={['company_owner', 'store_owner', 'agent', 'readonly']}>
                       <GmailAccountPage />
                     </ProtectedRoute>
                   }
@@ -103,7 +103,7 @@ function App() {
                 <Route
                   path="/accounts/phone"
                   element={
-                    <ProtectedRoute allowedRoles={['company_owner', 'store_owner']}>
+                    <ProtectedRoute allowedRoles={['company_owner', 'store_owner', 'agent', 'readonly']}>
                       <PhoneAccountPage />
                     </ProtectedRoute>
                   }
@@ -112,7 +112,7 @@ function App() {
                 <Route
                   path="/shopify"
                   element={
-                    <ProtectedRoute allowedRoles={['company_owner', 'store_owner']}>
+                    <ProtectedRoute allowedRoles={['company_owner', 'store_owner', 'agent', 'readonly']}>
                       <ShopifyPage />
                     </ProtectedRoute>
                   }
@@ -121,7 +121,7 @@ function App() {
                 <Route
                   path="/shopify/success"
                   element={
-                    <ProtectedRoute allowedRoles={['company_owner', 'store_owner']}>
+                    <ProtectedRoute allowedRoles={['company_owner', 'store_owner', 'agent', 'readonly']}>
                       <ShopifySuccess />
                     </ProtectedRoute>
                   }
@@ -130,7 +130,7 @@ function App() {
                 <Route
                   path="/settings"
                   element={
-                    <ProtectedRoute allowedRoles={['company_owner', 'store_owner']}>
+                    <ProtectedRoute allowedRoles={['company_owner', 'store_owner', 'agent', 'readonly']}>
                       <Settings />
                     </ProtectedRoute>
                   }
@@ -139,7 +139,7 @@ function App() {
                 <Route
                   path="/invite"
                   element={
-                    <ProtectedRoute allowedRoles={['company_owner', 'store_owner']}>
+                    <ProtectedRoute allowedRoles={['company_owner', 'store_owner', 'agent', 'readonly']}>
                       <InvitationPage />
                     </ProtectedRoute>
                   }
