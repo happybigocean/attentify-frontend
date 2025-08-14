@@ -14,6 +14,7 @@ import ShopifySuccess from "./pages/User/ShopifySuccess";
 import OrderPage from "./pages/User/OrderPage";
 import RegisterCompany from "./pages/User/RegisterCompany";
 import InvitationPage from "./pages/User/InvitationPage";
+import AcceptInvite from "./pages/User/AcceptInvite";
 import { UserProvider } from "./context/UserContext";
 import { NotificationProvider } from "./context/NotificationContext";
 import { CompanyProvider } from "./context/CompanyContext";
@@ -145,9 +146,16 @@ function App() {
                 />
 
                 <Route
+                  path="/accept-invite"
+                  element={
+                    <AcceptInvite />
+                  }
+                />
+
+                <Route
                   path="/register-company"
                   element={
-                      <RegisterCompany />
+                    <RegisterCompany />
                   }
                 />
               </Routes>
