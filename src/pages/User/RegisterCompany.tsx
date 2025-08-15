@@ -1,11 +1,16 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useUser } from "../../context/UserContext";
+import { useCompany } from "../../context/CompanyContext"; 
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1";
 
 export default function RegisterCompany() {
   const navigate = useNavigate();
+  const { setUser } = useUser();
+  const { setCompanies, setCurrentCompanyId } = useCompany();
+
   const [companyName, setCompanyName] = useState("");
   const [siteUrl, setSiteUrl] = useState("");
   const [email, setEmail] = useState("");
@@ -38,23 +43,35 @@ export default function RegisterCompany() {
     setLoading(true);
 
     try {
-      const token = localStorage.getItem("token");
-      await axios.post(
-        `${API_URL}/company/create`,
-        {
-          name: companyName,
-          site_url: siteUrl,
-          email: email,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+        const token = localStorage.getItem("token");
+        const res = await axios.post(
+            `${API_URL}/company/create`,
+            {
+                name: companyName,
+                site_url: siteUrl,
+                email: email,
+            },
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
 
-      navigate("/dashboard");
+        const data = res.data;
+        localStorage.setItem("token", data?.token);
+        localStorage.setItem('user', JSON.stringify(data?.user));
+        setUser(data?.user);
+
+        if (data?.user.companies?.length) {
+            setCompanies(data?.user.companies);
+            setCurrentCompanyId(data?.user.company_id); // default company from login
+        }
+        
+        setTimeout(() => {
+            navigate(data?.redirect_url || "/login");
+        }, 1000);
     } catch (err: any) {
       const message =
         err.response?.data?.detail || err.message || "Failed to register company";
