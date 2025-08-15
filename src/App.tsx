@@ -15,6 +15,7 @@ import OrderPage from "./pages/User/OrderPage";
 import RegisterCompany from "./pages/User/RegisterCompany";
 import InvitationPage from "./pages/User/InvitationPage";
 import AcceptInvite from "./pages/User/AcceptInvite";
+import AskAcceptInvitation from "./pages/User/AskAcceptInvitation";
 import { UserProvider } from "./context/UserContext";
 import { NotificationProvider } from "./context/NotificationContext";
 import { CompanyProvider } from "./context/CompanyContext";
@@ -149,6 +150,13 @@ function App() {
                   path="/accept-invite"
                   element={
                     <AcceptInvite />
+                  }
+                />
+
+                <Route
+                  path="/ask-accept-invitation"
+                  element={
+                    <AskAcceptInvitation />
                   }
                 />
 

@@ -30,7 +30,7 @@ const AcceptInvitePage: React.FC = () => {
     const fetchInvitation = async () => {
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_API_URL}/invitations/${token}`
+          `${import.meta.env.VITE_API_URL}/invitations/invitation-status/${token}`
         );
         setInvitation(res.data);
       } catch (err: any) {
@@ -48,7 +48,7 @@ const AcceptInvitePage: React.FC = () => {
     setAccepting(true);
     try {
         const res = await axios.post(
-            `${import.meta.env.VITE_API_URL}/invitations/accept`,
+            `${import.meta.env.VITE_API_URL}/invitations/accept-invitation-token`,
             { token: token },
             {
                 headers: {
