@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Layout from "../../layouts/Layout";
 import { usePageTitle } from "../../context/PageTitleContext";
+import { useCompany } from "../../context/CompanyContext";
 
 type Role = "agent" | "store_owner" | "readonly";
 
@@ -13,23 +14,28 @@ const InvitationPage: React.FC = () => {
     const [error, setError] = useState<string>("");
     const navigate = useNavigate();
     const { setTitle } = usePageTitle();
-    
+    const { currentCompanyId } = useCompany();
+
     useEffect(() => {
         setTitle("");
     }, [setTitle]);
 
     const sendInvite = async () => {
         if (!email) {
-        setError("Email is required");
-        return;
+            setError("Email is required");
+            return;
         }
         setError("");
         setLoading(true);
 
         try {
         await axios.post(
-            `${import.meta.env.VITE_API_URL}/api/v1/invitations/send`,
-            { email, role },
+            `${import.meta.env.VITE_API_URL}/invitations/send`,
+            { 
+                email, 
+                company_id: currentCompanyId,
+                role 
+            },
             {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("token") ?? ""}`,
@@ -37,7 +43,7 @@ const InvitationPage: React.FC = () => {
             }
         );
         alert("Invitation sent!");
-        navigate("/members");
+        navigate("/settings");
         } catch (err) {
         console.error(err);
         setError("Failed to send invite. Please try again.");
@@ -49,11 +55,12 @@ const InvitationPage: React.FC = () => {
     return (
         <Layout>
             <div className="max-w-md ml-30 mt-20">
-                {error && <div className="text-red-600 mb-4">{error}</div>}
+                
                 <h2 className="text-xl font-semibold mb-4">Invite a Member</h2>
                 <label className="block mb-2 font-medium" htmlFor="email">
                     Email
                 </label>
+                {error && <div className="text-red-600 mb-4">{error}</div>}
                 <input
                     id="email"
                     type="email"
