@@ -7,7 +7,7 @@ import axios from "axios";
 type Role = "company_owner" | "store_owner" | "agent" | "readonly";
 
 interface Member {
-  membership_id: string, 
+  membership_id: string;
   email: string;
   role: Role;
 }
@@ -18,6 +18,8 @@ export default function TeamMembers() {
   const navigate = useNavigate();
 
   const [members, setMembers] = useState<Member[]>([]);
+  const [originalMembers, setOriginalMembers] = useState<Member[]>([]);
+  const [hasChanges, setHasChanges] = useState(false);
 
   useEffect(() => {
     if (!currentCompanyId) return;
@@ -25,12 +27,15 @@ export default function TeamMembers() {
     const fetchMembers = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL || ""}/company/${currentCompanyId}/members`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        });
+          `${import.meta.env.VITE_API_URL || ""}/company/${currentCompanyId}/members`,
+          {
+            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          }
+        );
         const data = response.data;
         if (data) {
           setMembers(data || []);
+          setOriginalMembers(data || []);
         }
       } catch (error) {
         console.error("Error fetching members:", error);
@@ -41,38 +46,78 @@ export default function TeamMembers() {
     fetchMembers();
   }, [currentCompanyId]);
 
-  const handleRoleChange = async (index: number, newRole: Role) => {
-    // Create a deep copy to avoid mutating state directly
+  const handleRoleChange = (index: number, newRole: Role) => {
     const updated = members.map((m, i) =>
       i === index ? { ...m, role: newRole } : m
     );
-
-    // Optimistically update UI
     setMembers(updated);
 
-    try {
-      await axios.post(
-        `${import.meta.env.VITE_API_URL}/membership/update`,
-        {
-          membership_id: updated[index].membership_id,
-          role: newRole,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-    } catch (error) {
-      console.error("Failed to update role:", error);
+    // Detect if changes exist
+    const changed = updated.some(
+      (m, i) => m.role !== originalMembers[i]?.role
+    );
+    setHasChanges(changed);
+  };
 
-      // Revert UI if request fails
-      setMembers(members);
+  const handleSaveChanges = async () => {
+    try {
+      const changedMembers = members.filter(
+        (m, i) => m.role !== originalMembers[i]?.role
+      );
+
+      // Update only changed members
+      await Promise.all(
+        changedMembers.map((member) =>
+          axios.post(
+            `${import.meta.env.VITE_API_URL}/membership/update`,
+            {
+              membership_id: member.membership_id,
+              role: member.role,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }
+          )
+        )
+      );
+
+      setOriginalMembers(members);
+      setHasChanges(false);
+      notify("success", "Changes saved successfully");
+    } catch (error) {
+      console.error("Failed to save changes:", error);
+      notify("error", "Failed to save changes");
     }
+  };
+
+  const handleCancelChanges = () => {
+    setMembers(originalMembers);
+    setHasChanges(false);
   };
 
   const handleAddMember = () => {
     navigate("/invite");
+  };
+
+  const handleDeleteMember = async (membership_id: string) => {
+    try {
+      await axios.delete(
+        `${import.meta.env.VITE_API_URL}/membership/${membership_id}`,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
+      setMembers(members.filter((m) => m.membership_id !== membership_id));
+      setOriginalMembers(
+        originalMembers.filter((m) => m.membership_id !== membership_id)
+      );
+      notify("success", "Member deleted");
+    } catch (error) {
+      console.error("Failed to delete member:", error);
+      notify("error", "Failed to delete member");
+    }
   };
 
   return (
@@ -81,8 +126,8 @@ export default function TeamMembers() {
         <div>
           <h3 className="text-xl font-semibold text-gray-800">Team Members</h3>
           <p className="text-sm text-gray-500">
-            Add team members to collaborate in your workspace. Optionally specify
-            member roles to enhance security.
+            Add team members to collaborate in your workspace. Optionally
+            specify member roles to enhance security.
           </p>
         </div>
         <button
@@ -99,16 +144,19 @@ export default function TeamMembers() {
             <tr className="bg-gray-100 text-left">
               <th className="px-4 py-2 border-b border-gray-300">Member Email</th>
               <th className="px-4 py-2 border-b border-gray-300">Role</th>
+              <th className="px-4 py-2 border-b border-gray-300">Actions</th>
             </tr>
           </thead>
           <tbody>
             {members.map((member, index) => (
-              <tr key={index} className="border-b border-gray-200">
+              <tr key={member.membership_id} className="border-b border-gray-200">
                 <td className="px-4 py-2">{member.email}</td>
                 <td className="px-4 py-2">
                   <select
                     value={member.role}
-                    onChange={(e) => handleRoleChange(index, e.target.value as Role)}
+                    onChange={(e) =>
+                      handleRoleChange(index, e.target.value as Role)
+                    }
                     className="border border-gray-300 px-2 py-1"
                   >
                     <option value="company_owner">Owner</option>
@@ -117,11 +165,37 @@ export default function TeamMembers() {
                     <option value="readonly">Read-only</option>
                   </select>
                 </td>
+                <td className="px-4 py-2">
+                  <button
+                    onClick={() => handleDeleteMember(member.membership_id)}
+                    className="px-3 py-1 bg-red-500 text-white text-sm hover:bg-red-600"
+                  >
+                    Delete
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      {hasChanges && (
+        <div className="flex justify-end gap-3 mt-4">
+          <button
+            onClick={handleSaveChanges}
+            className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700"
+          >
+            Save Changes
+          </button>
+
+          <button
+            onClick={handleCancelChanges}
+            className="px-4 py-2 bg-gray-300 text-gray-800 hover:bg-gray-400"
+          >
+            Cancel
+          </button>
+        </div>
+      )}
     </section>
   );
 }
