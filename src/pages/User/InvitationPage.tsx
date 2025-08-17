@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Layout from "../../layouts/Layout";
 import { usePageTitle } from "../../context/PageTitleContext";
 import { useCompany } from "../../context/CompanyContext";
+import { useNotification } from "../../context/NotificationContext"; 
 
 type Role = "agent" | "store_owner" | "readonly";
 
@@ -15,6 +16,7 @@ const InvitationPage: React.FC = () => {
   const navigate = useNavigate();
   const { setTitle } = usePageTitle();
   const { currentCompanyId } = useCompany();
+  const { notify } = useNotification();
 
   useEffect(() => {
     setTitle("");
@@ -42,11 +44,11 @@ const InvitationPage: React.FC = () => {
           },
         }
       );
-      alert("Invitation sent!");
+      notify("success", "Invitation sent!");
       navigate("/settings");
     } catch (err) {
       console.error(err);
-      setError("Failed to send invite. Please try again.");
+      notify("error", "Failed to send invite. Please try again.");
     } finally {
       setLoading(false);
     }

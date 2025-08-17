@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../context/UserContext";
 import { useCompany } from "../../context/CompanyContext";
+import { useNotification } from "../../context/NotificationContext"; 
 
 interface InvitationInfo {
 	company_name: string;
@@ -17,6 +18,7 @@ export default function AskAcceptInvitation() {
 	const navigate = useNavigate();
 	const { setUser } = useUser();
 	const { setCompanies, setCurrentCompanyId } = useCompany();
+	const { notify } = useNotification();
 
 	useEffect(() => {
 		async function fetchInvitation() {
@@ -64,7 +66,7 @@ export default function AskAcceptInvitation() {
 				navigate(data?.redirect_url || "/login");
 			}, 1000);
 		} catch (err: any) {
-			alert(err.response?.data?.detail || "Failed to accept invitation.");
+			notify("error", err.response?.data?.detail || "Failed to accept invitation.");
 		}
 	};
 
@@ -79,7 +81,7 @@ export default function AskAcceptInvitation() {
 			);
 			navigate("/register-company");
 		} catch (err: any) {
-			alert(err.response?.data?.detail || "Failed to cancel invitation.");
+			notify("error", err.response?.data?.detail || "Failed to cancel invitation.");
 		}
 	};
 

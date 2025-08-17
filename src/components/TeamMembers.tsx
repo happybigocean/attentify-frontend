@@ -29,7 +29,6 @@ export default function TeamMembers() {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         const data = response.data;
-        console.log("Fetched members:", data);
         if (data) {
           setMembers(data || []);
         }
