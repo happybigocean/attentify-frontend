@@ -47,10 +47,10 @@ export default function Login() {
           redirectPath = "/dashboard";
           break;
         case "agent":
-          redirectPath = "/agent";
+          redirectPath = "/dashboard";
           break;
         case "readonly":
-          redirectPath = "/readonly";
+          redirectPath = "/dashboard";
           break;
         default:
           redirectPath = "/dashboard";
