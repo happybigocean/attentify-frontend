@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
+import { useNotification } from "../../context/NotificationContext"; 
 import axios from "axios";
 
 interface InvitationDetails {
@@ -19,6 +20,7 @@ const AcceptInvitePage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
   const navigate = useNavigate();
+  const { notify } = useNotification();
 
   useEffect(() => {
     if (!token) {
