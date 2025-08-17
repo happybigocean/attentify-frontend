@@ -171,8 +171,8 @@ const MessageDetailPage = () => {
 
                 {message.channel === "email" && (
                   <EmailReplySection
-                  threadId={threadId}
-                  replyFromParent={reply}
+                    threadId={threadId}
+                    replyFromParent={reply}
                   />
                 )}
 
