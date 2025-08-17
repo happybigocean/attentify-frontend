@@ -149,8 +149,8 @@ export default function MessagePage() {
     viewMode === "archived"
       ? "Archived"
       : viewMode === "trashed"
-      ? "Trash"
-      : "Inbox";
+        ? "Trash"
+        : "Inbox";
 
   return (
     <Layout>
@@ -172,11 +172,10 @@ export default function MessagePage() {
               <button
                 key={mode}
                 onClick={() => setViewMode(mode)}
-                className={`flex items-center gap-2 text-base ${
-                  viewMode === mode
+                className={`flex items-center gap-2 text-base ${viewMode === mode
                     ? "text-blue-600 font-semibold"
                     : "text-gray-500 hover:text-gray-700"
-                }`}
+                  }`}
                 type="button"
               >
                 {icon} {mode.charAt(0).toUpperCase() + mode.slice(1)}
@@ -198,9 +197,8 @@ export default function MessagePage() {
               aria-label="Select all messages"
             />
             <ArrowPathIcon
-              className={`h-6 w-6 cursor-pointer hover:text-blue-600 ${
-                loading ? "animate-spin" : ""
-              }`}
+              className={`h-6 w-6 cursor-pointer hover:text-blue-600 ${loading ? "animate-spin" : ""
+                }`}
               aria-hidden="true"
               onClick={refreshMessages}
             />
@@ -248,11 +246,10 @@ export default function MessagePage() {
                     </td>
                     <td className="px-6 py-4 text-sm text-right">
                       <span
-                        className={`px-3 py-1 text-xs font-semibold ${
-                          msg.status === "solved"
+                        className={`px-3 py-1 text-xs font-semibold ${msg.status === "solved"
                             ? "bg-green-100 text-green-700"
                             : "bg-yellow-100 text-yellow-700"
-                        }`}
+                          }`}
                       >
                         {msg.status}
                       </span>

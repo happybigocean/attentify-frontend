@@ -47,17 +47,17 @@ const AcceptInvitePage: React.FC = () => {
     if (!token) return;
     setAccepting(true);
     try {
-        const res = await axios.post(
-            `${import.meta.env.VITE_API_URL}/invitations/accept-invitation-token`,
-            { token: token },
-            {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                },
-            }
-        );
-        setSuccess(true);
-        setTimeout(() => navigate(res.data.redirect_url), 1500);
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/invitations/accept-invitation-token`,
+        { token: token },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      setSuccess(true);
+      setTimeout(() => navigate(res.data.redirect_url), 1500);
     } catch (err: any) {
       setError(err.response?.data?.detail || "Failed to accept invitation.");
     } finally {
@@ -82,11 +82,10 @@ const AcceptInvitePage: React.FC = () => {
           <button
             onClick={handleAccept}
             disabled={accepting || success}
-            className={`mt-6 w-full py-2 px-4 rounded ${
-              accepting || success
+            className={`mt-6 w-full py-2 px-4 rounded ${accepting || success
                 ? "bg-gray-400 cursor-not-allowed"
                 : "bg-blue-600 hover:bg-blue-700 text-white"
-            }`}
+              }`}
           >
             {accepting ? "Accepting..." : success ? "Accepted!" : "Accept Invitation"}
           </button>
