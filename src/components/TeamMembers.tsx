@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useCompany } from "../context/CompanyContext";
 import { useNotification } from "../context/NotificationContext";
 import axios from "axios";
+import ConfirmDialog from "./ConfirmDialog";
 
 type Role = "company_owner" | "store_owner" | "agent" | "readonly";
 
@@ -20,6 +21,8 @@ export default function TeamMembers() {
   const [members, setMembers] = useState<Member[]>([]);
   const [originalMembers, setOriginalMembers] = useState<Member[]>([]);
   const [hasChanges, setHasChanges] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedMember, setSelectedMember] = useState<Member | null>(null);
 
   useEffect(() => {
     if (!currentCompanyId) return;
@@ -101,6 +104,11 @@ export default function TeamMembers() {
     navigate("/invite");
   };
 
+  const onDelete = (membership_id: string) => {
+    setSelectedMember(members.find((m) => m.membership_id === membership_id) || null);
+    setIsOpen(true);
+  };
+
   const handleDeleteMember = async (membership_id: string) => {
     try {
       await axios.delete(
@@ -167,7 +175,7 @@ export default function TeamMembers() {
                 </td>
                 <td className="px-4 py-2">
                   <button
-                    onClick={() => handleDeleteMember(member.membership_id)}
+                    onClick={() => onDelete(member.membership_id)}
                     className="px-3 py-1 bg-red-500 text-white text-sm hover:bg-red-600"
                   >
                     Delete
@@ -196,6 +204,19 @@ export default function TeamMembers() {
           </button>
         </div>
       )}
+
+      <ConfirmDialog
+        isOpen={isOpen}
+        title="Delete Member"
+        message="Are you sure you want to delete this member? This action cannot be undone."
+        onConfirm={() => {
+          if (selectedMember) {
+            handleDeleteMember(selectedMember.membership_id);
+          }
+          setIsOpen(false);
+        }}
+        onCancel={() => setIsOpen(false)}
+      />
     </section>
   );
 }
