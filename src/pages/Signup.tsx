@@ -4,6 +4,15 @@ import { register } from "../services/auth";
 import { useUser } from "../context/UserContext";
 import { useCompany } from "../context/CompanyContext";
 
+// helper to verify token
+async function verifyInvitationToken(token: string) {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/invitations/invitation-status/${token}`);
+  if (!res.ok) {
+    throw new Error("Invalid or expired invitation token");
+  }
+  return res.json();
+}
+
 export default function Signup() {
   const navigate = useNavigate();
   const { setUser } = useUser();
@@ -19,6 +28,21 @@ export default function Signup() {
 
   const [searchParams] = useSearchParams();
   const invitation_token = searchParams.get("token");
+
+  // fetch email from backend if invitation token exists
+  useEffect(() => {
+    const fetchEmail = async () => {
+      if (invitation_token) {
+        try {
+          const data = await verifyInvitationToken(invitation_token);
+          setRegisterEmail(data.email);
+        } catch (err: any) {
+          setError(err.message || "Failed to verify invitation token");
+        }
+      }
+    };
+    fetchEmail();
+  }, [invitation_token]);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -103,9 +127,14 @@ export default function Signup() {
             <label className="text-sm text-gray-700 mb-1">Email address</label>
             <input
               type="email"
-              className="w-full border border-gray-300  px-3 py-2 mb-4 focus:outline-none focus:ring focus:ring-indigo-200"
+              className={`w-full border px-3 py-2 mb-4 focus:outline-none focus:ring focus:ring-indigo-200
+                ${invitation_token 
+                  ? "bg-gray-100 text-gray-500 cursor-not-allowed border-gray-300" 
+                  : "bg-white text-gray-700 border-gray-300"
+                }`}
               placeholder="you@example.com"
               value={registerEmail}
+              disabled={!!invitation_token} // greyed out and disabled if token exists
               onChange={(e) => setRegisterEmail(e.target.value)}
               required
             />
