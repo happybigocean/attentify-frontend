@@ -226,12 +226,12 @@ const UserManagement: React.FC = () => {
             </thead>
             <tbody>
               {users.map((u) => (
-                <tr key={u._id} className="border-t">
+                <tr key={u._id} className="border-b border-gray-300 hover:bg-gray-50">
                   {editingUserId === u._id ? (
                     <>
                       <td className="px-4 py-2">
                         <input
-                          className="w-full px-2 py-1 border  focus:outline-none focus:ring"
+                          className="w-full px-2 py-1 border focus:outline-none focus:ring"
                           value={editForm?.email || ""}
                           onChange={(e) => setEditForm({ ...editForm!, email: e.target.value })}
                         />
