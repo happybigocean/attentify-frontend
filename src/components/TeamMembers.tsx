@@ -8,9 +8,10 @@ import ConfirmDialog from "./ConfirmDialog";
 type Role = "company_owner" | "store_owner" | "agent" | "readonly";
 
 interface Member {
-  membership_id: string;
+  id: string;
   email: string;
   role: Role;
+  status: "active" | "pending";
 }
 
 export default function TeamMembers() {
@@ -74,7 +75,7 @@ export default function TeamMembers() {
           axios.post(
             `${import.meta.env.VITE_API_URL}/membership/update`,
             {
-              membership_id: member.membership_id,
+              id: member.id,
               role: member.role,
             },
             {
@@ -104,27 +105,48 @@ export default function TeamMembers() {
     navigate("/invite");
   };
 
-  const onDelete = (membership_id: string) => {
-    setSelectedMember(members.find((m) => m.membership_id === membership_id) || null);
+  const onDelete = (id: string) => {
+    setSelectedMember(members.find((m) => m.id === id) || null);
     setIsOpen(true);
   };
 
-  const handleDeleteMember = async (membership_id: string) => {
+  const handleDeleteMember = async (id: string) => {
+    console.log(id);
     try {
       await axios.delete(
-        `${import.meta.env.VITE_API_URL}/membership/${membership_id}`,
+        `${import.meta.env.VITE_API_URL}/company/delete-member`, // make sure your backend route supports this
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          data: { 
+            id,
+            status: members.find((m) => m.id === id)?.status || "active" 
+          }, // pass email in the request body
         }
       );
-      setMembers(members.filter((m) => m.membership_id !== membership_id));
-      setOriginalMembers(
-        originalMembers.filter((m) => m.membership_id !== membership_id)
-      );
+
+      setMembers(members.filter((m) => m.id !== id));
+      setOriginalMembers(originalMembers.filter((m) => m.id !== id));
       notify("success", "Member deleted");
     } catch (error) {
       console.error("Failed to delete member:", error);
       notify("error", "Failed to delete member");
+    }
+  };
+
+
+  const renderStatusTag = (status: "active" | "pending") => {
+    if (status === "pending") {
+      return (
+        <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded-full">
+          Pending
+        </span>
+      );
+    } else if (status === "active") {
+      return (
+        <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
+          Active
+        </span>
+      );
     }
   };
 
@@ -152,12 +174,13 @@ export default function TeamMembers() {
             <tr className="bg-gray-100 text-left">
               <th className="px-4 py-2 border-b border-gray-300">Member Email</th>
               <th className="px-4 py-2 border-b border-gray-300">Role</th>
+              <th className="px-4 py-2 border-b border-gray-300">Status</th>
               <th className="px-4 py-2 border-b border-gray-300">Actions</th>
             </tr>
           </thead>
           <tbody>
             {members.map((member, index) => (
-              <tr key={member.membership_id} className="border-b border-gray-200">
+              <tr key={member.id} className="border-b border-gray-200">
                 <td className="px-4 py-2">{member.email}</td>
                 <td className="px-4 py-2">
                   <select
@@ -173,9 +196,10 @@ export default function TeamMembers() {
                     <option value="readonly">Read-only</option>
                   </select>
                 </td>
+                <td className="px-4 py-2">{renderStatusTag(member.status)}</td>
                 <td className="px-4 py-2">
                   <button
-                    onClick={() => onDelete(member.membership_id)}
+                    onClick={() => onDelete(member.id)}
                     className="px-3 py-1 bg-red-500 text-white text-sm hover:bg-red-600"
                   >
                     Delete
@@ -211,7 +235,7 @@ export default function TeamMembers() {
         message="Are you sure you want to delete this member? This action cannot be undone."
         onConfirm={() => {
           if (selectedMember) {
-            handleDeleteMember(selectedMember.membership_id);
+            handleDeleteMember(selectedMember.id);
           }
           setIsOpen(false);
         }}
