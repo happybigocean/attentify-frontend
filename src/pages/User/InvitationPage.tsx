@@ -31,7 +31,7 @@ const InvitationPage: React.FC = () => {
     setLoading(true);
 
     try {
-      await axios.post(
+      const res = await axios.post(
         `${import.meta.env.VITE_API_URL}/invitations/send`,
         {
           email,
@@ -44,7 +44,7 @@ const InvitationPage: React.FC = () => {
           },
         }
       );
-      notify("success", "Invitation sent!");
+      notify("success", res.data.message || "Invitation sent successfully");
       navigate("/settings");
     } catch (err) {
       console.error(err);
