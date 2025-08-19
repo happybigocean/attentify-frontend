@@ -25,27 +25,27 @@ export default function TeamMembers() {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
 
+  const fetchMembers = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL || ""}/company/${currentCompanyId}/members`,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
+      const data = response.data;
+      if (data) {
+        setMembers(data || []);
+        setOriginalMembers(data || []);
+      }
+    } catch (error) {
+      console.error("Error fetching members:", error);
+      notify("error", "Error fetching members");
+    }
+  };
+
   useEffect(() => {
     if (!currentCompanyId) return;
-
-    const fetchMembers = async () => {
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_API_URL || ""}/company/${currentCompanyId}/members`,
-          {
-            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-          }
-        );
-        const data = response.data;
-        if (data) {
-          setMembers(data || []);
-          setOriginalMembers(data || []);
-        }
-      } catch (error) {
-        console.error("Error fetching members:", error);
-        notify("error", "Error fetching members");
-      }
-    };
 
     fetchMembers();
   }, [currentCompanyId]);
@@ -111,7 +111,6 @@ export default function TeamMembers() {
   };
 
   const handleDeleteMember = async (id: string) => {
-    console.log(id);
     try {
       await axios.delete(
         `${import.meta.env.VITE_API_URL}/company/delete-member`, // make sure your backend route supports this
@@ -120,13 +119,12 @@ export default function TeamMembers() {
           data: { 
             id,
             status: members.find((m) => m.id === id)?.status || "active" 
-          }, // pass email in the request body
+          }, 
         }
       );
 
-      setMembers(members.filter((m) => m.id !== id));
-      setOriginalMembers(originalMembers.filter((m) => m.id !== id));
       notify("success", "Member deleted");
+      fetchMembers();
     } catch (error) {
       console.error("Failed to delete member:", error);
       notify("error", "Failed to delete member");
