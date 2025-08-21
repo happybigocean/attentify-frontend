@@ -26,7 +26,7 @@ interface ChatEntry {
 
 interface Message {
   _id: string;
-  client_id: string;
+  client: string;
   title?: string;
   channel: string;
   status: string;
@@ -53,13 +53,11 @@ interface Member {
 
 const statusList = [
   "Open",
-  "Assigned",
-  "In Progress",
   "Pending",
   "Resolved",
   "Escalated",
   "Awaiting Approval",
-  "Canceled",
+  "Cancelled",
 ];
 
 export default function MessagePage() {
@@ -114,7 +112,7 @@ export default function MessagePage() {
         }
       );
       setMessages(response.data);
-      //setTimeout(refreshMessages, 500);
+      setTimeout(refreshMessages, 500);
       // initialize assignedMap if messages contain assigned_to
       const assignedObj: Record<string, Member | null> = {};
       response.data.forEach(msg => {
@@ -245,15 +243,30 @@ export default function MessagePage() {
     setAssignMenuId(null);
   };
 
-  const handleStatusSelect = (status: string, msg: Message) => {
-    // In real app, call API here to change status
+  const handleStatusSelect = async (status: string, msg: Message) => {
+
+    const prevMessages = messages;
     setMessages((prev) =>
       prev.map((m) =>
         m._id === msg._id ? { ...m, status } : m
       )
     );
-    notify("success", `Status of "${msg.title ?? msg._id}" changed to ${status}`);
     setStatusMenuId(null);
+
+    try {
+      await axios.patch(
+        `${import.meta.env.VITE_API_URL}/message/${msg._id}`,
+        { status },
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
+      notify("success", `Status of "${msg.title ?? msg._id}" changed to ${status}`);
+    } catch (error) {
+      // Revert UI on error
+      setMessages(prevMessages);
+      notify("error", "Failed to update status. Please try again.");
+    }
   };
 
   const filteredMembers = members.filter(
@@ -348,7 +361,7 @@ export default function MessagePage() {
                     aria-label="Select all messages"
                   />
                 </th>
-                <th className="px-6 py-3 w-2/10 text-left">Client ID</th>
+                <th className="px-6 py-3 w-2/10 text-left">Client</th>
                 <th className="px-6 py-3 w-4/10 text-left">Title</th>
                 <th className="px-6 py-3 w-1/10 text-left">Assigned</th>
                 <th className="px-6 py-3 w-1/10 text-left">Status</th>
@@ -380,7 +393,7 @@ export default function MessagePage() {
                       />
                     </td>
                     <td className="px-6 py-4 w-2/10 font-medium text-gray-700">
-                      {msg.client_id}
+                      {msg.client}
                     </td>
                     <td className="px-6 py-4 w-4/10 text-blue-700 hover:underline">
                       <Link to={`/message/${msg._id}`}>
