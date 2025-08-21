@@ -334,14 +334,27 @@ export default function MessagePage() {
 
         <div className="bg-white border-x border-b border-gray-300 overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200 text-lg">
-            <thead>
+            <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 w-14"></th>
-                <th className="px-6 py-3 text-left">Client</th>
-                <th className="px-6 py-3 text-left">Title</th>
-                <th className="px-6 py-3 text-left">Assigned</th>
-                <th className="px-6 py-3 text-left">Status</th>
-                <th className="px-6 py-3 text-right w-1/6">Last Updated</th>
+                <th className="px-6 py-3 w-14">
+                  <input
+                    type="checkbox"
+                    checked={
+                      selected.length === filteredMessages.length &&
+                      filteredMessages.length > 0
+                    }
+                    onChange={toggleSelectAll}
+                    className="h-5 w-5 text-blue-600 border-gray-300 cursor-pointer"
+                    aria-label="Select all messages"
+                  />
+                </th>
+                <th className="px-6 py-3 w-2/10 text-left">Client ID</th>
+                <th className="px-6 py-3 w-4/10 text-left">Title</th>
+                <th className="px-6 py-3 w-1/10 text-left">Assigned</th>
+                <th className="px-6 py-3 w-1/10 text-left">Status</th>
+                <th className="px-6 py-3 w-2/10 text-left">
+                  Last Updated
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -366,16 +379,16 @@ export default function MessagePage() {
                         aria-label={`Select message ${msg.title ?? msg._id}`}
                       />
                     </td>
-                    <td className="px-6 py-4 font-medium text-gray-700 w-1/4">
+                    <td className="px-6 py-4 w-2/10 font-medium text-gray-700">
                       {msg.client_id}
                     </td>
-                    <td className="px-6 py-4 w-2/4 text-blue-700 hover:underline">
+                    <td className="px-6 py-4 w-4/10 text-blue-700 hover:underline">
                       <Link to={`/message/${msg._id}`}>
                         {msg.title ?? "(no subject)"}
                       </Link>
                     </td>
                     {/* Assigned */}
-                    <td className="px-6 py-4 w-32">
+                    <td className="px-6 py-4 w-1/10">
                       <button
                         className="flex items-center gap-2 px-2 py-1 bg-gray-100 hover:bg-blue-50 rounded cursor-pointer"
                         onClick={() => handleAssignMenuOpen(msg._id)}
@@ -439,7 +452,7 @@ export default function MessagePage() {
                       )}
                     </td>
                     {/* Status */}
-                    <td className="px-6 py-4 w-36">
+                    <td className="px-6 py-4 w-1/10">
                       <button
                         className={`px-3 py-1 text-xs font-semibold rounded ${msg.status === "Resolved"
                           ? "bg-green-100 text-green-700"
@@ -480,7 +493,7 @@ export default function MessagePage() {
                         </div>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 text-right w-1/6">
+                    <td className="px-6 py-4 w-2/10 text-sm text-gray-500 text-left">
                       {new Date(msg.last_updated).toLocaleDateString()}
                     </td>
                   </tr>
