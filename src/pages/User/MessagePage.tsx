@@ -85,7 +85,7 @@ export default function MessagePage() {
 
     const fetchMembers = async () => {
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL || ""}/company/${currentCompanyId}/members`,
+        `${import.meta.env.VITE_API_URL || ""}/company/${currentCompanyId}/active_members`,
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
@@ -112,7 +112,7 @@ export default function MessagePage() {
         }
       );
       setMessages(response.data);
-      setTimeout(refreshMessages, 500);
+      //setTimeout(refreshMessages, 500);
       // initialize assignedMap if messages contain assigned_to
       const assignedObj: Record<string, Member | null> = {};
       response.data.forEach(msg => {
@@ -193,8 +193,8 @@ export default function MessagePage() {
 
   const filteredMessages = messages
     .filter((msg) => {
-      if (viewMode === "inbox") return !msg.archived && !msg.trashed;
-      if (viewMode === "archived") return msg.archived;
+      if (viewMode === "inbox") return msg.status !== "Resolved" && msg.status !== "Cancelled";
+      if (viewMode === "archived") return msg.status === "Resolved" || msg.status === "Cancelled";
       if (viewMode === "trashed") return msg.trashed;
       return false;
     })
@@ -233,38 +233,41 @@ export default function MessagePage() {
     setAssignMenuId(null);
   };
 
-  const handleUserSelect = (user: Member, msg: Message) => {
-    // In real app, call API here to assign
-    setAssignedMap((prev) => ({
-      ...prev,
-      [msg._id]: user,
-    }));
-    notify("success", `Assigned "${msg.title ?? msg._id}" to ${user.name}`);
+  const handleUserSelect = async (member: Member, msg: Message) => {
     setAssignMenuId(null);
+    try {
+      await axios.patch(
+        `${import.meta.env.VITE_API_URL}/message/${msg._id}`,
+        { 
+          field: "assigned_member_id",
+          value: member.id 
+        },
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
+      fetchMessages();
+    } catch (error) {
+      notify("error", "Failed to assign. Please try again.");
+    }
   };
 
   const handleStatusSelect = async (status: string, msg: Message) => {
-
-    const prevMessages = messages;
-    setMessages((prev) =>
-      prev.map((m) =>
-        m._id === msg._id ? { ...m, status } : m
-      )
-    );
     setStatusMenuId(null);
 
     try {
       await axios.patch(
         `${import.meta.env.VITE_API_URL}/message/${msg._id}`,
-        { status },
+        { 
+          field: "status",
+          value: status 
+        },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
-      notify("success", `Status of "${msg.title ?? msg._id}" changed to ${status}`);
+      fetchMessages();
     } catch (error) {
-      // Revert UI on error
-      setMessages(prevMessages);
       notify("error", "Failed to update status. Please try again.");
     }
   };
@@ -407,10 +410,10 @@ export default function MessagePage() {
                         onClick={() => handleAssignMenuOpen(msg._id)}
                         type="button"
                       >
-                        {assignedMap[msg._id] ? (
+                        {msg.assigned_to? (
                           <>
-                            <AssignedCircle user={assignedMap[msg._id]!} />
-                            <span className="text-gray-700">{assignedMap[msg._id]!.name.split(" ")[0]}</span>
+                            <AssignedCircle user={msg.assigned_to} />
+                            <span className="text-gray-700">{msg.assigned_to!.name.split(" ")[0]}</span>
                           </>
                         ) : (
                           <span className="text-gray-400">Unassigned</span>
