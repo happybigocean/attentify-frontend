@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import type { ChangeEvent } from "react";
+import React, { useEffect, useRef, useState, ChangeEvent } from "react";
 import { Link } from "react-router-dom";
 import Layout from "../../layouts/Layout";
 import {
@@ -9,10 +8,12 @@ import {
   ArchiveBoxArrowDownIcon,
   InboxIcon,
   TrashIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useNotification } from "../../context/NotificationContext";
 import { usePageTitle } from "../../context/PageTitleContext";
+import { useCompany } from "../../context/CompanyContext";
 
 interface ChatEntry {
   sender: string;
@@ -29,7 +30,7 @@ interface Message {
   client_id: string;
   title?: string;
   channel: string;
-  status: "solved" | "unsolved";
+  status: "solved" | "unsolved" | string;
   archived: boolean;
   trashed: boolean;
   last_updated: string;
@@ -39,9 +40,26 @@ interface Message {
 type ViewMode = "inbox" | "archived" | "trashed";
 
 const modes: [ViewMode, React.ReactNode][] = [
-  ["inbox", <InboxIcon className="w-5 h-5" />],
-  ["archived", <ArchiveBoxArrowDownIcon className="w-5 h-5" />],
-  ["trashed", <TrashIcon className="w-5 h-5" />],
+  ["inbox", <InboxIcon className="w-5 h-5" key="inbox" />],
+  ["archived", <ArchiveBoxArrowDownIcon className="w-5 h-5" key="archived" />],
+  ["trashed", <TrashIcon className="w-5 h-5" key="trashed" />],
+];
+
+interface Member {
+  id: string;
+  name: string;
+  email: string;
+}
+
+const statusList = [
+  "Open",
+  "Assigned",
+  "In Progress",
+  "Pending",
+  "Resolved",
+  "Escalated",
+  "Awaiting Approval",
+  "Canceled",
 ];
 
 export default function MessagePage() {
@@ -50,8 +68,33 @@ export default function MessagePage() {
   const [viewMode, setViewMode] = useState<ViewMode>("inbox");
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [menuOpenId, setMenuOpenId] = useState<string | null>(null);
+  const [assignMenuId, setAssignMenuId] = useState<string | null>(null);
+  const [statusMenuId, setStatusMenuId] = useState<string | null>(null);
+  const [memberSearch, setMemberSearch] = useState<string>("");
+  const [members, setMembers] = useState<Member[]>([]);
+  const { currentCompanyId } = useCompany();
   const { notify } = useNotification();
   const { setTitle } = usePageTitle();
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!currentCompanyId) return;
+
+    const fetchMembers = async () => {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL || ""}/company/${currentCompanyId}/members`,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
+      const data = response.data;
+      if (data) {
+        setMembers(data || []);
+      }
+    };
+    fetchMembers();
+  }, [currentCompanyId]);
 
   useEffect(() => {
     setTitle("Messages");
@@ -67,7 +110,7 @@ export default function MessagePage() {
         }
       );
       setMessages(response.data);
-      setTimeout(refreshMessages, 500);
+      //setTimeout(refreshMessages, 500);
     } catch (error) {
       console.error("Failed to load messages:", error);
       notify("error", "Failed to load messages");
@@ -114,6 +157,30 @@ export default function MessagePage() {
     fetchMessages();
   }, []);
 
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      // close all menus if click outside
+      if (
+        !(
+          menuRef.current &&
+          menuRef.current.contains(event.target as Node)
+        )
+      ) {
+        setMenuOpenId(null);
+        setAssignMenuId(null);
+        setStatusMenuId(null);
+      }
+    }
+    if (menuOpenId || assignMenuId || statusMenuId) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [menuOpenId, assignMenuId, statusMenuId]);
+
   const filteredMessages = messages
     .filter((msg) => {
       if (viewMode === "inbox") return !msg.archived && !msg.trashed;
@@ -145,6 +212,41 @@ export default function MessagePage() {
     setSearch(e.target.value);
   };
 
+  const handleMenuOpen = (id: string) => {
+    setMenuOpenId(id === menuOpenId ? null : id);
+    setAssignMenuId(null);
+    setStatusMenuId(null);
+  };
+
+  const handleAssign = (msg: Message) => {
+    setAssignMenuId(msg._id);
+    setMenuOpenId(null);
+    setStatusMenuId(null);
+    setMemberSearch("");
+  };
+
+  const handleStatus = (msg: Message) => {
+    setStatusMenuId(msg._id);
+    setMenuOpenId(null);
+    setAssignMenuId(null);
+  };
+
+  const handleUserSelect = (user: Member, msg: Message) => {
+    notify("success", `Assigned "${msg.title ?? msg._id}" to ${user.name}`);
+    setAssignMenuId(null);
+  };
+
+  const handleStatusSelect = (status: string, msg: Message) => {
+    notify("success", `Status of "${msg.title ?? msg._id}" changed to ${status}`);
+    setStatusMenuId(null);
+  };
+
+  const filteredMembers = members.filter(
+    (member) =>
+      member.name.toLowerCase().includes(memberSearch.toLowerCase()) ||
+      member.email.toLowerCase().includes(memberSearch.toLowerCase())
+  );
+
   const viewLabel: string =
     viewMode === "archived"
       ? "Archived"
@@ -173,8 +275,8 @@ export default function MessagePage() {
                 key={mode}
                 onClick={() => setViewMode(mode)}
                 className={`flex items-center gap-2 text-base ${viewMode === mode
-                    ? "text-blue-600 font-semibold"
-                    : "text-gray-500 hover:text-gray-700"
+                  ? "text-blue-600 font-semibold"
+                  : "text-gray-500 hover:text-gray-700"
                   }`}
                 type="button"
               >
@@ -214,7 +316,7 @@ export default function MessagePage() {
             <tbody>
               {filteredMessages.length === 0 ? (
                 <tr>
-                  <td className="p-8 text-gray-400 text-center" colSpan={5}>
+                  <td className="p-8 text-gray-400 text-center" colSpan={6}>
                     No {viewLabel.toLowerCase()} emails found.
                   </td>
                 </tr>
@@ -222,7 +324,7 @@ export default function MessagePage() {
                 filteredMessages.map((msg) => (
                   <tr
                     key={msg._id}
-                    className="hover:bg-gray-50 transition-all border-t border-gray-100"
+                    className="hover:bg-gray-50 transition-all border-t border-gray-100 relative"
                   >
                     <td className="px-6 py-4 w-14">
                       <input
@@ -241,18 +343,123 @@ export default function MessagePage() {
                         {msg.title ?? "(no subject)"}
                       </Link>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 text-right w-1/6">
-                      {new Date(msg.last_updated).toLocaleDateString()}
-                    </td>
                     <td className="px-6 py-4 text-sm text-right">
                       <span
                         className={`px-3 py-1 text-xs font-semibold ${msg.status === "solved"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-yellow-100 text-yellow-700"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-yellow-100 text-yellow-700"
                           }`}
                       >
                         {msg.status}
                       </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-500 text-right w-1/6">
+                      {new Date(msg.last_updated).toLocaleDateString()}
+                    </td>
+                    <td className="px-2 py-4 text-right w-10 relative">
+                      <button
+                        type="button"
+                        className="p-1 rounded-full hover:bg-gray-200"
+                        aria-label="Actions"
+                        onClick={() => handleMenuOpen(msg._id)}
+                      >
+                        <EllipsisVerticalIcon className="h-6 w-6 text-gray-500" />
+                      </button>
+                      {/* Main Actions Menu */}
+                      {menuOpenId === msg._id && (
+                        <div
+                          ref={menuRef}
+                          className="absolute right-0 z-20 mt-2 w-32 bg-white rounded-md border border-gray-200 shadow-lg"
+                        >
+                          <button
+                            className="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
+                            onClick={() => handleAssign(msg)}
+                          >
+                            Assign
+                          </button>
+                          <button
+                            className="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
+                            onClick={() => handleStatus(msg)}
+                          >
+                            Status
+                          </button>
+                        </div>
+                      )}
+
+                      {/* Assign User Menu */}
+                      {assignMenuId === msg._id && (
+                        <div
+                          ref={menuRef}
+                          className="absolute right-0 z-30 mt-2 w-64 bg-white rounded-md border border-gray-200 shadow-lg"
+                        >
+                          <div className="flex items-center px-3 py-2 border-b border-gray-200">
+                            <MagnifyingGlassIcon className="h-4 w-4 text-gray-400 mr-2" />
+                            <input
+                              autoFocus
+                              type="text"
+                              placeholder="Search users..."
+                              value={memberSearch}
+                              onChange={e => setMemberSearch(e.target.value)}
+                              className="w-full text-sm px-1 py-1 outline-none"
+                            />
+                            <button
+                              className="ml-2 text-gray-400 hover:text-gray-600"
+                              onClick={() => setAssignMenuId(null)}
+                              aria-label="Close"
+                            >
+                              <XMarkIcon className="h-5 w-5" />
+                            </button>
+                          </div>
+                          <div className="max-h-56 overflow-y-auto">
+                            {filteredMembers.length === 0 ? (
+                              <div className="p-4 text-sm text-gray-400 text-center">
+                                No users found.
+                              </div>
+                            ) : (
+                              filteredMembers.map(member => (
+                                <button
+                                  key={member.id}
+                                  className="block w-full px-4 py-2 text-left hover:bg-blue-50"
+                                  onClick={() => handleUserSelect(member, msg)}
+                                >
+                                  <div className="font-medium text-gray-700">{member.name}</div>
+                                  <div className="text-xs text-gray-400">{member.email}</div>
+                                </button>
+                              ))
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Status Menu */}
+                      {statusMenuId === msg._id && (
+                        <div
+                          ref={menuRef}
+                          className="absolute right-0 z-30 mt-2 w-56 bg-white rounded-md border border-gray-200 shadow-lg"
+                        >
+                          <div className="flex items-center justify-between px-3 py-2 border-b border-gray-200">
+                            <span className="text-sm font-semibold text-gray-700">Change Status</span>
+                            <button
+                              className="ml-2 text-gray-400 hover:text-gray-600"
+                              onClick={() => setStatusMenuId(null)}
+                              aria-label="Close"
+                            >
+                              <XMarkIcon className="h-5 w-5" />
+                            </button>
+                          </div>
+                          <div>
+                            {statusList.map((status) => (
+                              <button
+                                key={status}
+                                className="block w-full px-4 py-2 text-left hover:bg-blue-50"
+                                onClick={() => handleStatusSelect(status, msg)}
+                              >
+                                {status}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ))
