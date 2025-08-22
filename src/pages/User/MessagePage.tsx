@@ -106,13 +106,15 @@ export default function MessagePage() {
     setLoading(true);
     try {
       const response = await axios.get<Message[]>(
-        `${import.meta.env.VITE_API_URL || ""}/message`,
+        `${import.meta.env.VITE_API_URL || ""}/message/company_messages`,
         {
+          params: { company_id: currentCompanyId },
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
+
       setMessages(response.data);
-      //setTimeout(refreshMessages, 500);
+      setTimeout(refreshMessages, 500);
       // initialize assignedMap if messages contain assigned_to
       const assignedObj: Record<string, Member | null> = {};
       response.data.forEach(msg => {
@@ -137,21 +139,22 @@ export default function MessagePage() {
         throw new Error("No auth token found");
       }
 
-      const authHeader = {
-        headers: { Authorization: `Bearer ${token}` },
-      };
-
       await axios.post(
         `${import.meta.env.VITE_API_URL || ""}/message/fetch-all`,
         {
           company_id : currentCompanyId
-        },
-        authHeader
+        }, 
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
 
       const response = await axios.get<Message[]>(
-        `${import.meta.env.VITE_API_URL || ""}/message`,
-        authHeader
+        `${import.meta.env.VITE_API_URL || ""}/message/company_messages`,
+        {
+          params: { company_id: currentCompanyId },
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
 
       setMessages(response.data);
