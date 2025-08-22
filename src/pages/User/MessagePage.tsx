@@ -26,7 +26,7 @@ interface ChatEntry {
 
 interface Message {
   _id: string;
-  client_id: string;
+  client: string;
   title?: string;
   channel: string;
   status: string;
@@ -53,13 +53,11 @@ interface Member {
 
 const statusList = [
   "Open",
-  "Assigned",
-  "In Progress",
   "Pending",
   "Resolved",
   "Escalated",
   "Awaiting Approval",
-  "Canceled",
+  "Cancelled",
 ];
 
 export default function MessagePage() {
@@ -79,15 +77,12 @@ export default function MessagePage() {
   const { setTitle } = usePageTitle();
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // For local assignment simulation
-  const [assignedMap, setAssignedMap] = useState<Record<string, Member | null>>({});
-
   useEffect(() => {
     if (!currentCompanyId) return;
 
     const fetchMembers = async () => {
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL || ""}/company/${currentCompanyId}/members`,
+        `${import.meta.env.VITE_API_URL || ""}/company/${currentCompanyId}/active_members`,
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
@@ -108,19 +103,14 @@ export default function MessagePage() {
     setLoading(true);
     try {
       const response = await axios.get<Message[]>(
-        `${import.meta.env.VITE_API_URL || ""}/message`,
+        `${import.meta.env.VITE_API_URL || ""}/message/company_messages`,
         {
+          params: { company_id: currentCompanyId },
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
+
       setMessages(response.data);
-      //setTimeout(refreshMessages, 500);
-      // initialize assignedMap if messages contain assigned_to
-      const assignedObj: Record<string, Member | null> = {};
-      response.data.forEach(msg => {
-        assignedObj[msg._id] = msg.assigned_to || null;
-      });
-      setAssignedMap(assignedObj);
     } catch (error) {
       console.error("Failed to load messages:", error);
       notify("error", "Failed to load messages");
@@ -139,28 +129,26 @@ export default function MessagePage() {
         throw new Error("No auth token found");
       }
 
-      const authHeader = {
-        headers: { Authorization: `Bearer ${token}` },
-      };
-
       await axios.post(
         `${import.meta.env.VITE_API_URL || ""}/message/fetch-all`,
-        {},
-        authHeader
+        {
+          company_id : currentCompanyId
+        }, 
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
 
       const response = await axios.get<Message[]>(
-        `${import.meta.env.VITE_API_URL || ""}/message`,
-        authHeader
+        `${import.meta.env.VITE_API_URL || ""}/message/company_messages`,
+        {
+          params: { company_id: currentCompanyId },
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
 
       setMessages(response.data);
-      // initialize assignedMap if messages contain assigned_to
-      const assignedObj: Record<string, Member | null> = {};
-      response.data.forEach(msg => {
-        assignedObj[msg._id] = msg.assigned_to || null;
-      });
-      setAssignedMap(assignedObj);
+      
     } catch (error) {
       console.error("Failed to load messages:", error);
       notify("error", "Failed to load messages");
@@ -171,6 +159,7 @@ export default function MessagePage() {
 
   useEffect(() => {
     fetchMessages();
+    setTimeout(refreshMessages, 500);
   }, []);
 
   useEffect(() => {
@@ -195,8 +184,8 @@ export default function MessagePage() {
 
   const filteredMessages = messages
     .filter((msg) => {
-      if (viewMode === "inbox") return !msg.archived && !msg.trashed;
-      if (viewMode === "archived") return msg.archived;
+      if (viewMode === "inbox") return msg.status !== "Resolved" && msg.status !== "Cancelled";
+      if (viewMode === "archived") return msg.status === "Resolved" || msg.status === "Cancelled";
       if (viewMode === "trashed") return msg.trashed;
       return false;
     })
@@ -235,25 +224,43 @@ export default function MessagePage() {
     setAssignMenuId(null);
   };
 
-  const handleUserSelect = (user: Member, msg: Message) => {
-    // In real app, call API here to assign
-    setAssignedMap((prev) => ({
-      ...prev,
-      [msg._id]: user,
-    }));
-    notify("success", `Assigned "${msg.title ?? msg._id}" to ${user.name}`);
+  const handleUserSelect = async (member: Member, msg: Message) => {
     setAssignMenuId(null);
+    try {
+      await axios.patch(
+        `${import.meta.env.VITE_API_URL}/message/${msg._id}`,
+        { 
+          field: "assigned_member_id",
+          value: member.id 
+        },
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
+      fetchMessages();
+    } catch (error) {
+      notify("error", "Failed to assign. Please try again.");
+    }
   };
 
-  const handleStatusSelect = (status: string, msg: Message) => {
-    // In real app, call API here to change status
-    setMessages((prev) =>
-      prev.map((m) =>
-        m._id === msg._id ? { ...m, status } : m
-      )
-    );
-    notify("success", `Status of "${msg.title ?? msg._id}" changed to ${status}`);
+  const handleStatusSelect = async (status: string, msg: Message) => {
     setStatusMenuId(null);
+
+    try {
+      await axios.patch(
+        `${import.meta.env.VITE_API_URL}/message/${msg._id}`,
+        { 
+          field: "status",
+          value: status 
+        },
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
+      fetchMessages();
+    } catch (error) {
+      notify("error", "Failed to update status. Please try again.");
+    }
   };
 
   const filteredMembers = members.filter(
@@ -334,14 +341,27 @@ export default function MessagePage() {
 
         <div className="bg-white border-x border-b border-gray-300 overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200 text-lg">
-            <thead>
+            <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 w-14"></th>
-                <th className="px-6 py-3 text-left">Client</th>
-                <th className="px-6 py-3 text-left">Title</th>
-                <th className="px-6 py-3 text-left">Assigned</th>
-                <th className="px-6 py-3 text-left">Status</th>
-                <th className="px-6 py-3 text-right w-1/6">Last Updated</th>
+                <th className="px-6 py-3 w-14">
+                  <input
+                    type="checkbox"
+                    checked={
+                      selected.length === filteredMessages.length &&
+                      filteredMessages.length > 0
+                    }
+                    onChange={toggleSelectAll}
+                    className="h-5 w-5 text-blue-600 border-gray-300 cursor-pointer"
+                    aria-label="Select all messages"
+                  />
+                </th>
+                <th className="px-6 py-3 w-2/10 text-left">Client</th>
+                <th className="px-6 py-3 w-4/10 text-left">Title</th>
+                <th className="px-6 py-3 w-1/10 text-left">Assigned</th>
+                <th className="px-6 py-3 w-1/10 text-left">Status</th>
+                <th className="px-6 py-3 w-2/10 text-left">
+                  Last Updated
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -366,25 +386,25 @@ export default function MessagePage() {
                         aria-label={`Select message ${msg.title ?? msg._id}`}
                       />
                     </td>
-                    <td className="px-6 py-4 font-medium text-gray-700 w-1/4">
-                      {msg.client_id}
+                    <td className="px-6 py-4 w-2/10 font-medium text-gray-700">
+                      {msg.client}
                     </td>
-                    <td className="px-6 py-4 w-2/4 text-blue-700 hover:underline">
+                    <td className="px-6 py-4 w-4/10 text-blue-700 hover:underline">
                       <Link to={`/message/${msg._id}`}>
                         {msg.title ?? "(no subject)"}
                       </Link>
                     </td>
                     {/* Assigned */}
-                    <td className="px-6 py-4 w-32">
+                    <td className="px-6 py-4 w-1/10">
                       <button
                         className="flex items-center gap-2 px-2 py-1 bg-gray-100 hover:bg-blue-50 rounded cursor-pointer"
                         onClick={() => handleAssignMenuOpen(msg._id)}
                         type="button"
                       >
-                        {assignedMap[msg._id] ? (
+                        {msg.assigned_to? (
                           <>
-                            <AssignedCircle user={assignedMap[msg._id]!} />
-                            <span className="text-gray-700">{assignedMap[msg._id]!.name.split(" ")[0]}</span>
+                            <AssignedCircle user={msg.assigned_to} />
+                            <span className="text-gray-700">{msg.assigned_to!.name.split(" ")[0]}</span>
                           </>
                         ) : (
                           <span className="text-gray-400">Unassigned</span>
@@ -439,7 +459,7 @@ export default function MessagePage() {
                       )}
                     </td>
                     {/* Status */}
-                    <td className="px-6 py-4 w-36">
+                    <td className="px-6 py-4 w-1/10">
                       <button
                         className={`px-3 py-1 text-xs font-semibold rounded ${msg.status === "Resolved"
                           ? "bg-green-100 text-green-700"
@@ -480,7 +500,7 @@ export default function MessagePage() {
                         </div>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 text-right w-1/6">
+                    <td className="px-6 py-4 w-2/10 text-sm text-gray-500 text-left">
                       {new Date(msg.last_updated).toLocaleDateString()}
                     </td>
                   </tr>
