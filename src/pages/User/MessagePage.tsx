@@ -77,9 +77,6 @@ export default function MessagePage() {
   const { setTitle } = usePageTitle();
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // For local assignment simulation
-  const [assignedMap, setAssignedMap] = useState<Record<string, Member | null>>({});
-
   useEffect(() => {
     if (!currentCompanyId) return;
 
@@ -114,13 +111,6 @@ export default function MessagePage() {
       );
 
       setMessages(response.data);
-      setTimeout(refreshMessages, 500);
-      // initialize assignedMap if messages contain assigned_to
-      const assignedObj: Record<string, Member | null> = {};
-      response.data.forEach(msg => {
-        assignedObj[msg._id] = msg.assigned_to || null;
-      });
-      setAssignedMap(assignedObj);
     } catch (error) {
       console.error("Failed to load messages:", error);
       notify("error", "Failed to load messages");
@@ -158,12 +148,7 @@ export default function MessagePage() {
       );
 
       setMessages(response.data);
-      // initialize assignedMap if messages contain assigned_to
-      const assignedObj: Record<string, Member | null> = {};
-      response.data.forEach(msg => {
-        assignedObj[msg._id] = msg.assigned_to || null;
-      });
-      setAssignedMap(assignedObj);
+      
     } catch (error) {
       console.error("Failed to load messages:", error);
       notify("error", "Failed to load messages");
@@ -174,6 +159,7 @@ export default function MessagePage() {
 
   useEffect(() => {
     fetchMessages();
+    setTimeout(refreshMessages, 500);
   }, []);
 
   useEffect(() => {
