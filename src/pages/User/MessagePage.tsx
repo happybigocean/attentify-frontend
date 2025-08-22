@@ -143,7 +143,9 @@ export default function MessagePage() {
 
       await axios.post(
         `${import.meta.env.VITE_API_URL || ""}/message/fetch-all`,
-        {},
+        {
+          company_id : currentCompanyId
+        },
         authHeader
       );
 
