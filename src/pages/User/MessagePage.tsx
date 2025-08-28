@@ -283,28 +283,7 @@ export default function MessagePage() {
           </div>
         </div>
 
-        <div className="flex items-center justify-between px-5 py-3 bg-white border border-gray-300">
-          <div className="flex items-center gap-6 ms-1">
-            <input
-              type="checkbox"
-              checked={
-                selected.length === filteredMessages.length &&
-                filteredMessages.length > 0
-              }
-              onChange={toggleSelectAll}
-              className="h-5 w-5 text-blue-600 border-gray-300 cursor-pointer"
-              aria-label="Select all messages"
-            />
-            <ArrowPathIcon
-              className={`h-6 w-6 cursor-pointer hover:text-blue-600 ${loading ? "animate-spin" : ""
-                }`}
-              aria-hidden="true"
-              onClick={refreshMessages}
-            />
-          </div>
-        </div>
-
-        <div className="bg-white border-x border-b border-gray-300 overflow-x-auto">
+        <div className="bg-white border border-gray-300 overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200 text-lg">
             <thead className="bg-gray-50">
               <tr>
