@@ -159,7 +159,6 @@ export default function MessagePage() {
 
   useEffect(() => {
     fetchMessages();
-    setTimeout(refreshMessages, 500);
   }, []);
 
   useEffect(() => {
