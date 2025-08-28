@@ -4,6 +4,7 @@ import Layout from "../../layouts/Layout";
 import { useUser } from "../../context/UserContext";
 import { useNotification } from "../../context/NotificationContext"; 
 import { usePageTitle } from "../../context/PageTitleContext";
+import ConfirmDialog from "../../components/ConfirmDialog";
 
 interface GmailAccount {
   id: string;
@@ -17,6 +18,8 @@ export default function GmailAccountPage() {
   const { user } = useUser();
   const { notify } = useNotification();
   const { setTitle } = usePageTitle();
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedAccount, setSelectedAccount] = useState<GmailAccount | null>(null);
 
   useEffect(() => {
     setTitle("Accounts/Gmail");
@@ -56,7 +59,12 @@ export default function GmailAccountPage() {
     window.location.href = oauthUrl;
   };
 
-  const handleRemove = async (id: string) => {
+  const onDelete = (id: string) => {
+    setSelectedAccount(accounts.find((a) => a.id === id) || null);
+    setIsOpen(true);
+  };
+
+  const handleDeleteAccount = async (id: string) => {
     try {
       await axios.delete(`${import.meta.env.VITE_API_URL || ""}/gmail/${id}`);
       setAccounts(prev => prev.filter(account => account.id !== id));
@@ -96,7 +104,7 @@ export default function GmailAccountPage() {
                     </p>
                   </div>
                   <button
-                    onClick={() => handleRemove(account.id)}
+                    onClick={() => onDelete(account.id)}
                     className="text-sm text-red-500 hover:underline"
                   >
                     Remove
@@ -107,6 +115,18 @@ export default function GmailAccountPage() {
           )}
         </div>
       </div>
+       <ConfirmDialog
+        isOpen={isOpen}
+        title="Delete Account"
+        message="Are you sure you want to delete this account? This action cannot be undone."
+        onConfirm={() => {
+          if (selectedAccount) {
+            handleDeleteAccount(selectedAccount.id);
+          }
+          setIsOpen(false);
+        }}
+        onCancel={() => setIsOpen(false)}
+      />
     </Layout>
   );
 }
