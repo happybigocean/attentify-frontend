@@ -86,7 +86,7 @@ export default function MessagePage() {
 
     socket.on("gmail_update", (data) => {
       console.log("📩 Gmail update:", data);
-      // Update page state here
+      fetchMessages();
     });
 
     return () => {
