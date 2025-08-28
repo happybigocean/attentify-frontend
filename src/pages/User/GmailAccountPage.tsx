@@ -29,17 +29,16 @@ export default function GmailAccountPage() {
 
   useEffect(() => {
     fetchAccounts();
-  }, [user]);
+  }, [currentCompanyId]);
 
   const fetchAccounts = async () => {
-    if (!user) {
-      console.error("User not logged in");
+    if (!currentCompanyId) {
       return;
     }
 
     setLoading(true);
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL || ""}/gmail`, {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL || ""}/gmail/company_accounts/${currentCompanyId}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       setAccounts(res.data);
