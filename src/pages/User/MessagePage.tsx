@@ -1,9 +1,8 @@
-import React, { useEffect, useRef, useState, ChangeEvent } from "react";
+import React, { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { Link } from "react-router-dom";
 import Layout from "../../layouts/Layout";
 import {
   MagnifyingGlassIcon,
-  ArrowPathIcon,
   ArchiveBoxArrowDownIcon,
   InboxIcon,
   TrashIcon,
@@ -13,6 +12,7 @@ import axios from "axios";
 import { useNotification } from "../../context/NotificationContext";
 import { usePageTitle } from "../../context/PageTitleContext";
 import { useCompany } from "../../context/CompanyContext";
+import { initSocket } from "../../services/socket";
 
 interface ChatEntry {
   sender: string;
@@ -78,6 +78,23 @@ export default function MessagePage() {
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const socket = initSocket();
+
+    socket.on("connect", () => {
+      console.log("✅ Socket connected:", socket.id);
+    });
+
+    socket.on("gmail_update", (data) => {
+      console.log("📩 Gmail update:", data);
+      fetchMessages();
+    });
+
+    return () => {
+      socket.off("gmail_update");
+    };
+  }, []);
+  
+  useEffect(() => {
     if (!currentCompanyId) return;
 
     const fetchMembers = async () => {
@@ -117,10 +134,6 @@ export default function MessagePage() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const refreshMessages = async () => {
-    fetchMessages();
   };
 
   useEffect(() => {
