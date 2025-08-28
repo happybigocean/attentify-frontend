@@ -120,41 +120,7 @@ export default function MessagePage() {
   };
 
   const refreshMessages = async () => {
-    setLoading(true);
-    try {
-      const token = localStorage.getItem("token");
-
-      if (!token) {
-        notify("error", "No authentication token found");
-        throw new Error("No auth token found");
-      }
-
-      await axios.post(
-        `${import.meta.env.VITE_API_URL || ""}/message/fetch-all`,
-        {
-          company_id : currentCompanyId
-        }, 
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      const response = await axios.get<Message[]>(
-        `${import.meta.env.VITE_API_URL || ""}/message/company_messages`,
-        {
-          params: { company_id: currentCompanyId },
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      setMessages(response.data);
-      
-    } catch (error) {
-      console.error("Failed to load messages:", error);
-      notify("error", "Failed to load messages");
-    } finally {
-      setLoading(false);
-    }
+    fetchMessages();
   };
 
   useEffect(() => {
