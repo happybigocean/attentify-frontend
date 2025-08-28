@@ -4,6 +4,8 @@ import Layout from "../../layouts/Layout";
 import { useUser } from "../../context/UserContext";
 import { useNotification } from "../../context/NotificationContext"; 
 import { usePageTitle } from "../../context/PageTitleContext";
+import { useCompany } from "../../context/CompanyContext";
+import ConfirmDialog from "../../components/ConfirmDialog";
 
 interface GmailAccount {
   id: string;
@@ -12,11 +14,14 @@ interface GmailAccount {
 };
 
 export default function GmailAccountPage() {
+  const { currentCompanyId } = useCompany();
   const [accounts, setAccounts] = useState<GmailAccount[]>([]);
   const [loading, setLoading] = useState(false);
   const { user } = useUser();
   const { notify } = useNotification();
   const { setTitle } = usePageTitle();
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedAccount, setSelectedAccount] = useState<GmailAccount | null>(null);
 
   useEffect(() => {
     setTitle("Accounts/Gmail");
@@ -24,17 +29,16 @@ export default function GmailAccountPage() {
 
   useEffect(() => {
     fetchAccounts();
-  }, [user]);
+  }, [currentCompanyId]);
 
   const fetchAccounts = async () => {
-    if (!user) {
-      console.error("User not logged in");
+    if (!currentCompanyId) {
       return;
     }
 
     setLoading(true);
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL || ""}/gmail`, {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL || ""}/gmail/company_accounts/${currentCompanyId}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       setAccounts(res.data);
@@ -52,11 +56,16 @@ export default function GmailAccountPage() {
       return;
     }
 
-    const oauthUrl = `${import.meta.env.VITE_API_URL || ""}/gmail/oauth/login?user_id=${user.id}`;
+    const oauthUrl = `${import.meta.env.VITE_API_URL || ""}/gmail/oauth/login?user_id=${user.id}&company_id=${currentCompanyId}`;
     window.location.href = oauthUrl;
   };
 
-  const handleRemove = async (id: string) => {
+  const onDelete = (id: string) => {
+    setSelectedAccount(accounts.find((a) => a.id === id) || null);
+    setIsOpen(true);
+  };
+
+  const handleDeleteAccount = async (id: string) => {
     try {
       await axios.delete(`${import.meta.env.VITE_API_URL || ""}/gmail/${id}`);
       setAccounts(prev => prev.filter(account => account.id !== id));
@@ -96,7 +105,7 @@ export default function GmailAccountPage() {
                     </p>
                   </div>
                   <button
-                    onClick={() => handleRemove(account.id)}
+                    onClick={() => onDelete(account.id)}
                     className="text-sm text-red-500 hover:underline"
                   >
                     Remove
@@ -107,6 +116,18 @@ export default function GmailAccountPage() {
           )}
         </div>
       </div>
+       <ConfirmDialog
+        isOpen={isOpen}
+        title="Delete Account"
+        message="Are you sure you want to delete this account? This action cannot be undone."
+        onConfirm={() => {
+          if (selectedAccount) {
+            handleDeleteAccount(selectedAccount.id);
+          }
+          setIsOpen(false);
+        }}
+        onCancel={() => setIsOpen(false)}
+      />
     </Layout>
   );
 }
