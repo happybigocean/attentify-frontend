@@ -4,6 +4,7 @@ import Layout from "../../layouts/Layout";
 import { useUser } from "../../context/UserContext";
 import { useNotification } from "../../context/NotificationContext"; 
 import { usePageTitle } from "../../context/PageTitleContext";
+import { useCompany } from "../../context/CompanyContext";
 import ConfirmDialog from "../../components/ConfirmDialog";
 
 interface GmailAccount {
@@ -13,6 +14,7 @@ interface GmailAccount {
 };
 
 export default function GmailAccountPage() {
+  const { currentCompanyId } = useCompany();
   const [accounts, setAccounts] = useState<GmailAccount[]>([]);
   const [loading, setLoading] = useState(false);
   const { user } = useUser();
@@ -55,7 +57,7 @@ export default function GmailAccountPage() {
       return;
     }
 
-    const oauthUrl = `${import.meta.env.VITE_API_URL || ""}/gmail/oauth/login?user_id=${user.id}`;
+    const oauthUrl = `${import.meta.env.VITE_API_URL || ""}/gmail/oauth/login?user_id=${user.id}&company_id=${currentCompanyId}`;
     window.location.href = oauthUrl;
   };
 
