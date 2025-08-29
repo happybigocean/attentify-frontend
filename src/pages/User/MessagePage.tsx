@@ -296,8 +296,8 @@ export default function MessagePage() {
           </div>
         </div>
 
-        <div className="bg-white border border-gray-300 overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200 text-lg">
+        <div className="bg-white min-h-150 border border-gray-300 overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200 text-md">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 w-14">
@@ -332,7 +332,7 @@ export default function MessagePage() {
                 filteredMessages.map((msg) => (
                   <tr
                     key={msg._id}
-                    className="hover:bg-gray-50 transition-all border-t border-gray-100 relative"
+                    className="hover:bg-gray-50 transition-all border-b border-gray-100 relative"
                   >
                     <td className="px-6 py-4 w-14">
                       <input
