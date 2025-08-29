@@ -68,14 +68,15 @@ export default function TeamMembers() {
       const changedMembers = members.filter(
         (m, i) => m.role !== originalMembers[i]?.role
       );
-
+      
+      
       // Update only changed members
       await Promise.all(
         changedMembers.map((member) =>
           axios.post(
             `${import.meta.env.VITE_API_URL}/membership/update`,
             {
-              id: member.id,
+              membership_id: member.id,
               role: member.role,
             },
             {
