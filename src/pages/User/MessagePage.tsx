@@ -12,6 +12,7 @@ import axios from "axios";
 import { useNotification } from "../../context/NotificationContext";
 import { usePageTitle } from "../../context/PageTitleContext";
 import { useCompany } from "../../context/CompanyContext";
+import { useUser } from "../../context/UserContext";
 import { initSocket } from "../../services/socket";
 
 interface ChatEntry {
@@ -75,6 +76,7 @@ export default function MessagePage() {
   const { currentCompanyId } = useCompany();
   const { notify } = useNotification();
   const { setTitle } = usePageTitle();
+  const { user } = useUser();
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -353,20 +355,30 @@ export default function MessagePage() {
                     </td>
                     {/* Assigned */}
                     <td className="px-6 py-4 w-1/10">
-                      <button
-                        className="flex items-center gap-2 px-2 py-1 bg-gray-100 hover:bg-blue-50 rounded cursor-pointer"
-                        onClick={() => handleAssignMenuOpen(msg._id)}
-                        type="button"
-                      >
-                        {msg.assigned_to? (
-                          <>
-                            <AssignedCircle user={msg.assigned_to} />
-                            <span className="text-gray-700">{msg.assigned_to!.name.split(" ")[0]}</span>
-                          </>
-                        ) : (
-                          <span className="text-gray-400">Unassigned</span>
-                        )}
-                      </button>
+                      {["company_owner", "store_owner"].includes(user?.role || "agent") ? (
+                        <button
+                          className="flex items-center gap-2 px-2 py-1 bg-gray-100 hover:bg-blue-50 rounded cursor-pointer"
+                          onClick={() => handleAssignMenuOpen(msg._id)}
+                          type="button"
+                        >
+                          {msg.assigned_to ? (
+                            <>
+                              <AssignedCircle user={msg.assigned_to} />
+                              <span className="text-gray-700">{msg.assigned_to.name.split(" ")[0]}</span>
+                            </>
+                          ) : (
+                            <span className="text-gray-400">Unassigned</span>
+                          )}
+                        </button>
+                      ) : msg.assigned_to ? (
+                        <>
+                          <AssignedCircle user={msg.assigned_to} />
+                          <span className="text-gray-700 ms-1">{msg.assigned_to.name.split(" ")[0]}</span>
+                        </>
+                      ) : (
+                        <span className="text-gray-400">Unassigned</span>
+                      )}
+                      
                       {/* Assign User Menu */}
                       {assignMenuId === msg._id && (
                         <div
@@ -417,16 +429,28 @@ export default function MessagePage() {
                     </td>
                     {/* Status */}
                     <td className="px-6 py-4 w-1/10">
-                      <button
-                        className={`px-3 py-1 text-xs font-semibold rounded ${msg.status === "Resolved"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-yellow-100 text-yellow-700"
+                      {["company_owner", "store_owner"].includes(user?.role || "agent") ? (
+                        // Clickable status button for allowed roles
+                        <button
+                          className={`px-3 py-1 text-xs font-semibold rounded ${
+                            msg.status === "Resolved" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"
                           }`}
-                        onClick={() => handleStatusMenuOpen(msg._id)}
-                        type="button"
-                      >
-                        {msg.status}
-                      </button>
+                          onClick={() => handleStatusMenuOpen(msg._id)}
+                          type="button"
+                        >
+                          {msg.status}
+                        </button>
+                      ) : (
+                        // Read-only status display for other roles
+                        <span
+                          className={`px-3 py-1 text-xs font-semibold rounded inline-block ${
+                            msg.status === "Resolved" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"
+                          }`}
+                        >
+                          {msg.status}
+                        </span>
+                      )}
+
                       {/* Status Menu */}
                       {statusMenuId === msg._id && (
                         <div
