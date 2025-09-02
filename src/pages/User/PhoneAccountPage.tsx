@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import Layout from "../../layouts/Layout";
 import { useNotification } from "../../context/NotificationContext";
 import { usePageTitle } from "../../context/PageTitleContext";
+import { useUser } from "../../context/UserContext";
+import RoleWrapper from "../../components/RoleWrapper";
 
 interface PhoneAccount {
   id: string;
@@ -18,6 +20,7 @@ export default function PhoneAccountPage() {
   const [loading, setLoading] = useState(false);
   const { notify } = useNotification();
   const { setTitle } = usePageTitle();
+  const { user } = useUser();
 
   useEffect(() => {
     setTitle("Accounts/Phone");
@@ -64,12 +67,14 @@ export default function PhoneAccountPage() {
         <div className="border border-gray-300  p-4">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-medium text-gray-700">Phone Accounts</h3>
-            <button
-              onClick={handleConnect}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2  text-sm font-medium"
-            >
-              + Connect Phone
-            </button>
+            <RoleWrapper allowedRoles={["company_owner", "store_owner"]} userRole={user?.role || "agent"}>
+              <button
+                onClick={handleConnect}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2  text-sm font-medium"
+              >
+                + Connect Phone
+              </button>
+            </RoleWrapper>
           </div>
           {loading ? (
             <p className="text-gray-500">Loading accounts...</p>
@@ -82,12 +87,14 @@ export default function PhoneAccountPage() {
                   <div>
                     <p className="text-gray-800 font-medium">{account.phone}</p>
                   </div>
-                  <button
-                    onClick={() => handleRemove(account.id)}
-                    className="text-sm text-red-500 hover:underline"
-                  >
-                    Remove
-                  </button>
+                  <RoleWrapper allowedRoles={["company_owner", "store_owner"]} userRole={user?.role || "agent"}>
+                    <button
+                      onClick={() => handleRemove(account.id)}
+                      className="text-sm text-red-500 hover:underline"
+                    >
+                      Remove
+                    </button>
+                  </RoleWrapper>
                 </li>
               ))}
             </ul>

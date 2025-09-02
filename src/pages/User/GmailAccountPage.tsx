@@ -6,6 +6,7 @@ import { useNotification } from "../../context/NotificationContext";
 import { usePageTitle } from "../../context/PageTitleContext";
 import { useCompany } from "../../context/CompanyContext";
 import ConfirmDialog from "../../components/ConfirmDialog";
+import RoleWrapper from "../../components/RoleWrapper";
 
 interface GmailAccount {
   id: string;
@@ -82,12 +83,14 @@ export default function GmailAccountPage() {
         <div className="border border-gray-300  p-4">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-medium text-gray-700">Gmail Accounts</h3>
-            <button
-              onClick={handleConnect}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2  text-sm font-medium"
-            >
-              + Connect Gmail
-            </button>
+            <RoleWrapper allowedRoles={["company_owner", "store_owner"]} userRole={user?.role || "agent"}>
+              <button
+                onClick={handleConnect}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2  text-sm font-medium"
+              >
+                + Connect Gmail
+              </button>
+            </RoleWrapper>
           </div>
 
           {loading ? (
@@ -104,12 +107,14 @@ export default function GmailAccountPage() {
                       {account.status === "connected" ? "Connected" : "Disconnected"}
                     </p>
                   </div>
-                  <button
-                    onClick={() => onDelete(account.id)}
-                    className="text-sm text-red-500 hover:underline"
-                  >
-                    Remove
-                  </button>
+                  <RoleWrapper allowedRoles={["company_owner", "store_owner"]} userRole={user?.role || "agent"}>
+                    <button
+                      onClick={() => onDelete(account.id)}
+                      className="text-sm text-red-500 hover:underline"
+                    >
+                      Remove
+                    </button>
+                  </RoleWrapper>
                 </li>
               ))}
             </ul>
