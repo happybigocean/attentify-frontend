@@ -3,10 +3,13 @@ import { PencilIcon, XMarkIcon, CheckIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useCompany } from "../context/CompanyContext";
 import { useNotification } from "../context/NotificationContext";
+import { useUser } from "../context/UserContext";
+import RoleWrapper from "../components/RoleWrapper"; 
 
 export default function GeneralSettings() {
   const { currentCompanyId } = useCompany();
   const { notify } = useNotification();
+  const { user } = useUser();
 
   // Initial states — you can replace with real fetched data or empty strings
   const [companyName, setCompanyName] = useState("");
@@ -187,17 +190,19 @@ export default function GeneralSettings() {
             disabled={!companyNameEdit}
             placeholder="Enter company name"
           />
-          <div className="flex justify-end mt-1">
-            {!companyNameEdit ? (
-              <EditButton onClick={() => setCompanyNameEdit(true)} />
-            ) : (
-              <SaveCancelButtons
-                onSave={() => saveField("companyName")}
-                onCancel={() => cancelEdit("companyName")}
-                disableSave={!companyNameDraft.trim()}
-              />
-            )}
-          </div>
+          <RoleWrapper allowedRoles={["company_owner"]} userRole={user?.role || "agent"}>
+            <div className="flex justify-end mt-1">
+              {!companyNameEdit ? (
+                <EditButton onClick={() => setCompanyNameEdit(true)} />
+              ) : (
+                <SaveCancelButtons
+                  onSave={() => saveField("companyName")}
+                  onCancel={() => cancelEdit("companyName")}
+                  disableSave={!companyNameDraft.trim()}
+                />
+              )}
+            </div>
+          </RoleWrapper>
         </div>
       </div>
 
@@ -221,17 +226,19 @@ export default function GeneralSettings() {
             disabled={!siteUrlEdit}
             placeholder="Enter site URL"
           />
-          <div className="flex justify-end mt-1">
-            {!siteUrlEdit ? (
-              <EditButton onClick={() => setSiteUrlEdit(true)} />
-            ) : (
-              <SaveCancelButtons
-                onSave={() => saveField("siteUrl")}
-                onCancel={() => cancelEdit("siteUrl")}
-                disableSave={!siteUrlDraft.trim()}
-              />
-            )}
-          </div>
+          <RoleWrapper allowedRoles={["company_owner"]} userRole={user?.role || "agent"}>
+            <div className="flex justify-end mt-1">
+              {!siteUrlEdit ? (
+                <EditButton onClick={() => setSiteUrlEdit(true)} />
+              ) : (
+                <SaveCancelButtons
+                  onSave={() => saveField("siteUrl")}
+                  onCancel={() => cancelEdit("siteUrl")}
+                  disableSave={!siteUrlDraft.trim()}
+                />
+              )}
+            </div>
+          </RoleWrapper>
         </div>
       </div>
 
@@ -258,17 +265,20 @@ export default function GeneralSettings() {
             disabled={!emailEdit}
             placeholder="Enter email"
           />
-          <div className="flex justify-end mt-1">
-            {!emailEdit ? (
-              <EditButton onClick={() => setEmailEdit(true)} />
-            ) : (
-              <SaveCancelButtons
-                onSave={() => saveField("email")}
-                onCancel={() => cancelEdit("email")}
-                disableSave={!emailDraft.trim()}
-              />
-            )}
-          </div>
+
+          <RoleWrapper allowedRoles={["company_owner"]} userRole={user?.role || "agent"}>
+            <div className="flex justify-end mt-1">
+              {!emailEdit ? (
+                <EditButton onClick={() => setEmailEdit(true)} />
+              ) : (
+                <SaveCancelButtons
+                  onSave={() => saveField("email")}
+                  onCancel={() => cancelEdit("email")}
+                  disableSave={!emailDraft.trim()}
+                />
+              )}
+            </div>
+          </RoleWrapper>
         </div>
       </div>
     </section>

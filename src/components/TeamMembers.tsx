@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCompany } from "../context/CompanyContext";
 import { useNotification } from "../context/NotificationContext";
+import { useUser } from "../context/UserContext";
+import RoleWrapper from "./RoleWrapper";
 import axios from "axios";
 import ConfirmDialog from "./ConfirmDialog";
 
@@ -17,6 +19,7 @@ interface Member {
 export default function TeamMembers() {
   const { currentCompanyId } = useCompany();
   const { notify } = useNotification();
+  const { user } = useUser();
   const navigate = useNavigate();
 
   const [members, setMembers] = useState<Member[]>([]);
@@ -159,12 +162,14 @@ export default function TeamMembers() {
             specify member roles to enhance security.
           </p>
         </div>
-        <button
-          onClick={handleAddMember}
-          className="px-4 py-2 bg-blue-600 text-white text-sm font-medium hover:bg-blue-700"
-        >
-          Add Member
-        </button>
+        <RoleWrapper allowedRoles={["company_owner"]} userRole={user?.role || "agent"}>
+          <button
+            onClick={handleAddMember}
+            className="px-4 py-2 bg-blue-600 text-white text-sm font-medium hover:bg-blue-700"
+          >
+            Add Member
+          </button>
+        </RoleWrapper>
       </div>
 
       <div className="overflow-x-auto">
@@ -174,7 +179,9 @@ export default function TeamMembers() {
               <th className="px-4 py-2 border-b border-gray-300">Member Email</th>
               <th className="px-4 py-2 border-b border-gray-300">Role</th>
               <th className="px-4 py-2 border-b border-gray-300">Status</th>
-              <th className="px-4 py-2 border-b border-gray-300">Actions</th>
+              <RoleWrapper allowedRoles={["company_owner"]} userRole={user?.role || "agent"}>
+                <th className="px-4 py-2 border-b border-gray-300">Actions</th>
+              </RoleWrapper>
             </tr>
           </thead>
           <tbody>
@@ -196,14 +203,16 @@ export default function TeamMembers() {
                   </select>
                 </td>
                 <td className="px-4 py-2">{renderStatusTag(member.status)}</td>
-                <td className="px-4 py-2">
-                  <button
-                    onClick={() => onDelete(member.id)}
-                    className="px-3 py-1 bg-red-500 text-white text-sm hover:bg-red-600"
-                  >
-                    Delete
-                  </button>
-                </td>
+                <RoleWrapper allowedRoles={["company_owner"]} userRole={user?.role || "agent"}>
+                  <td className="px-4 py-2">
+                    <button
+                      onClick={() => onDelete(member.id)}
+                      className="px-3 py-1 bg-red-500 text-white text-sm hover:bg-red-600"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </RoleWrapper>
               </tr>
             ))}
           </tbody>
