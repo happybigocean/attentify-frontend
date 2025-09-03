@@ -164,8 +164,8 @@ export default function MessagePage() {
 
   const filteredMessages = messages
     .filter((msg) => {
-      if (viewMode === "inbox") return msg.status !== "Resolved" && msg.status !== "Cancelled";
-      if (viewMode === "archived") return msg.status === "Resolved" || msg.status === "Cancelled";
+      if (viewMode === "inbox") return (msg.status !== "Resolved" && msg.status !== "Cancelled") && !msg.trashed;
+      if (viewMode === "archived") return (msg.status === "Resolved" || msg.status === "Cancelled") && !msg.trashed;
       if (viewMode === "trashed") return msg.trashed;
       return false;
     })
@@ -240,6 +240,24 @@ export default function MessagePage() {
       fetchMessages();
     } catch (error) {
       notify("error", "Failed to update status. Please try again.");
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      await axios.patch(
+        `${import.meta.env.VITE_API_URL}/message/${id}`,
+        {
+          field: "trashed",
+          value: true
+        },
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
+      fetchMessages();
+    } catch (error) {
+      notify("error", "Failed to delete message. Please try again.");
     }
   };
 
@@ -334,7 +352,7 @@ export default function MessagePage() {
                 filteredMessages.map((msg) => (
                   <tr
                     key={msg._id}
-                    className="hover:bg-gray-50 transition-all border-b border-gray-100 relative"
+                    className="group hover:bg-gray-50 transition-all border-b border-gray-100 relative"
                   >
                     <td className="px-6 py-4 w-14">
                       <input
@@ -483,6 +501,15 @@ export default function MessagePage() {
                     </td>
                     <td className="px-6 py-4 w-2/10 text-sm text-gray-500 text-left">
                       {new Date(msg.last_updated).toLocaleDateString()}
+
+                      {/* Trash button (hidden until hover) */}
+                      <button
+                        onClick={() => handleDelete(msg._id)}
+                        className="hidden group-hover:flex items-center justify-center absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-full text-gray-400 hover:text-red-600 hover:bg-red-50 transition"
+                        aria-label="Delete message"
+                      >
+                        <TrashIcon className="w-6 h-6" />
+                      </button>
                     </td>
                   </tr>
                 ))
