@@ -7,6 +7,10 @@ import { usePageTitle } from "../../context/PageTitleContext";
 import { useCompany } from "../../context/CompanyContext";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import RoleWrapper from "../../components/RoleWrapper";
+import {
+  PencilIcon,
+  TrashIcon,
+} from "@heroicons/react/24/outline";
 
 interface GmailAccount {
   id: string;
@@ -174,18 +178,18 @@ export default function GmailAccountPage() {
                               type="text"
                               value={storeInput}
                               onChange={(e) => setStoreInput(e.target.value)}
-                              className="border border-gray-300 px-2 py-1 text-sm w-48"
+                              className="border border-gray-300 px-2 py-1 text-sm w-64"
                               placeholder="Enter store name or URL"
                             />
                             <button
                               onClick={() => saveStore(account.id)}
-                              className="text-green-600 text-xs font-medium"
+                              className="text-green-600 text-lg font-medium"
                             >
                               Save
                             </button>
                             <button
                               onClick={() => setEditingStore(null)}
-                              className="text-gray-500 text-xs"
+                              className="text-gray-500 text-lg"
                             >
                               Cancel
                             </button>
@@ -205,7 +209,7 @@ export default function GmailAccountPage() {
                                 onClick={() => startEditing(account)}
                                 className="text-blue-600 text-xs hover:underline"
                               >
-                                Edit
+                                <PencilIcon className="w-5 h-5" />
                               </button>
                             </RoleWrapper>
                           </div>
@@ -218,9 +222,9 @@ export default function GmailAccountPage() {
                         >
                           <button
                             onClick={() => onDelete(account.id)}
-                            className="text-red-600 text-xs hover:underline"
+                            className="group-hover:flex items-center justify-center p-2 rounded-full text-gray-400 hover:text-red-600 hover:bg-red-50 transition"
                           >
-                            Remove
+                            <TrashIcon className="w-6 h-6" />
                           </button>
                         </RoleWrapper>
                       </td>
