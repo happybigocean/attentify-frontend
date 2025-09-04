@@ -217,6 +217,7 @@ export default function MessagePage() {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
+      notify("success", `Message assigned to ${member.name}.`);
       fetchMessages();
     } catch (error) {
       notify("error", "Failed to assign. Please try again.");
@@ -237,6 +238,7 @@ export default function MessagePage() {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
+      notify("success", "Message status updated successfully.");
       fetchMessages();
     } catch (error) {
       notify("error", "Failed to update status. Please try again.");
@@ -255,6 +257,7 @@ export default function MessagePage() {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
+      notify("success", "Message moved to trash.");
       fetchMessages();
     } catch (error) {
       notify("error", "Failed to delete message. Please try again.");
