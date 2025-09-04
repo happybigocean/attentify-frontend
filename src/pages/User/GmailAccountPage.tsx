@@ -146,7 +146,7 @@ export default function GmailAccountPage() {
                   <tr className="bg-gray-100 border-b border-gray-300 text-left text-gray-700">
                     <th className="w-2/12 px-3 py-2 text-left">Email</th>
                     <th className="w-2/12 px-3 py-2 text-left">Status</th>
-                    <th className="w-3/12 px-3 py-2 text-left">Added By</th>
+                    <th className="w-2/12 px-3 py-2 text-left">Added By</th>
                     <th className="w-4/12 px-3 py-2 text-left">Store</th>
                     <th className="w-2/12 px-3 py-2 text-left">Actions</th>
                   </tr>
