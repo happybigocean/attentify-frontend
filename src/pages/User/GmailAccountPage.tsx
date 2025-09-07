@@ -7,17 +7,19 @@ import { usePageTitle } from "../../context/PageTitleContext";
 import { useCompany } from "../../context/CompanyContext";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import RoleWrapper from "../../components/RoleWrapper";
-import {
-  PencilIcon,
-  TrashIcon,
-} from "@heroicons/react/24/outline";
+import { TrashIcon } from "@heroicons/react/24/outline";
+
+interface Store {
+  id: string;
+  shop: string;
+}
 
 interface GmailAccount {
   id: string;
   email: string;
   status: "connected" | "disconnected";
-  owner_name: string; // Store owner name
-  store?: string; // Store name or URL
+  owner_name: string;
+  store: Store | null;
 }
 
 export default function GmailAccountPage() {
@@ -28,41 +30,12 @@ export default function GmailAccountPage() {
   const { notify } = useNotification();
   const { setTitle } = usePageTitle();
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedAccount, setSelectedAccount] = useState<GmailAccount | null>(
-    null
-  );
+  const [selectedAccount, setSelectedAccount] = useState<GmailAccount | null>(null);
 
-  const [editingStore, setEditingStore] = useState<string | null>(null);
-  const [storeInput, setStoreInput] = useState("");
+  const [stores, setStores] = useState<Store[]>([]);
 
-  const startEditing = (account: GmailAccount) => {
-    setEditingStore(account.id);
-    setStoreInput(account.store || "");
-  };
-
-  const saveStore = async (id: string) => {
-    try {
-      await axios.put(
-        `${import.meta.env.VITE_API_URL || ""}/gmail/${id}/store`,
-        { 
-          field: "store",
-          value: storeInput 
-        },
-        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
-      );
-      setAccounts((prev) =>
-        prev.map((acc) =>
-          acc.id === id ? { ...acc, store: storeInput } : acc
-        )
-      );
-      notify("success", "Store updated successfully");
-    } catch (err) {
-      console.error("Failed to update store", err);
-      notify("error", "Failed to update store");
-    }
-    setEditingStore(null);
-    setStoreInput("");
-  };
+  // Track unsaved changes
+  const [pendingChanges, setPendingChanges] = useState<Record<string, string>>({});
 
   useEffect(() => {
     setTitle("Accounts / Gmail");
@@ -80,7 +53,9 @@ export default function GmailAccountPage() {
         `${import.meta.env.VITE_API_URL || ""}/gmail/company_accounts/${currentCompanyId}`,
         { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
       );
-      setAccounts(res.data);
+      console.log(res.data)
+      setAccounts(res.data.accounts || []);
+      setStores(res.data.stores || []);
     } catch (err) {
       console.error("Failed to fetch Gmail accounts", err);
       notify("error", "Failed to fetch Gmail accounts");
@@ -114,18 +89,49 @@ export default function GmailAccountPage() {
     }
   };
 
+  // When user changes store in dropdown → keep in pendingChanges
+  const handleStoreSelect = (id: string, storeId: string) => {
+    setPendingChanges((prev) => ({ ...prev, [id]: storeId }));
+  };
+
+  const handleSaveChanges = async () => {
+    try {
+      await Promise.all(
+        Object.entries(pendingChanges).map(async ([id, store_id]) => {
+          await axios.put(
+            `${import.meta.env.VITE_API_URL || ""}/gmail/${id}/store`,
+            { field: "store_id", value: store_id },
+            { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+          );
+
+          const store = stores.find((s) => s.id === store_id);
+          setAccounts((prev) =>
+            prev.map((acc) =>
+              acc.id === id ? { ...acc, store: store ? { id: store_id, shop: store.shop } : null } : acc
+            )
+          );
+        })
+      );
+
+      setPendingChanges({});
+      notify("success", "Store changes saved successfully");
+    } catch (err) {
+      console.error("Failed to save changes", err);
+      notify("error", "Failed to save store changes");
+    }
+  };
+
+  const handleCancelChanges = () => {
+    setPendingChanges({});
+  };
+
   return (
     <Layout>
       <div className="p-3">
         <div className="border border-gray-300 p-4">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-medium text-gray-700">
-              Gmail Accounts
-            </h3>
-            <RoleWrapper
-              allowedRoles={["company_owner", "store_owner"]}
-              userRole={user?.role || "agent"}
-            >
+            <h3 className="text-lg font-medium text-gray-700">Gmail Accounts</h3>
+            <RoleWrapper allowedRoles={["company_owner", "store_owner"]} userRole={user?.role || "agent"}>
               <button
                 onClick={handleConnect}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm font-medium"
@@ -140,91 +146,60 @@ export default function GmailAccountPage() {
           ) : accounts.length === 0 ? (
             <p className="text-gray-500">No Gmail accounts connected yet.</p>
           ) : (
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto relative">
               <table className="w-full border border-gray-300 border-collapse text-sm">
                 <thead>
                   <tr className="bg-gray-100 border-b border-gray-300 text-left text-gray-700">
-                    <th className="w-2/12 px-3 py-2 text-left">Email</th>
-                    <th className="w-2/12 px-3 py-2 text-left">Status</th>
-                    <th className="w-2/12 px-3 py-2 text-left">Added By</th>
-                    <th className="w-4/12 px-3 py-2 text-left">Store</th>
-                    <th className="w-2/12 px-3 py-2 text-left">Actions</th>
+                    <th className="w-2/12 px-3 py-2">Email</th>
+                    <th className="w-2/12 px-3 py-2">Status</th>
+                    <th className="w-2/12 px-3 py-2">Added By</th>
+                    <th className="w-4/12 px-3 py-2">Store</th>
+                    <th className="w-2/12 px-3 py-2">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {accounts.map((account) => (
                     <tr key={account.id} className="hover:bg-gray-50 border-b border-gray-300">
-                      <td className="px-3 py-2 font-medium">
-                        {account.email}
-                      </td>
+                      <td className="px-3 py-2 font-medium">{account.email}</td>
                       <td
                         className={`px-3 py-2 ${
-                          account.status === "connected"
-                            ? "text-green-600"
-                            : "text-red-500"
+                          account.status === "connected" ? "text-green-600" : "text-red-500"
                         }`}
                       >
-                        {account.status === "connected"
-                          ? "Connected"
-                          : "Disconnected"}
+                        {account.status === "connected" ? "Connected" : "Disconnected"}
                       </td>
+                      <td className="px-3 py-2">{account.owner_name}</td>
                       <td className="px-3 py-2">
-                        {account.owner_name}
-                      </td>
-                      <td className="px-3 py-2">
-                        {editingStore === account.id ? (
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="text"
-                              value={storeInput}
-                              onChange={(e) => setStoreInput(e.target.value)}
-                              className="border border-gray-300 px-2 py-1 text-sm w-64"
-                              placeholder="Enter store name or URL"
-                            />
-                            <button
-                              onClick={() => saveStore(account.id)}
-                              className="text-green-600 text-lg font-medium"
-                            >
-                              Save
-                            </button>
-                            <button
-                              onClick={() => setEditingStore(null)}
-                              className="text-gray-500 text-lg"
-                            >
-                              Cancel
-                            </button>
-                          </div>
+                        {user?.role === "company_owner" || user?.role === "store_owner" ? (
+                          <select
+                            value={
+                              pendingChanges[account.id] !== undefined
+                                ? pendingChanges[account.id]
+                                : account.store?.id || ""
+                            }
+                            onChange={(e) => handleStoreSelect(account.id, e.target.value)}
+                            className="border border-gray-300 rounded px-2 py-1 text-sm"
+                          >
+                            <option value="">Select a store</option>
+                            {stores.map((store) => (
+                              <option key={store.id} value={store.id}>
+                                {store.shop}
+                              </option>
+                            ))}
+                          </select>
                         ) : (
-                          <div className="flex items-center gap-2">
-                            {account.store ? (
-                              <span>{account.store}</span>
-                            ) : (
-                              <span className="text-gray-400">Not set</span>
-                            )}
-                            <RoleWrapper
-                              allowedRoles={["company_owner", "store_owner"]}
-                              userRole={user?.role || "agent"}
-                            >
-                              <button
-                                onClick={() => startEditing(account)}
-                                className="text-blue-600 text-xs hover:underline"
-                              >
-                                <PencilIcon className="w-5 h-5" />
-                              </button>
-                            </RoleWrapper>
-                          </div>
+                          <span className="text-gray-700">
+                            {account.store?.shop || "Select a store"}
+                          </span>
                         )}
                       </td>
                       <td className="px-3 py-2">
-                        <RoleWrapper
-                          allowedRoles={["company_owner", "store_owner"]}
-                          userRole={user?.role || "agent"}
-                        >
+                        <RoleWrapper allowedRoles={["company_owner", "store_owner"]} userRole={user?.role || "agent"}>
                           <button
                             onClick={() => onDelete(account.id)}
-                            className="group-hover:flex items-center justify-center p-2 rounded-full text-gray-400 hover:text-red-600 hover:bg-red-50 transition"
+                            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 transition"
                           >
-                            <TrashIcon className="w-6 h-6" />
+                            <TrashIcon className="w-5 h-5" />
                           </button>
                         </RoleWrapper>
                       </td>
@@ -232,6 +207,24 @@ export default function GmailAccountPage() {
                   ))}
                 </tbody>
               </table>
+
+              {/* Save / Cancel buttons when changes exist */}
+              {Object.keys(pendingChanges).length > 0 && (
+                <div className="flex justify-end gap-3 mt-4">
+                  <button
+                    onClick={handleSaveChanges}
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm"
+                  >
+                    Save
+                  </button>
+                  <button
+                    onClick={handleCancelChanges}
+                    className="px-4 py-2 border border-gray-400 text-sm text-gray-700"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>
