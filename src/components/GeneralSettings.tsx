@@ -95,6 +95,7 @@ export default function GeneralSettings() {
         setEmailEdit(false);
       }
 
+      notify("success", `${field === "companyName" ? "Name" : field === "siteUrl" ? "Site URL" : "Email"} updated successfully.`);
     } catch (error) {
       console.error(`Failed to save ${field}:`, error);
       notify("error", `Failed to save ${field}. Please try again.`);
