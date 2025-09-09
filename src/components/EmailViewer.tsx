@@ -27,7 +27,7 @@ const EmailViewer: React.FC<EmailViewerProps> = ({
   return (
     <div>
       {!isExpanded && (
-        <div className="bg-white  shadow-md p-6 max-w-5xl mx-auto">
+        <div className="bg-white border border-gray-300 p-4 max-w-5xl mx-auto">
           <header>
             <h2 className="text-xl font-bold mb-2">{subject}</h2>
             <div className="flex gap-3 text-sm text-gray-600">
@@ -47,8 +47,8 @@ const EmailViewer: React.FC<EmailViewerProps> = ({
         </div>
       )}
       {isExpanded && (
-        <div className="bg-white  shadow-md p-6 max-w-5xl mx-auto">
-          <header className="mb-4 border-b pb-4">
+        <div className="bg-white border border-gray-300 p-4 max-w-5xl mx-auto">
+          <header className="mb-4 border-b border-gray-400 pb-4">
             <h2 className="text-xl font-bold mb-2">{subject}</h2>
             <div className="flex gap-3 text-sm text-gray-600">
               <div>

@@ -47,7 +47,7 @@ const EmailReplySection: React.FC<EmailReplyProps> = ({
 
   return (
     <div className="mt-4">
-      <div className="bg-white  p-4 shadow">
+      <div className="bg-white border border-gray-300 p-4 ">
         <h3 className="text-lg font-semibold mb-2">Reply</h3>
         <div data-color-mode="light">
           <Editor

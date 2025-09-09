@@ -12,6 +12,13 @@ import EmailReplySection from "../../components/EmailReplySection";
 import SMSReplySection from "../../components/SMSReplySection";
 import { usePageTitle } from "../../context/PageTitleContext";
 
+type Comment = {
+  id: string;
+  user: string;
+  content: string;
+  date: string;
+};
+
 const MessageDetailPage = () => {
   const { threadId } = useParams<{ threadId: string }>();
   const [message, setMessage] = useState<Message | null>(null);
@@ -23,7 +30,23 @@ const MessageDetailPage = () => {
   const [loadingOrder, setLoadingOrder] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Prevent double-fetching caused by React 18 StrictMode or fast refreshes
+  // comments state
+  const [comments, setComments] = useState<Comment[]>([
+    {
+      id: "1",
+      user: "Alice",
+      content: "This order looks suspicious, please verify.",
+      date: "2025-09-09 09:00",
+    },
+    {
+      id: "2",
+      user: "Bob",
+      content: "I have checked the details, seems fine.",
+      date: "2025-09-09 10:15",
+    },
+  ]);
+  const [newComment, setNewComment] = useState("");
+
   const hasFetchedMessage = useRef(false);
   const hasFetchedOrder = useRef(false);
   const { setTitle } = usePageTitle();
@@ -34,7 +57,6 @@ const MessageDetailPage = () => {
 
   // Fetch message thread
   useEffect(() => {
-    // Reset the fetch flag if the ID changes
     hasFetchedMessage.current = false;
     setLoading(true);
     setMessage(null);
@@ -46,10 +68,8 @@ const MessageDetailPage = () => {
         const response = await axios.get(
           `${import.meta.env.VITE_API_URL || ""}/message/${threadId}`
         );
-        console.log(response.data);
         setMessage(response.data);
 
-        // Expand only the last message by default
         if (response.data?.messages?.length) {
           setExpandedIndexes([response.data.messages.length - 1]);
         }
@@ -104,16 +124,27 @@ const MessageDetailPage = () => {
   // Toggle collapse/expand
   const handleToggle = (idx: number) => {
     setExpandedIndexes((prev) =>
-      prev.includes(idx)
-        ? prev.filter((i) => i !== idx)
-        : [...prev, idx]
+      prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx]
     );
+  };
+
+  // Handle new comment add
+  const handleAddComment = () => {
+    if (!newComment.trim()) return;
+    const comment: Comment = {
+      id: Date.now().toString(),
+      user: "You",
+      content: newComment,
+      date: new Date().toLocaleString(),
+    };
+    setComments((prev) => [...prev, comment]);
+    setNewComment("");
   };
 
   return (
     <Layout>
       {loading && <div className="p-4">Loading...</div>}
-      {!loading &&
+      {!loading && (
         <div className="flex min-h-screen w-full p-4">
           {/* Main Email Thread */}
           <div className="flex-1 max-w-4xl">
@@ -131,11 +162,15 @@ const MessageDetailPage = () => {
                   return (
                     <div
                       key={index}
-                      className={`flex ${entry.sender === "client" ? "justify-start" : "justify-end"}`}
+                      className={`flex ${
+                        entry.sender === "client"
+                          ? "justify-start"
+                          : "justify-end"
+                      }`}
                     >
                       <div className="w-full max-w-5xl">
                         <div
-                          className={`cursor-pointer select-none  mb-2`}
+                          className={`cursor-pointer select-none mb-2`}
                           onClick={() => handleToggle(index)}
                         >
                           {entry.message_type === "html" && (
@@ -148,9 +183,7 @@ const MessageDetailPage = () => {
                               threadId={threadId}
                               isExpanded={isExpanded}
                               replyFromParent={reply}
-                              OnHandleReply={() => {
-                                // Handle reply logic here
-                              }}
+                              OnHandleReply={() => {}}
                             />
                           )}
 
@@ -182,6 +215,40 @@ const MessageDetailPage = () => {
                     replyFromParent={reply}
                   />
                 )}
+
+                <div className="mt-8 border border-gray-300 p-4">
+                  <h3 className="text-xl font-semibold mb-3">Comments</h3>
+                  <div className="space-y-3">
+                    {comments.map((c) => (
+                      <div
+                        key={c.id}
+                        className="bg-gray-100 p-3 "
+                      >
+                        <div className="text-sm text-gray-600 mb-1">
+                          {c.user} • {c.date}
+                        </div>
+                        <div>{c.content}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* New Comment Input */}
+                  <div className="mt-4 flex">
+                    <input
+                      type="text"
+                      className="flex-1 border p-2"
+                      placeholder="Write a comment..."
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
+                    />
+                    <button
+                      onClick={handleAddComment}
+                      className="bg-blue-600 text-white px-4"
+                    >
+                      Add
+                    </button>
+                  </div>
+                </div>
               </div>
             ) : (
               <div className="p-6 text-red-600">Message not found</div>
@@ -190,37 +257,44 @@ const MessageDetailPage = () => {
 
           {/* Sidebar */}
           <div className="flex flex-col justify-start ml-6 space-y-6">
-            <div className="sticky top-19 flex flex-col space-y-6">
-              {/* Customer Info Card */}
-              <div className="w-[350px] bg-white p-8">
+            <div className="sticky top-31 flex flex-col space-y-6">
+              <div className="w-[350px] border border-gray-300 bg-white p-4">
                 <h2 className="text-2xl font-bold mb-5">Customer Info</h2>
-                {orderInfo && orderInfo?.shopify_order && orderInfo?.shopify_order?.customer && (
-                  <>
-                    <div className="mb-4">
-                      <span className="font-semibold">Name: </span>
-                      {orderInfo?.shopify_order?.customer.name}
-                    </div>
-                    <div className="mb-4">
-                      <span className="font-semibold">Email: </span>
-                      {orderInfo?.shopify_order?.customer.email}
-                    </div>
-                    <div className="mb-4">
-                      <span className="font-semibold">Phone: </span>
-                      {orderInfo?.shopify_order?.customer.phone}
-                    </div>
-                    <div>
-                      <span className="font-semibold">Address: </span>
-                      {orderInfo?.shopify_order?.customer.default_address?.address1}
-                    </div>
-                  </>
+                {orderInfo &&
+                  orderInfo?.shopify_order &&
+                  orderInfo?.shopify_order?.customer && (
+                    <>
+                      <div className="mb-4">
+                        <span className="font-semibold">Name: </span>
+                        {orderInfo?.shopify_order?.customer.name}
+                      </div>
+                      <div className="mb-4">
+                        <span className="font-semibold">Email: </span>
+                        {orderInfo?.shopify_order?.customer.email}
+                      </div>
+                      <div className="mb-4">
+                        <span className="font-semibold">Phone: </span>
+                        {orderInfo?.shopify_order?.customer.phone}
+                      </div>
+                      <div>
+                        <span className="font-semibold">Address: </span>
+                        {
+                          orderInfo?.shopify_order?.customer.default_address
+                            ?.address1
+                        }
+                      </div>
+                    </>
                 )}
               </div>
-              {/* Order Info Card */}
-              <OrderInfoCard order={orderInfo} loading={loadingOrder} error={error} />
+              <OrderInfoCard
+                order={orderInfo}
+                loading={loadingOrder}
+                error={error}
+              />
             </div>
           </div>
         </div>
-      }
+      )}
     </Layout>
   );
 };
