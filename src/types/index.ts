@@ -85,3 +85,10 @@ export interface ShopifyOrder {
   updated_at?: string;
   [key: string]: any; // For any additional properties
 }
+
+export interface Comment {
+  id: string;
+  user: string;
+  content: string;
+  date: string;
+};
