@@ -84,7 +84,7 @@ const OrderInfoCard: React.FC<OrderInfoCardProps> = ({ order, loading, error }) 
   }
 
   return (
-    <div className="w-[350px] bg-white  shadow-lg p-8">
+    <div className="w-[350px] bg-white border border-gray-300 p-4">
       <h3 className="text-lg font-semibold mb-4">Order Information</h3>
       {content}
     </div>
