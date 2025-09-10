@@ -32,6 +32,7 @@ export type Message = {
   ai_summary?: string;
   tags?: string[];
   resolved_by_ai?: boolean;
+  comments?: Comment[];
 };
 
 export interface OrderInfo {
@@ -90,5 +91,6 @@ export interface Comment {
   id: string;
   user: string;
   content: string;
-  date: string;
+  created_at: string;
+  updated_at?: string;
 };
