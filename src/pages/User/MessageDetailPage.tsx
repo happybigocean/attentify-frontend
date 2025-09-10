@@ -12,7 +12,6 @@ import EmailReplySection from "../../components/EmailReplySection";
 import SMSReplySection from "../../components/SMSReplySection";
 import { usePageTitle } from "../../context/PageTitleContext";
 import Comments from "../../components/Comments";
-import type { Comment } from "../../types";
 
 const MessageDetailPage = () => {
   const { threadId } = useParams<{ threadId: string }>();
@@ -24,22 +23,6 @@ const MessageDetailPage = () => {
   const [orderInfo, setOrderInfo] = useState<OrderInfo | null>(null);
   const [loadingOrder, setLoadingOrder] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  // comments state
-  const [comments, setComments] = useState<Comment[]>([
-    {
-      id: "1",
-      user: "Alice",
-      content: "This order looks suspicious, please verify.",
-      date: "2025-09-09 09:00",
-    },
-    {
-      id: "2",
-      user: "Bob",
-      content: "I have checked the details, seems fine.",
-      date: "2025-09-09 10:15",
-    },
-  ]);
 
   const hasFetchedMessage = useRef(false);
   const hasFetchedOrder = useRef(false);
@@ -63,7 +46,7 @@ const MessageDetailPage = () => {
           `${import.meta.env.VITE_API_URL || ""}/message/${threadId}`
         );
         setMessage(response.data);
-
+        console.log("Fetched message:", response.data);
         if (response.data?.messages?.length) {
           setExpandedIndexes([response.data.messages.length - 1]);
         }
@@ -81,6 +64,7 @@ const MessageDetailPage = () => {
 
   // Analyze email to get order info
   useEffect(() => {
+    return;
     hasFetchedOrder.current = false;
     setOrderInfo(null);
     setLoadingOrder(true);
@@ -202,7 +186,7 @@ const MessageDetailPage = () => {
               <div className="p-6 text-red-600">Message not found</div>
             )}
 
-            <Comments pComments={comments} />
+            <Comments messageId={message?._id} pComments={message?.comments} />
           </div>
 
           {/* Sidebar */}

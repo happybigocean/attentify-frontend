@@ -1,29 +1,64 @@
 import React, {useState, useEffect} from "react";
 import axios from "axios";
+import { useUser } from "../context/UserContext";
 import type { Comment } from "../types";
 
 type CommentsProps = {
+  messageId?: string;
   pComments?: Comment[];
 };
 
 const Comments: React.FC<CommentsProps> = ({
+  messageId,
   pComments
 }) => {
   const [newComment, setNewComment] = useState("");
-  // comments state
+  const [message_id, setMessageId] = useState(messageId);
   const [comments, setComments] = useState<Comment[]>(pComments || []);
+  const { user } = useUser();
 
   // Handle new comment add
-  const handleAddComment = () => {
+  const handleAddComment = async () => {
     if (!newComment.trim()) return;
-    const comment: Comment = {
-      id: Date.now().toString(),
-      user: "You",
-      content: newComment,
-      date: new Date().toLocaleString(),
-    };
-    setComments((prev) => [...prev, comment]);
-    setNewComment("");
+    if (!message_id) return;
+
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/message/add_comment/${message_id}`,
+        {
+          content: newComment,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      const newBackendComment = res.data.comment;
+
+      const comment: Comment = {
+        id: newBackendComment.id, // from backend
+        user: user?.name || "Unknown", // you can also map by user context
+        content: newBackendComment.content,
+        created_at: new Date(newBackendComment.created_at).toLocaleString(),
+      };
+
+      setComments((prev) => [...prev, comment]);
+      setNewComment("");
+    } catch (error) {
+      console.error("Failed to add comment:", error);
+    }
+  };
+
+  const formatDate = (iso: string) => {
+    const date = new Date(iso);
+    return date.toLocaleString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   };
 
   return (
@@ -36,7 +71,7 @@ const Comments: React.FC<CommentsProps> = ({
             className="bg-gray-100 p-3 "
           >
             <div className="text-sm text-gray-600 mb-1">
-              {c.user} • {c.date}
+              {c.user} • {formatDate(c.created_at)}
             </div>
             <div>{c.content}</div>
           </div>
