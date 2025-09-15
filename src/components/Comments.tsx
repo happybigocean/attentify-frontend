@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useUser } from "../context/UserContext";
 import { useNotification } from "../context/NotificationContext";
@@ -19,6 +19,10 @@ const Comments: React.FC<CommentsProps> = ({ messageId, pComments }) => {
   // edit state
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editContent, setEditContent] = useState("");
+
+  useEffect(() => {
+    setComments(pComments || []);
+  }, [pComments]);
 
   // Turn URLs in text into clickable links
   const linkify = (text: string) => {
@@ -42,14 +46,14 @@ const Comments: React.FC<CommentsProps> = ({ messageId, pComments }) => {
 
   // Handle new comment add
   const handleAddComment = async () => {
-    if (!newComment.trim() || !messageId) return;
+    if (!newComment || !messageId) return;
 
     try {
       const res = await axios.post(
         `${import.meta.env.VITE_API_URL}/message/add_comment/${messageId}`,
         {
           content: newComment,
-          is_resolution: markAsResolution,
+          resolution: markAsResolution,
         },
         {
           headers: {
@@ -63,9 +67,11 @@ const Comments: React.FC<CommentsProps> = ({ messageId, pComments }) => {
       const comment: Comment = {
         id: newBackendComment.id,
         user: user?.name || "Unknown",
+        user_id: user?.id,
         content: newBackendComment.content,
         created_at: new Date(newBackendComment.created_at).toISOString(),
-        is_resolution: newBackendComment.is_resolution || false,
+        updated_at: new Date(newBackendComment.updated_at).toISOString(),
+        resolution: newBackendComment.resolution,
       };
       
       notify("success", "Comment added");
@@ -87,7 +93,6 @@ const Comments: React.FC<CommentsProps> = ({ messageId, pComments }) => {
   // Handle edit save
   const saveEdit = async (id: string) => {
     if (!messageId) return;
-    console.log(editContent);
     try {
       const res = await axios.put(
         `${import.meta.env.VITE_API_URL}/message/edit_comment/${messageId}/${id}`,
@@ -159,7 +164,7 @@ const Comments: React.FC<CommentsProps> = ({ messageId, pComments }) => {
           <div
             key={c.id}
             className={`p-3 ${
-              c.is_resolution ? "bg-green-100 border border-green-400" : "bg-gray-100"
+              c.resolution ? "bg-green-100 border border-green-400" : "bg-gray-100"
             }`}
           >
             {/* Header row: user + date + resolution + actions */}
@@ -167,8 +172,8 @@ const Comments: React.FC<CommentsProps> = ({ messageId, pComments }) => {
               <div className="flex items-center gap-2">
                 <span>{c.user}</span>
                 <span>•</span>
-                <span>{formatDate(c.created_at)}</span>
-                {c.is_resolution && (
+                <span>{formatDate(c.updated_at)}</span>
+                {c.resolution && (
                   <span className="ml-2 px-2 py-0.5 text-xs bg-green-200 text-green-800">
                     Resolution
                   </span>
@@ -176,7 +181,7 @@ const Comments: React.FC<CommentsProps> = ({ messageId, pComments }) => {
               </div>
 
               {/* Actions (hide while editing) */}
-              {editingId !== c.id && (
+              {editingId !== c.id && user?.id == c.user_id && (
                 <div className="flex gap-2">
                   <button
                     onClick={() => startEdit(c)}
@@ -219,12 +224,13 @@ const Comments: React.FC<CommentsProps> = ({ messageId, pComments }) => {
                 </div>
               </div>
             ) : (
-              <div>{linkify(c.content)}</div>
+              <div className="whitespace-pre-wrap break-words">
+                {linkify(c.content)}
+              </div>
             )}
           </div>
         ))}
       </div>
-
 
       {/* New Comment Input */}
       <div className="mt-4">
