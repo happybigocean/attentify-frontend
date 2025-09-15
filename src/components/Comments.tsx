@@ -42,7 +42,7 @@ const Comments: React.FC<CommentsProps> = ({ messageId, pComments }) => {
 
   // Handle new comment add
   const handleAddComment = async () => {
-    if (!newComment.trim() || !messageId) return;
+    if (!newComment || !messageId) return;
 
     try {
       const res = await axios.post(
@@ -87,7 +87,6 @@ const Comments: React.FC<CommentsProps> = ({ messageId, pComments }) => {
   // Handle edit save
   const saveEdit = async (id: string) => {
     if (!messageId) return;
-    console.log(editContent);
     try {
       const res = await axios.put(
         `${import.meta.env.VITE_API_URL}/message/edit_comment/${messageId}/${id}`,
@@ -219,12 +218,13 @@ const Comments: React.FC<CommentsProps> = ({ messageId, pComments }) => {
                 </div>
               </div>
             ) : (
-              <div>{linkify(c.content)}</div>
+              <div className="whitespace-pre-wrap break-words">
+                {linkify(c.content)}
+              </div>
             )}
           </div>
         ))}
       </div>
-
 
       {/* New Comment Input */}
       <div className="mt-4">
