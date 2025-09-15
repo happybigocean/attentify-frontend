@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useUser } from "../context/UserContext";
+import { useNotification } from "../context/NotificationContext";
 import type { Comment } from "../types";
 
 type CommentsProps = {
@@ -12,6 +13,7 @@ const Comments: React.FC<CommentsProps> = ({ messageId, pComments }) => {
   const [newComment, setNewComment] = useState("");
   const [comments, setComments] = useState<Comment[]>(pComments || []);
   const { user } = useUser();
+  const { notify } = useNotification();
   const [markAsResolution, setMarkAsResolution] = useState(false);
 
   // edit state
@@ -65,11 +67,13 @@ const Comments: React.FC<CommentsProps> = ({ messageId, pComments }) => {
         created_at: new Date(newBackendComment.created_at).toISOString(),
         is_resolution: newBackendComment.is_resolution || false,
       };
-
+      
+      notify("success", "Comment added");
       setComments((prev) => [...prev, comment]);
       setNewComment("");
       setMarkAsResolution(false);
     } catch (error) {
+      notify("error", "Failed to add comment");
       console.error("Failed to add comment:", error);
     }
   };
@@ -103,9 +107,12 @@ const Comments: React.FC<CommentsProps> = ({ messageId, pComments }) => {
             : c
         )
       );
+
+      notify("success", "Comment updated");
       setEditingId(null);
       setEditContent("");
     } catch (error) {
+      notify("error", "Failed to edit comment");
       console.error("Failed to edit comment:", error);
     }
   };
@@ -124,9 +131,10 @@ const Comments: React.FC<CommentsProps> = ({ messageId, pComments }) => {
           },
         }
       );
-
+      notify("success", "Comment deleted");
       setComments((prev) => prev.filter((c) => c.id !== id));
     } catch (error) {
+      notify("error", "Failed to delete comment");
       console.error("Failed to delete comment:", error);
     }
   };
