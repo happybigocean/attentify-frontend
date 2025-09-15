@@ -83,9 +83,10 @@ const Comments: React.FC<CommentsProps> = ({ messageId, pComments }) => {
   // Handle edit save
   const saveEdit = async (id: string) => {
     if (!messageId) return;
+    console.log(editContent);
     try {
       const res = await axios.put(
-        `${import.meta.env.VITE_API_URL}/message/${messageId}/comment/${id}`,
+        `${import.meta.env.VITE_API_URL}/message/edit_comment/${messageId}/${id}`,
         { content: editContent },
         {
           headers: {
@@ -116,7 +117,7 @@ const Comments: React.FC<CommentsProps> = ({ messageId, pComments }) => {
 
     try {
       await axios.delete(
-        `${import.meta.env.VITE_API_URL}/message/${messageId}/comment/${id}`,
+        `${import.meta.env.VITE_API_URL}/message/delete_comment/${messageId}/${id}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
