@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useUser } from "../context/UserContext";
 import { useNotification } from "../context/NotificationContext";
@@ -19,6 +19,10 @@ const Comments: React.FC<CommentsProps> = ({ messageId, pComments }) => {
   // edit state
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editContent, setEditContent] = useState("");
+
+  useEffect(() => {
+    setComments(pComments || []);
+  }, [pComments]);
 
   // Turn URLs in text into clickable links
   const linkify = (text: string) => {
@@ -175,7 +179,7 @@ const Comments: React.FC<CommentsProps> = ({ messageId, pComments }) => {
               </div>
 
               {/* Actions (hide while editing) */}
-              {editingId !== c.id && (
+              {editingId !== c.id && user?.id == c.user_id && (
                 <div className="flex gap-2">
                   <button
                     onClick={() => startEdit(c)}
