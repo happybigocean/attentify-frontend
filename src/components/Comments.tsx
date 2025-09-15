@@ -53,7 +53,7 @@ const Comments: React.FC<CommentsProps> = ({ messageId, pComments }) => {
         `${import.meta.env.VITE_API_URL}/message/add_comment/${messageId}`,
         {
           content: newComment,
-          is_resolution: markAsResolution,
+          resolution: markAsResolution,
         },
         {
           headers: {
@@ -67,9 +67,11 @@ const Comments: React.FC<CommentsProps> = ({ messageId, pComments }) => {
       const comment: Comment = {
         id: newBackendComment.id,
         user: user?.name || "Unknown",
+        user_id: user?.id,
         content: newBackendComment.content,
         created_at: new Date(newBackendComment.created_at).toISOString(),
-        is_resolution: newBackendComment.is_resolution || false,
+        updated_at: new Date(newBackendComment.updated_at).toISOString(),
+        resolution: newBackendComment.resolution,
       };
       
       notify("success", "Comment added");
@@ -162,7 +164,7 @@ const Comments: React.FC<CommentsProps> = ({ messageId, pComments }) => {
           <div
             key={c.id}
             className={`p-3 ${
-              c.is_resolution ? "bg-green-100 border border-green-400" : "bg-gray-100"
+              c.resolution ? "bg-green-100 border border-green-400" : "bg-gray-100"
             }`}
           >
             {/* Header row: user + date + resolution + actions */}
@@ -170,8 +172,8 @@ const Comments: React.FC<CommentsProps> = ({ messageId, pComments }) => {
               <div className="flex items-center gap-2">
                 <span>{c.user}</span>
                 <span>•</span>
-                <span>{formatDate(c.created_at)}</span>
-                {c.is_resolution && (
+                <span>{formatDate(c.updated_at)}</span>
+                {c.resolution && (
                   <span className="ml-2 px-2 py-0.5 text-xs bg-green-200 text-green-800">
                     Resolution
                   </span>

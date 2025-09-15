@@ -93,6 +93,6 @@ export interface Comment {
   user_id?: string;
   content: string;
   created_at: string;
-  updated_at?: string;
-  is_resolution?: boolean;
+  updated_at: string;
+  resolution?: boolean;
 };
