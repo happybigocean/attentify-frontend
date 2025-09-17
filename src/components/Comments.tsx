@@ -14,11 +14,13 @@ const Comments: React.FC<CommentsProps> = ({ messageId, pComments }) => {
   const [comments, setComments] = useState<Comment[]>(pComments || []);
   const { user } = useUser();
   const { notify } = useNotification();
-  const [markAsResolution, setMarkAsResolution] = useState(false);
 
   // edit state
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editContent, setEditContent] = useState("");
+
+  // mark as resolution state
+  const [markAsResolution, setMarkAsResolution] = useState(false);
 
   useEffect(() => {
     setComments(pComments || []);
@@ -53,7 +55,7 @@ const Comments: React.FC<CommentsProps> = ({ messageId, pComments }) => {
         `${import.meta.env.VITE_API_URL}/message/add_comment/${messageId}`,
         {
           content: newComment,
-          resolution: markAsResolution,
+          status: markAsResolution ? "Awaiting Approval" : "Pending",
         },
         {
           headers: {
@@ -71,9 +73,9 @@ const Comments: React.FC<CommentsProps> = ({ messageId, pComments }) => {
         content: newBackendComment.content,
         created_at: new Date(newBackendComment.created_at).toISOString(),
         updated_at: new Date(newBackendComment.updated_at).toISOString(),
-        resolution: newBackendComment.resolution,
+        status: newBackendComment.status,
       };
-      
+
       notify("success", "Comment added");
       setComments((prev) => [...prev, comment]);
       setNewComment("");
@@ -144,6 +146,35 @@ const Comments: React.FC<CommentsProps> = ({ messageId, pComments }) => {
     }
   };
 
+  // Handle approve (set to Resolved)
+  const approve = async (c: Comment) => {
+    if (!messageId) return;
+
+    try {
+      const res = await axios.put(
+        `${import.meta.env.VITE_API_URL}/message/approve_comment/${messageId}/${c.id}`,
+        { status: "Resolved" },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      const updatedComment = res.data.comment;
+      setComments((prev) =>
+        prev.map((cm) =>
+          cm.id === c.id ? { ...cm, status: updatedComment.status } : cm
+        )
+      );
+
+      notify("success", "Comment marked as resolved");
+    } catch (error) {
+      notify("error", "Failed to update comment status");
+      console.error("Failed to approve comment:", error);
+    }
+  };
+
   const formatDate = (iso: string) => {
     const date = new Date(iso);
     return date.toLocaleString("en-US", {
@@ -155,34 +186,58 @@ const Comments: React.FC<CommentsProps> = ({ messageId, pComments }) => {
     });
   };
 
+  // Get background style by status
+  const getStatusStyle = (status?: string) => {
+    switch (status) {
+      case "Awaiting Approval":
+        return "bg-orange-100 border border-orange-400";
+      case "Resolved":
+        return "bg-green-100 border border-green-400";
+      default:
+        return "bg-gray-100";
+    }
+  };
+
   return (
     <div className="mt-8 border border-gray-300 p-4">
       <h3 className="text-xl font-semibold mb-3">Comments</h3>
 
       <div className="space-y-3">
         {comments?.map((c) => (
-          <div
-            key={c.id}
-            className={`p-3 ${
-              c.resolution ? "bg-green-100 border border-green-400" : "bg-gray-100"
-            }`}
-          >
-            {/* Header row: user + date + resolution + actions */}
+          <div key={c.id} className={`p-3 ${getStatusStyle(c.status)}`}>
+            {/* Header row: user + date + status + actions */}
             <div className="flex items-center justify-between text-sm text-gray-600 mb-1">
               <div className="flex items-center gap-2">
                 <span>{c.user}</span>
                 <span>•</span>
                 <span>{formatDate(c.updated_at)}</span>
-                {c.resolution && (
-                  <span className="ml-2 px-2 py-0.5 text-xs bg-green-200 text-green-800">
-                    Resolution
+                {c.status && (
+                  <span
+                    className={`ml-2 px-2 py-0.5 text-xs rounded ${
+                      c.status === "Awaiting Approval"
+                        ? "bg-orange-200 text-orange-800"
+                        : c.status === "Resolved"
+                        ? "bg-green-200 text-green-800"
+                        : "bg-gray-200 text-gray-800"
+                    }`}
+                  >
+                    {c.status}
                   </span>
                 )}
               </div>
 
               {/* Actions (hide while editing) */}
-              {editingId !== c.id && user?.id == c.user_id && (
+              {editingId !== c.id && user?.id == c.user_id && c.status !== "Resolved" && (
                 <div className="flex gap-2">
+                  {c.status === "Awaiting Approval" &&
+                    (user?.role === "company_owner" || user?.role === "store_owner") && (
+                      <button
+                        onClick={() => approve(c)}
+                        className="text-green-600 hover:underline text-sm"
+                      >
+                        Approve
+                      </button>
+                    )}
                   <button
                     onClick={() => startEdit(c)}
                     className="text-blue-600 hover:underline text-sm"
@@ -224,9 +279,7 @@ const Comments: React.FC<CommentsProps> = ({ messageId, pComments }) => {
                 </div>
               </div>
             ) : (
-              <div className="whitespace-pre-wrap break-words">
-                {linkify(c.content)}
-              </div>
+              <div className="whitespace-pre-wrap break-words">{linkify(c.content)}</div>
             )}
           </div>
         ))}
