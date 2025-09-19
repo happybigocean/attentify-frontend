@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { register } from "../services/auth";
 import { useUser } from "../context/UserContext";
 import { useCompany } from "../context/CompanyContext";
+import { jwtDecode } from "jwt-decode";
 
 // helper to verify token
 async function verifyInvitationToken(token: string) {
@@ -12,6 +13,18 @@ async function verifyInvitationToken(token: string) {
   }
   return res.json();
 }
+
+type JwtPayload = {
+  sub: string,
+  user_id: string;
+  name: string,
+  email: string,
+  company_id?: string,
+  role?: string,
+  status?: string,
+  companies?: any
+  redirect_url: string,
+};
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -49,20 +62,39 @@ export default function Signup() {
     setLoading(true);
     setError(null);
     try {
-      const data = await register(registerEmail, registerPassword, firstName, lastName, invitation_token);
-      localStorage.setItem("token", data?.token);
-      localStorage.setItem('user', JSON.stringify(data?.user));
-      setUser(data?.user);
+      const data = await register(
+                registerEmail, 
+                registerPassword, 
+                firstName, 
+                lastName, 
+                invitation_token
+              );
+      
+      const { token } = data;
 
-      if (data?.user.companies?.length) {
-        setCompanies(data?.user.companies);
-        setCurrentCompanyId(data?.user.company_id); // default company from login
+      if ( token ) {
+        localStorage.setItem("token", token);
+
+        const decoded = jwtDecode<JwtPayload>(token)
+        const user = {
+          id: decoded.user_id,
+          name: decoded.name,
+          email: decoded.email
+        }
+
+        localStorage.setItem('user', JSON.stringify(user));
+        setUser(user);
+
+        if (decoded?.companies?.length) {
+          setCompanies(decoded?.companies);
+          setCurrentCompanyId(decoded?.company_id || ""); 
+        }
+
+        setMessage("Registered! Redirecting...");
+        setTimeout(() => {
+          navigate(decoded?.redirect_url || "/login");
+        }, 1000);
       }
-
-      setMessage("Registered! Redirecting...");
-      setTimeout(() => {
-        navigate(data?.redirect_url || "/login");
-      }, 1000);
     } catch (err: any) {
       setError(err.message || "Registration failed");
     } finally {

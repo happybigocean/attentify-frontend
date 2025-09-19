@@ -2,66 +2,94 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "../services/auth";
 import { useUser } from "../context/UserContext";
-import { useCompany } from "../context/CompanyContext"; // adjust path if needed
+import { useCompany } from "../context/CompanyContext"; 
+import { jwtDecode } from "jwt-decode"
+
+type JwtPayload = {
+  sub: string;
+  user_id: string;
+  name: string,
+  email: string,
+  company_id: string,
+  role: string,
+  status: string,
+  companies: any,
+};
 
 export default function Login() {
+  const navigate = useNavigate();
   const { setUser } = useUser();
+  const { setCompanies, setCurrentCompanyId } = useCompany();
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
-  const navigate = useNavigate();
-  const { setCompanies, setCurrentCompanyId } = useCompany();
-
+  
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
     try {
       const data = await login(loginEmail, loginPassword);
-      console.log("Login response:", data);
-      const { token, user } = data;
-      localStorage.setItem("token", token);
-      localStorage.setItem('user', JSON.stringify(user));
-      setUser(user);
+      const { token } = data;
 
-      if (user.companies?.length) {
-        setCompanies(user.companies);
-        setCurrentCompanyId(user.company_id); // default company from login
+      if (token) {
+        localStorage.setItem("token", token);
+
+        const decoded = jwtDecode<JwtPayload>(token);
+        const user = {
+          id: decoded.user_id,
+          name: decoded.name,
+          email: decoded.email,
+          company_id: decoded?.company_id || "",
+          role: decoded.role,
+          status: decoded?.status || "",
+          companies: decoded?.companies || []
+        }
+
+        setUser(user);
+        localStorage.setItem('user', JSON.stringify(user));
+        if (user.companies?.length) {
+          setCompanies(user.companies);
+          setCurrentCompanyId(user.company_id); // default company from login
+        }
+
+        setMessage("Logged in! Redirecting...");
+
+        let redirectPath = "/dashboard";
+        switch (user.role) {
+          case "admin":
+            redirectPath = "/admin/dashboard";
+            break;
+          case "company_owner":
+            redirectPath = "/dashboard";
+            break;
+          case "store_owner":
+            redirectPath = "/dashboard";
+            break;
+          case "agent":
+            redirectPath = "/dashboard";
+            break;
+          case "readonly":
+            redirectPath = "/dashboard";
+            break;
+          default:
+            redirectPath = "/dashboard";
+        }
+
+        setTimeout(() => navigate(redirectPath), 1000); // redirect after short delay
       }
-
-      setMessage("Logged in! Redirecting...");
-
-      // Determine redirect path based on user.role
-      let redirectPath = "/dashboard";
-      switch (user.role) {
-        case "admin":
-          redirectPath = "/admin/dashboard";
-          break;
-        case "company_owner":
-          redirectPath = "/dashboard";
-          break;
-        case "store_owner":
-          redirectPath = "/dashboard";
-          break;
-        case "agent":
-          redirectPath = "/dashboard";
-          break;
-        case "readonly":
-          redirectPath = "/dashboard";
-          break;
-        default:
-          redirectPath = "/dashboard";
-      }
-
-      setTimeout(() => navigate(redirectPath), 1000); // redirect after short delay
     } catch (err: any) {
       setError(err.message || "Login failed");
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleGoogleLogin = () => {
+    window.location.href = `${import.meta.env.VITE_API_URL || ""}/auth/google/login`;
   };
 
   return (
@@ -154,6 +182,7 @@ export default function Login() {
             <button
               type="button"
               className="w-full border mt-4 border-gray-300  py-2 px-4 flex items-center justify-center gap-2 hover:bg-gray-50"
+              onClick={handleGoogleLogin}
             >
               <img
                 src="https://www.svgrepo.com/show/475656/google-color.svg"

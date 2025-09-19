@@ -2,6 +2,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import OAuthCallbackLogin from "./pages/OAuthCallbackLogin";
+import OAuthCallbackRegister from "./pages/OAuthCallbackRegister";
 import Dashboard from "./pages/User/Dashboard";
 import MessagePage from "./pages/User/MessagePage";
 import MessageDetailPage from "./pages/User/MessageDetailPage";
@@ -37,6 +39,8 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
+                <Route path="/oauth/callback/login" element={<OAuthCallbackLogin />} />
+                <Route path="/oauth/callback/register" element={<OAuthCallbackRegister />} />
                 
                 <Route
                   path="/admin/dashboard"
