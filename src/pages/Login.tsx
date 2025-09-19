@@ -3,6 +3,18 @@ import { Link, useNavigate } from "react-router-dom";
 import { login } from "../services/auth";
 import { useUser } from "../context/UserContext";
 import { useCompany } from "../context/CompanyContext"; // adjust path if needed
+import { jwtDecode } from "jwt-decode"
+
+type JwtPayload = {
+  sub: string;
+  user_id: string;
+  name: string,
+  email: string,
+  company_id: string,
+  role: string,
+  status: string,
+  companies: any,
+};
 
 export default function Login() {
   const { setUser } = useUser();
@@ -21,42 +33,54 @@ export default function Login() {
     setError(null);
     try {
       const data = await login(loginEmail, loginPassword);
-      console.log("Login response:", data);
-      const { token, user } = data;
-      localStorage.setItem("token", token);
-      localStorage.setItem('user', JSON.stringify(user));
-      setUser(user);
+      const { token } = data;
 
-      if (user.companies?.length) {
-        setCompanies(user.companies);
-        setCurrentCompanyId(user.company_id); // default company from login
+      if (token) {
+        localStorage.setItem("token", token);
+
+        const decoded = jwtDecode<JwtPayload>(token);
+        const user = {
+          id: decoded.user_id,
+          name: decoded.name,
+          email: decoded.email,
+          company_id: decoded.company_id,
+          role: decoded.role,
+          status: decoded.status,
+          companies: decoded.companies
+        }
+
+        setUser(user);
+        localStorage.setItem('user', JSON.stringify(user));
+        if (user.companies?.length) {
+          setCompanies(user.companies);
+          setCurrentCompanyId(user.company_id); // default company from login
+        }
+
+        setMessage("Logged in! Redirecting...");
+
+        let redirectPath = "/dashboard";
+        switch (user.role) {
+          case "admin":
+            redirectPath = "/admin/dashboard";
+            break;
+          case "company_owner":
+            redirectPath = "/dashboard";
+            break;
+          case "store_owner":
+            redirectPath = "/dashboard";
+            break;
+          case "agent":
+            redirectPath = "/dashboard";
+            break;
+          case "readonly":
+            redirectPath = "/dashboard";
+            break;
+          default:
+            redirectPath = "/dashboard";
+        }
+
+        setTimeout(() => navigate(redirectPath), 1000); // redirect after short delay
       }
-
-      setMessage("Logged in! Redirecting...");
-
-      // Determine redirect path based on user.role
-      let redirectPath = "/dashboard";
-      switch (user.role) {
-        case "admin":
-          redirectPath = "/admin/dashboard";
-          break;
-        case "company_owner":
-          redirectPath = "/dashboard";
-          break;
-        case "store_owner":
-          redirectPath = "/dashboard";
-          break;
-        case "agent":
-          redirectPath = "/dashboard";
-          break;
-        case "readonly":
-          redirectPath = "/dashboard";
-          break;
-        default:
-          redirectPath = "/dashboard";
-      }
-
-      setTimeout(() => navigate(redirectPath), 1000); // redirect after short delay
     } catch (err: any) {
       setError(err.message || "Login failed");
     } finally {
