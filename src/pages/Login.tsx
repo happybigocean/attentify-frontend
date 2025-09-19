@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "../services/auth";
 import { useUser } from "../context/UserContext";
-import { useCompany } from "../context/CompanyContext"; // adjust path if needed
+import { useCompany } from "../context/CompanyContext"; 
 import { jwtDecode } from "jwt-decode"
 
 type JwtPayload = {
@@ -17,16 +17,16 @@ type JwtPayload = {
 };
 
 export default function Login() {
+  const navigate = useNavigate();
   const { setUser } = useUser();
+  const { setCompanies, setCurrentCompanyId } = useCompany();
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
-  const navigate = useNavigate();
-  const { setCompanies, setCurrentCompanyId } = useCompany();
-
+  
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -43,10 +43,10 @@ export default function Login() {
           id: decoded.user_id,
           name: decoded.name,
           email: decoded.email,
-          company_id: decoded.company_id,
+          company_id: decoded?.company_id || "",
           role: decoded.role,
-          status: decoded.status,
-          companies: decoded.companies
+          status: decoded?.status || "",
+          companies: decoded?.companies || []
         }
 
         setUser(user);
