@@ -64,6 +64,10 @@ export default function Login() {
     }
   };
 
+  const handleGoogleLogin = () => {
+    window.location.href = `${import.meta.env.VITE_API_URL || ""}/auth/google/login`;
+  };
+
   return (
     <div className="bg-white relative">
       {/* Header */}
@@ -154,6 +158,7 @@ export default function Login() {
             <button
               type="button"
               className="w-full border mt-4 border-gray-300  py-2 px-4 flex items-center justify-center gap-2 hover:bg-gray-50"
+              onClick={handleGoogleLogin}
             >
               <img
                 src="https://www.svgrepo.com/show/475656/google-color.svg"
