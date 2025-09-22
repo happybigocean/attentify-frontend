@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { register } from "../services/auth";
-import { useUser } from "../context/UserContext";
-import { useCompany } from "../context/CompanyContext";
+import { register } from "../../services/auth";
+import { useUser } from "../../context/UserContext";
+import { useCompany } from "../../context/CompanyContext";
 import { jwtDecode } from "jwt-decode";
 
 // helper to verify token

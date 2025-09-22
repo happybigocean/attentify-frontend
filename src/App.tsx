@@ -1,9 +1,14 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
-import OAuthCallbackLogin from "./pages/OAuthCallbackLogin";
-import OAuthCallbackRegister from "./pages/OAuthCallbackRegister";
+
+// auth
+import Login from "./pages/Auth/Login";
+import Signup from "./pages/Auth/Signup";
+import OAuthCallbackLogin from "./pages/Auth/OAuthCallbackLogin";
+import OAuthCallbackRegister from "./pages/Auth/OAuthCallbackRegister";
+import ForgetPassword from "./pages/Auth/ForgetPassword";
+import ResetPassword from "./pages/Auth/ResetPassword";
+
 import Dashboard from "./pages/User/Dashboard";
 import MessagePage from "./pages/User/MessagePage";
 import MessageDetailPage from "./pages/User/MessageDetailPage";
@@ -18,6 +23,7 @@ import RegisterCompany from "./pages/User/RegisterCompany";
 import InvitationPage from "./pages/User/InvitationPage";
 import AcceptInvite from "./pages/User/AcceptInvite";
 import AskAcceptInvitation from "./pages/User/AskAcceptInvitation";
+
 import { UserProvider } from "./context/UserContext";
 import { NotificationProvider } from "./context/NotificationContext";
 import { CompanyProvider } from "./context/CompanyContext";
@@ -37,10 +43,13 @@ function App() {
             <BrowserRouter>
               <Routes>
                 <Route path="/" element={<Home />} />
+
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/oauth/callback/login" element={<OAuthCallbackLogin />} />
                 <Route path="/oauth/callback/register" element={<OAuthCallbackRegister />} />
+                <Route path="/forget-password" element={<ForgetPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
                 
                 <Route
                   path="/admin/dashboard"
