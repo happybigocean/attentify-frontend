@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode"
-import { useUser } from "../context/UserContext";
-import { useCompany } from "../context/CompanyContext"; 
+import { useUser } from "../../context/UserContext";
+import { useCompany } from "../../context/CompanyContext"; 
 
 type JwtPayload = {
   sub: string;

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { login } from "../services/auth";
-import { useUser } from "../context/UserContext";
-import { useCompany } from "../context/CompanyContext"; 
+import { login } from "../../services/auth";
+import { useUser } from "../../context/UserContext";
+import { useCompany } from "../../context/CompanyContext"; 
 import { jwtDecode } from "jwt-decode"
 
 type JwtPayload = {
@@ -163,9 +163,12 @@ export default function Login() {
             />
 
             <div className="mb-4 text-right">
-              <a href="#" className="text-sm text-indigo-600 underline">
-                Forget your password?
-              </a>
+              <Link
+                to="/forget-password"
+                className="text-sm text-indigo-600 underline hover:text-indigo-800"
+              >
+                Forgot your password?
+              </Link>
             </div>
 
             <button
