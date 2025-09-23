@@ -95,4 +95,5 @@ export interface Comment {
   created_at: string;
   updated_at: string;
   status: string;
+  edited?: boolean;
 };
