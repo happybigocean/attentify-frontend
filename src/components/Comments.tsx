@@ -24,6 +24,7 @@ const Comments: React.FC<CommentsProps> = ({ messageId, pComments }) => {
 
   useEffect(() => {
     setComments(pComments || []);
+    console.log(pComments)
   }, [pComments]);
 
   // Turn URLs in text into clickable links
@@ -110,7 +111,7 @@ const Comments: React.FC<CommentsProps> = ({ messageId, pComments }) => {
       setComments((prev) =>
         prev.map((c) =>
           c.id === id
-            ? { ...c, content: updatedComment.content, updated_at: new Date().toISOString() }
+            ? { ...c, content: updatedComment.content, updated_at: new Date().toISOString(), edited: true}
             : c
         )
       );
@@ -209,7 +210,10 @@ const Comments: React.FC<CommentsProps> = ({ messageId, pComments }) => {
             <div className="flex items-center justify-between text-sm text-gray-600 mb-1">
               <div className="flex items-center gap-2">
                 <span>{c.user}</span>
-                <span>•</span>
+                {c?.edited && (
+                  <span className="text-xs italic text-gray-500">(edited)</span>
+                )}
+
                 <span>{formatDate(c.updated_at)}</span>
                 {c.status && (
                   <span
