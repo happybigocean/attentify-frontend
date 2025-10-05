@@ -105,6 +105,11 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
       icon: ShoppingBagIcon,
     },
     {
+      name: "Order",
+      href: "/order",
+      icon: ShoppingBagIcon,
+    },
+    {
       name: "Settings",
       href: "/settings",
       icon: Cog6ToothIcon,
