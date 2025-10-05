@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Layout from "../../layouts/Layout";
 import { useNotification } from "../../context/NotificationContext"; 
+import { usePageTitle } from "../../context/PageTitleContext";
 
 interface Customer {
   id?: string;
@@ -32,6 +33,7 @@ export default function OrderPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(false);
   const { notify } = useNotification();
+  const { setTitle } = usePageTitle();
 
   useEffect(() => {
     fetchOrders();
@@ -52,6 +54,11 @@ export default function OrderPage() {
     }
   };
 
+  useEffect(() => {
+      setTitle("Orders");
+  }, [setTitle]);
+  
+
   const handleSyncOrders = async () => {
     setLoading(true);
     try {
@@ -68,13 +75,11 @@ export default function OrderPage() {
   return (
     <Layout>
       <div className="p-6">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Orders</h2>
-        <div className="bg-white shadow  p-4">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-medium text-gray-700">Your Orders</h3>
+        <div className="bg-white ">
+          <div className="flex justify-end items-center mb-4">
             <button
               onClick={handleSyncOrders}
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2  text-sm font-medium"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2  text-sm font-medium"
             >
               + Sync Orders
             </button>
@@ -84,17 +89,17 @@ export default function OrderPage() {
           ) : orders.length === 0 ? (
             <p className="text-gray-500">No Orders.</p>
           ) : (
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto border-gray-300 border">
               <table className="min-w-full text-sm divide-y divide-gray-200">
                 <thead>
                   <tr className="bg-gray-50">
-                    <th className="py-2 px-3 text-left font-semibold text-gray-600">Order</th>
-                    <th className="py-2 px-3 text-left font-semibold text-gray-600">Shop</th>
-                    <th className="py-2 px-3 text-left font-semibold text-gray-600">Date</th>
-                    <th className="py-2 px-3 text-left font-semibold text-gray-600">Customer</th>
-                    <th className="py-2 px-3 text-left font-semibold text-gray-600">Total</th>
-                    <th className="py-2 px-3 text-left font-semibold text-gray-600">Payment Status</th>
-                    <th className="py-2 px-3 text-left font-semibold text-gray-600">Fulfillment Status</th>
+                    <th className="py-4 px-3 text-left font-semibold text-gray-600">Order</th>
+                    <th className="py-4 px-3 text-left font-semibold text-gray-600">Shop</th>
+                    <th className="py-4 px-3 text-left font-semibold text-gray-600">Date</th>
+                    <th className="py-4 px-3 text-left font-semibold text-gray-600">Customer</th>
+                    <th className="py-4 px-3 text-left font-semibold text-gray-600">Total</th>
+                    <th className="py-4 px-3 text-left font-semibold text-gray-600">Payment Status</th>
+                    <th className="py-4 px-3 text-left font-semibold text-gray-600">Fulfillment Status</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-100">
