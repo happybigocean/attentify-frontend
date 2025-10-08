@@ -3,6 +3,7 @@ import axios from "axios";
 import Layout from "../../layouts/Layout";
 import { useNotification } from "../../context/NotificationContext";
 import { usePageTitle } from "../../context/PageTitleContext";
+import { useCompany } from "../../context/CompanyContext";
 
 interface Customer {
   id?: string;
@@ -29,35 +30,49 @@ interface Order {
   line_items?: LineItem[];
 }
 
-interface ShopifyCred {
+interface ShopifyShop {
+  _id: string;
   shop: string;
-  [key: string]: any; // if there are other fields
 }
+
 
 export default function OrderPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [selectedShop, setSelectedShop] = useState("");
-  const [shops, setShops] = useState<string[]>([]);
+  const [shops, setShops] = useState<ShopifyShop[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
 
   const { notify } = useNotification();
   const { setTitle } = usePageTitle();
+
+  const { currentCompanyId } = useCompany();
 
   useEffect(() => {
     setTitle("Orders");
     fetchOrders();
     fetchShops();
-  }, []);
+  }, [currentPage, pageSize, search, selectedShop]);
 
-  // Fetch all orders
+  // Fetch all orders with search, pagination, and shop filter
   const fetchOrders = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL || ""}/shopify/orders`);
-      setOrders(res.data);
+      const res = await axios.get(`${import.meta.env.VITE_API_URL || ""}/shopify/orders`, {
+        params: {
+          search,
+          page: currentPage,
+          size: pageSize,
+          shop: selectedShop,
+          company_id: currentCompanyId, 
+        },
+      });
+
+      setOrders(res.data.orders);
+      setTotalPages(res.data.totalPages);
     } catch (err) {
       console.error("Failed to fetch orders", err);
       notify("error", "Failed to fetch orders");
@@ -66,17 +81,25 @@ export default function OrderPage() {
     }
   };
 
-  // Fetch all shops for filter dropdown
   const fetchShops = async () => {
+    setLoading(true);
     try {
-      const res = await axios.get<ShopifyCred[]>(`${import.meta.env.VITE_API_URL || ""}/shopify`);
+      // Build base URL
+      const baseUrl = import.meta.env.VITE_API_URL || "";
+      
+      // Add company_id as query param if provided
+      const url = `${baseUrl}/shopify/company?company_id=${encodeURIComponent(currentCompanyId)}`;
 
-      // Now TypeScript knows res.data is ShopifyCred[]
-      const uniqueShops = Array.from(new Set(res.data.map((s) => s.shop)));
-      setShops(uniqueShops);
+      const res = await axios.get(url, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+
+      setShops(res.data);
     } catch (err) {
-      console.error("Failed to fetch shops", err);
-      notify("error", "Failed to fetch shops");
+      console.error("Failed to fetch Shopify shops", err);
+      notify("error", "Failed to fetch Shopify shops");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -93,30 +116,10 @@ export default function OrderPage() {
     }
   };
 
-  // Filtered and searched orders
-  const filteredOrders = useMemo(() => {
-    return orders.filter((order) => {
-      const matchesShop = selectedShop ? order.shop === selectedShop : true;
-      const matchesSearch = search
-        ? order.name?.toLowerCase().includes(search.toLowerCase()) ||
-          order.customer?.email?.toLowerCase().includes(search.toLowerCase())
-        : true;
-      return matchesShop && matchesSearch;
-    });
-  }, [orders, selectedShop, search]);
-
-  // Pagination
-  const totalPages = Math.ceil(filteredOrders.length / pageSize);
-  const paginatedOrders = useMemo(() => {
-    const start = (currentPage - 1) * pageSize;
-    const end = start + pageSize;
-    return filteredOrders.slice(start, end);
-  }, [filteredOrders, currentPage, pageSize]);
-
   return (
     <Layout>
-      <div className="p-6">
-        <div className="bg-white p-4">
+      <div className="p-4">
+        <div className="bg-white">
           {/* Filters & Sync */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-2">
             <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
@@ -134,8 +137,8 @@ export default function OrderPage() {
               >
                 <option value="">All Shops</option>
                 {shops.map((shop) => (
-                  <option key={shop} value={shop}>
-                    {shop}
+                  <option key={shop._id} value={shop.shop}>
+                    {shop.shop}
                   </option>
                 ))}
               </select>
@@ -152,7 +155,7 @@ export default function OrderPage() {
           {/* Table */}
           {loading ? (
             <p className="text-gray-500">Loading Orders...</p>
-          ) : paginatedOrders.length === 0 ? (
+          ) : orders.length === 0 ? (
             <p className="text-gray-500">No Orders.</p>
           ) : (
             <div className="overflow-x-auto border border-gray-300">
@@ -169,7 +172,7 @@ export default function OrderPage() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-100">
-                  {paginatedOrders.map((order) => (
+                  {orders.map((order) => (
                     <tr key={order.order_id}>
                       <td className="py-2 px-3">{order.name}</td>
                       <td className="py-2 px-3">{order.shop}</td>
