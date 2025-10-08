@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Layout from "../../layouts/Layout";
+import { useCompany } from "../../context/CompanyContext";
 import { useUser } from "../../context/UserContext";
 import { useNotification } from "../../context/NotificationContext";
 import { usePageTitle } from "../../context/PageTitleContext";
@@ -19,6 +20,7 @@ export default function ShopifyPage() {
   const { user } = useUser();
   const { notify } = useNotification();
   const { setTitle } = usePageTitle();
+  const { currentCompanyId } = useCompany();
 
   useEffect(() => {
     setTitle("Shopify");
@@ -31,15 +33,20 @@ export default function ShopifyPage() {
   const fetchShops = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL || ""}/shopify`,
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        }
-      );
+      // Build base URL
+      const baseUrl = import.meta.env.VITE_API_URL || "";
+      
+      // Add company_id as query param if provided
+      const url = `${baseUrl}/shopify/company?company_id=${encodeURIComponent(currentCompanyId)}`;
+
+      const res = await axios.get(url, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+
       setShops(res.data);
     } catch (err) {
       console.error("Failed to fetch Shopify shops", err);
-      notify("error", "Failed to fetch Shopify shops")
+      notify("error", "Failed to fetch Shopify shops");
     } finally {
       setLoading(false);
     }
