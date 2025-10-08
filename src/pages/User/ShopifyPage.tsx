@@ -47,8 +47,11 @@ export default function ShopifyPage() {
 
   const handleConnect = () => {
     const user_id = user?.id || "";
+    const company_id = user?.company_id || ""; // assuming user object has company_id
     const baseUrl = import.meta.env.VITE_API_URL || "";
-    const oauthUrl = `${baseUrl}/shopify/auth?user_id=${encodeURIComponent(user_id)}`;
+    
+    const oauthUrl = `${baseUrl}/shopify/auth?user_id=${encodeURIComponent(user_id)}&company_id=${encodeURIComponent(company_id)}`;
+    
     window.location.href = oauthUrl;
   };
 
