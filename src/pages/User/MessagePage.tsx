@@ -62,7 +62,6 @@ const statusList = [
 ];
 
 export default function MessagePage() {
-  const [search, setSearch] = useState<string>("");
   const [selected, setSelected] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<ViewMode>("inbox");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -78,6 +77,11 @@ export default function MessagePage() {
   const { setTitle } = usePageTitle();
   const { user } = useUser();
   const menuRef = useRef<HTMLDivElement>(null);
+
+  const [search, setSearch] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     const socket = initSocket();
@@ -121,15 +125,21 @@ export default function MessagePage() {
   const fetchMessages = async () => {
     setLoading(true);
     try {
-      const response = await axios.get<Message[]>(
+      const response = await axios.get(
         `${import.meta.env.VITE_API_URL || ""}/message/company_messages`,
         {
-          params: { company_id: currentCompanyId },
+          params: { 
+            company_id: currentCompanyId,
+            search,
+            page: currentPage,
+            size: pageSize, 
+          },
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
 
-      setMessages(response.data);
+      setMessages(response.data?.messages);
+      setTotalPages(response.data?.totalPages);
     } catch (error) {
       console.error("Failed to load messages:", error);
       notify("error", "Failed to load messages");
@@ -140,7 +150,7 @@ export default function MessagePage() {
 
   useEffect(() => {
     fetchMessages();
-  }, []);
+  }, [currentPage, pageSize, search]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -520,6 +530,47 @@ export default function MessagePage() {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex justify-between items-center mt-4">
+              <div>
+                <button
+                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1 border border-gray-300 mr-2 disabled:opacity-50"
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1 border border-gray-300 disabled:opacity-50"
+                >
+                  Next
+                </button>
+              </div>
+              <div>
+                Page {currentPage} of {totalPages}
+              </div>
+              <div>
+                <select
+                  value={pageSize}
+                  onChange={(e) => {
+                    setPageSize(Number(e.target.value));
+                    setCurrentPage(1); // reset page
+                  }}
+                  className="border border-gray-300 px-2 py-1"
+                >
+                  {[5, 10, 20, 50].map((size) => (
+                    <option key={size} value={size}>
+                      {size} / page
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          )}
       </div>
     </Layout>
   );
