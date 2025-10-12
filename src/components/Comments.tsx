@@ -293,7 +293,7 @@ const Comments: React.FC<CommentsProps> = ({ messageId, pComments }) => {
       <div className="mt-4">
         <textarea
           rows={3}
-          className="w-full border p-2"
+          className="w-full border border-gray-400 p-2"
           placeholder="Write a comment..."
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}

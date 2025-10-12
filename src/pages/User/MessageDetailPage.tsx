@@ -64,7 +64,6 @@ const MessageDetailPage = () => {
 
   // Analyze email to get order info
   useEffect(() => {
-    return;
     hasFetchedOrder.current = false;
     setOrderInfo(null);
     setLoadingOrder(true);
