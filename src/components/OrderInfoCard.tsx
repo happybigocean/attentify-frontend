@@ -40,6 +40,21 @@ const renderLineItems = (items?: ShopifyLineItem[]) => {
 };
 
 const OrderInfoCard: React.FC<OrderInfoCardProps> = ({ order, loading, error }) => {
+  const handleRefund = () => {
+    console.log("Refund triggered");
+    // TODO: Implement refund logic here
+  };
+
+  const handlePartialRefund = () => {
+    console.log("Partial refund triggered");
+    // TODO: Implement partial refund logic here
+  };
+
+  const handleCancel = () => {
+    console.log("Cancel triggered");
+    // TODO: Implement cancel logic here
+  };
+
   let content = null;
 
   if (loading) {
@@ -50,7 +65,7 @@ const OrderInfoCard: React.FC<OrderInfoCardProps> = ({ order, loading, error }) 
     content = (
       <div>
         {order.shopify_order ? (
-          <div className="mt-4 border-t pt-4">
+          <div className="mt-4 border-t border-gray-300 pt-4">
             <div className="mb-2">
               <span className="font-semibold">Order:</span> {order.shopify_order.name || "-"}
             </div>
@@ -73,6 +88,28 @@ const OrderInfoCard: React.FC<OrderInfoCardProps> = ({ order, loading, error }) 
               <span className="font-semibold">Line Items:</span>
               <div className="ml-2">{renderLineItems(order.shopify_order.line_items)}</div>
             </div>
+
+            {/* Action Buttons */}
+            <div className="mt-4 flex flex-wrap gap-2">
+              <button
+                onClick={handleRefund}
+                className="px-3 py-1.5 bg-green-500 text-white text-sm hover:bg-green-600 transition"
+              >
+                Refund
+              </button>
+              <button
+                onClick={handlePartialRefund}
+                className="px-3 py-1.5 bg-yellow-500 text-white text-sm hover:bg-yellow-600 transition"
+              >
+                Partial Refund
+              </button>
+              <button
+                onClick={handleCancel}
+                className="px-3 py-1.5 bg-red-500 text-white text-sm hover:bg-red-600 transition"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         ) : (
           <div className="mt-4 text-gray-500">{order.msg}</div>
@@ -84,7 +121,7 @@ const OrderInfoCard: React.FC<OrderInfoCardProps> = ({ order, loading, error }) 
   }
 
   return (
-    <div className="w-[350px] bg-white border border-gray-300 p-4">
+    <div className="w-[350px] bg-white border border-gray-300 p-4 rounded-lg shadow-sm">
       <h3 className="text-lg font-semibold mb-4">Order Information</h3>
       {content}
     </div>
