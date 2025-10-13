@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import type { ShopifyAddress, ShopifyLineItem, OrderInfo } from "../types";
 import { useNotification } from "../context/NotificationContext";
 import { useConfirmDialog } from "../context/ConfirmDialogContext";
+import axios from "axios";
 
 interface OrderInfoCardProps {
   order: OrderInfo | null;
@@ -54,10 +55,46 @@ const OrderInfoCard: React.FC<OrderInfoCardProps> = ({ order, loading, error }) 
     if (!ok) return;
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 800)); // mock API
-      notify("success", "Order refunded successfully!");
-    } catch {
-      notify("error", "Refund failed.");
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/shopify/order/refund`,
+        {
+          order_id: order?.shopify_order?.order_id || "",
+          shop: order?.shopify_order?.shop || "",
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      // 🟩 Handle success
+      const msg =
+        response.data?.msg ||
+        response.data?.message ||
+        "Order refunded successfully!";
+      notify("success", msg);
+    } catch (error: any) {
+      // 🟥 Handle error from backend
+      let errorMsg = "Refund failed.";
+
+      if (error.response) {
+        // Backend responded with error
+        errorMsg =
+          error.response.data?.error ||
+          error.response.data?.errors ||
+          error.response.data?.message ||
+          `Refund failed with status ${error.response.status}`;
+      } else if (error.request) {
+        // No response received
+        errorMsg = "No response from server. Please check your connection.";
+      } else {
+        // Something else went wrong
+        errorMsg = error.message;
+      }
+
+      console.error("Refund error:", errorMsg, error.response?.data);
+      notify("error", errorMsg);
     }
   };
 
@@ -69,7 +106,18 @@ const OrderInfoCard: React.FC<OrderInfoCardProps> = ({ order, loading, error }) 
     if (!ok) return;
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      axios.post(
+        `${import.meta.env.VITE_API_URL}/shopify/order/partial_refund`,
+        {
+          order_id: order?.shopify_order?.order_id || "",
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      )
+
       notify("success", "Partial refund processed successfully!");
     } catch {
       notify("error", "Partial refund failed.");
@@ -84,12 +132,47 @@ const OrderInfoCard: React.FC<OrderInfoCardProps> = ({ order, loading, error }) 
     if (!ok) return;
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      notify("success", "Order cancelled successfully!");
-    } catch {
-      notify("error", "Order cancellation failed.");
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/shopify/order/cancel`,
+        {
+          order_id: order?.shopify_order?.order_id || "",
+          shop: order?.shopify_order?.shop || "",
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      const msg =
+        response.data?.msg ||
+        response.data?.message ||
+        "Order cancelled successfully!";
+      notify("success", msg);
+    } catch (error: any) {
+      let errorMsg = "Order cancellation failed.";
+
+      if (error.response) {
+        errorMsg =
+          error.response.data?.error ||
+          error.response.data?.errors ||
+          error.response.data?.message ||
+          `Cancellation failed with status ${error.response.status}`;
+      } else if (error.request) {
+        errorMsg = "No response from server. Please check your connection.";
+      } else {
+        errorMsg = error.message;
+      }
+
+      console.error("Cancel error:", errorMsg, error.response?.data);
+      notify("error", errorMsg);
     }
   };
+
+  useEffect(() => {
+    console.log("shopify order", order);
+  }, [order]);
 
   if (loading) return <div className="text-gray-500">Loading...</div>;
   if (error) return <div className="text-red-500">{error}</div>;
