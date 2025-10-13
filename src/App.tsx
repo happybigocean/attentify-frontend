@@ -28,6 +28,7 @@ import { UserProvider } from "./context/UserContext";
 import { NotificationProvider } from "./context/NotificationContext";
 import { CompanyProvider } from "./context/CompanyContext";
 import { PageTitleProvider } from "./context/PageTitleContext";
+import { ConfirmDialogProvider } from "./context/ConfirmDialogContext";
 
 // admin pages
 import AdminDashboard from "./pages/Admin/Dashboard";
@@ -37,153 +38,155 @@ import "./App.css";
 function App() {  
   return (
     <NotificationProvider>
-      <UserProvider>
-        <CompanyProvider>
-          <PageTitleProvider>
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Home />} />
+      <ConfirmDialogProvider>
+        <UserProvider>
+          <CompanyProvider>
+            <PageTitleProvider>
+              <BrowserRouter>
+                <Routes>
+                  <Route path="/" element={<Home />} />
 
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route path="/oauth/callback/login" element={<OAuthCallbackLogin />} />
-                <Route path="/oauth/callback/register" element={<OAuthCallbackRegister />} />
-                <Route path="/forget-password" element={<ForgetPassword />} />
-                <Route path="/reset-password" element={<ResetPassword />} />
-                
-                <Route
-                  path="/admin/dashboard"
-                  element={
-                    <ProtectedRoute allowedRoles={['admin']}>
-                      <AdminDashboard />
-                    </ProtectedRoute>
-                  }
-                />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/signup" element={<Signup />} />
+                  <Route path="/oauth/callback/login" element={<OAuthCallbackLogin />} />
+                  <Route path="/oauth/callback/register" element={<OAuthCallbackRegister />} />
+                  <Route path="/forget-password" element={<ForgetPassword />} />
+                  <Route path="/reset-password" element={<ResetPassword />} />
+                  
+                  <Route
+                    path="/admin/dashboard"
+                    element={
+                      <ProtectedRoute allowedRoles={['admin']}>
+                        <AdminDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
 
-                <Route
-                  path="/admin/user"
-                  element={
-                    <ProtectedRoute allowedRoles={['admin']}>
-                      <UserManagement />
-                    </ProtectedRoute>
-                  }
-                />
+                  <Route
+                    path="/admin/user"
+                    element={
+                      <ProtectedRoute allowedRoles={['admin']}>
+                        <UserManagement />
+                      </ProtectedRoute>
+                    }
+                  />
 
-                <Route
-                  path="/dashboard"
-                  element={
-                    <ProtectedRoute allowedRoles={['company_owner', 'store_owner', 'agent', 'readonly']}>
-                      <Dashboard />
-                    </ProtectedRoute>
-                  }
-                />
+                  <Route
+                    path="/dashboard"
+                    element={
+                      <ProtectedRoute allowedRoles={['company_owner', 'store_owner', 'agent', 'readonly']}>
+                        <Dashboard />
+                      </ProtectedRoute>
+                    }
+                  />
 
-                <Route
-                  path="/message"
-                  element={
-                    <ProtectedRoute allowedRoles={['company_owner', 'store_owner', 'agent', 'readonly']}>
-                      <MessagePage />
-                    </ProtectedRoute>
-                  }
-                />
-                
-                <Route
-                  path="/message/:threadId"
-                  element={
-                    <ProtectedRoute allowedRoles={['company_owner', 'store_owner', 'agent', 'readonly']}>
-                      <MessageDetailPage  />
-                    </ProtectedRoute>
-                  }
-                />
+                  <Route
+                    path="/message"
+                    element={
+                      <ProtectedRoute allowedRoles={['company_owner', 'store_owner', 'agent', 'readonly']}>
+                        <MessagePage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  
+                  <Route
+                    path="/message/:threadId"
+                    element={
+                      <ProtectedRoute allowedRoles={['company_owner', 'store_owner', 'agent', 'readonly']}>
+                        <MessageDetailPage  />
+                      </ProtectedRoute>
+                    }
+                  />
 
-                <Route
-                  path="/order"
-                  element={
-                    <ProtectedRoute allowedRoles={['company_owner', 'store_owner', 'agent', 'readonly']}>
-                      <OrderPage />
-                    </ProtectedRoute>
-                  }
-                />
+                  <Route
+                    path="/order"
+                    element={
+                      <ProtectedRoute allowedRoles={['company_owner', 'store_owner', 'agent', 'readonly']}>
+                        <OrderPage />
+                      </ProtectedRoute>
+                    }
+                  />
 
-                <Route
-                  path="/accounts/gmail"
-                  element={
-                    <ProtectedRoute allowedRoles={['company_owner', 'store_owner', 'agent', 'readonly']}>
-                      <GmailAccountPage />
-                    </ProtectedRoute>
-                  }
-                />
+                  <Route
+                    path="/accounts/gmail"
+                    element={
+                      <ProtectedRoute allowedRoles={['company_owner', 'store_owner', 'agent', 'readonly']}>
+                        <GmailAccountPage />
+                      </ProtectedRoute>
+                    }
+                  />
 
-                <Route
-                  path="/accounts/phone"
-                  element={
-                    <ProtectedRoute allowedRoles={['company_owner', 'store_owner', 'agent', 'readonly']}>
-                      <PhoneAccountPage />
-                    </ProtectedRoute>
-                  }
-                />
+                  <Route
+                    path="/accounts/phone"
+                    element={
+                      <ProtectedRoute allowedRoles={['company_owner', 'store_owner', 'agent', 'readonly']}>
+                        <PhoneAccountPage />
+                      </ProtectedRoute>
+                    }
+                  />
 
-                <Route
-                  path="/shopify"
-                  element={
-                    <ProtectedRoute allowedRoles={['company_owner', 'store_owner', 'agent', 'readonly']}>
-                      <ShopifyPage />
-                    </ProtectedRoute>
-                  }
-                />
+                  <Route
+                    path="/shopify"
+                    element={
+                      <ProtectedRoute allowedRoles={['company_owner', 'store_owner', 'agent', 'readonly']}>
+                        <ShopifyPage />
+                      </ProtectedRoute>
+                    }
+                  />
 
-                <Route
-                  path="/shopify/success"
-                  element={
-                    <ProtectedRoute allowedRoles={['company_owner', 'store_owner', 'agent', 'readonly']}>
-                      <ShopifySuccess />
-                    </ProtectedRoute>
-                  }
-                />
+                  <Route
+                    path="/shopify/success"
+                    element={
+                      <ProtectedRoute allowedRoles={['company_owner', 'store_owner', 'agent', 'readonly']}>
+                        <ShopifySuccess />
+                      </ProtectedRoute>
+                    }
+                  />
 
-                <Route
-                  path="/settings"
-                  element={
-                    <ProtectedRoute allowedRoles={['company_owner', 'store_owner', 'agent', 'readonly']}>
-                      <Settings />
-                    </ProtectedRoute>
-                  }
-                />
+                  <Route
+                    path="/settings"
+                    element={
+                      <ProtectedRoute allowedRoles={['company_owner', 'store_owner', 'agent', 'readonly']}>
+                        <Settings />
+                      </ProtectedRoute>
+                    }
+                  />
 
-                <Route
-                  path="/invite"
-                  element={
-                    <ProtectedRoute allowedRoles={['company_owner', 'store_owner', 'agent', 'readonly']}>
-                      <InvitationPage />
-                    </ProtectedRoute>
-                  }
-                />
+                  <Route
+                    path="/invite"
+                    element={
+                      <ProtectedRoute allowedRoles={['company_owner', 'store_owner', 'agent', 'readonly']}>
+                        <InvitationPage />
+                      </ProtectedRoute>
+                    }
+                  />
 
-                <Route
-                  path="/accept-invite"
-                  element={
-                    <AcceptInvite />
-                  }
-                />
+                  <Route
+                    path="/accept-invite"
+                    element={
+                      <AcceptInvite />
+                    }
+                  />
 
-                <Route
-                  path="/ask-accept-invitation"
-                  element={
-                    <AskAcceptInvitation />
-                  }
-                />
+                  <Route
+                    path="/ask-accept-invitation"
+                    element={
+                      <AskAcceptInvitation />
+                    }
+                  />
 
-                <Route
-                  path="/register-company"
-                  element={
-                    <RegisterCompany />
-                  }
-                />
-              </Routes>
-            </BrowserRouter>
-          </PageTitleProvider>
-        </CompanyProvider>
-      </UserProvider>
+                  <Route
+                    path="/register-company"
+                    element={
+                      <RegisterCompany />
+                    }
+                  />
+                </Routes>
+              </BrowserRouter>
+            </PageTitleProvider>
+          </CompanyProvider>
+        </UserProvider>
+      </ConfirmDialogProvider>
     </NotificationProvider>
   );
 }
