@@ -1,8 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import type { ShopifyAddress, ShopifyLineItem, OrderInfo } from "../types";
 import { useNotification } from "../context/NotificationContext";
 import { useConfirmDialog } from "../context/ConfirmDialogContext";
 import axios from "axios";
+import RefundModal from "./RefundModal";
 
 interface OrderInfoCardProps {
   order: OrderInfo | null;
@@ -46,83 +47,7 @@ const renderLineItems = (items?: ShopifyLineItem[]) => {
 const OrderInfoCard: React.FC<OrderInfoCardProps> = ({ order, loading, error }) => {
   const { notify } = useNotification();
   const { confirm } = useConfirmDialog();
-
-  const handleRefund = async () => {
-    const ok = await confirm({
-      title: "Confirm Refund",
-      message: "Are you sure you want to fully refund this order?",
-    });
-    if (!ok) return;
-
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/shopify/order/refund`,
-        {
-          order_id: order?.shopify_order?.order_id || "",
-          shop: order?.shopify_order?.shop || "",
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-
-      // 🟩 Handle success
-      const msg =
-        response.data?.msg ||
-        response.data?.message ||
-        "Order refunded successfully!";
-      notify("success", msg);
-    } catch (error: any) {
-      // 🟥 Handle error from backend
-      let errorMsg = "Refund failed.";
-
-      if (error.response) {
-        // Backend responded with error
-        errorMsg =
-          error.response.data?.error ||
-          error.response.data?.errors ||
-          error.response.data?.message ||
-          `Refund failed with status ${error.response.status}`;
-      } else if (error.request) {
-        // No response received
-        errorMsg = "No response from server. Please check your connection.";
-      } else {
-        // Something else went wrong
-        errorMsg = error.message;
-      }
-
-      console.error("Refund error:", errorMsg, error.response?.data);
-      notify("error", errorMsg);
-    }
-  };
-
-  const handlePartialRefund = async () => {
-    const ok = await confirm({
-      title: "Confirm Partial Refund",
-      message: "Are you sure you want to partially refund this order?",
-    });
-    if (!ok) return;
-
-    try {
-      axios.post(
-        `${import.meta.env.VITE_API_URL}/shopify/order/partial_refund`,
-        {
-          order_id: order?.shopify_order?.order_id || "",
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      )
-
-      notify("success", "Partial refund processed successfully!");
-    } catch {
-      notify("error", "Partial refund failed.");
-    }
-  };
+  const [showRefundModal, setShowRefundModal] = useState(false);
 
   const handleCancel = async () => {
     const ok = await confirm({
@@ -179,64 +104,64 @@ const OrderInfoCard: React.FC<OrderInfoCardProps> = ({ order, loading, error }) 
   if (!order) return <div className="text-gray-500">No order information found.</div>;
 
   return (
-    <div className="w-[350px] bg-white border border-gray-300 p-4">
-      <h3 className="text-lg font-semibold mb-4">Order Information</h3>
+    <>
+      <div className="w-[380px] bg-white border border-gray-300 p-4">
+        <h3 className="text-lg font-semibold mb-4">Order Information</h3>
 
-      {order.shopify_order ? (
-        <>
-          <div className="mb-2">
-            <span className="font-semibold">Order:</span> {order.shopify_order.name || "-"}
-          </div>
-          <div className="mb-2">
-            <span className="font-semibold">Shop:</span> {order.shopify_order.shop || "-"}
-          </div>
-          <div className="mb-2">
-            <span className="font-semibold">Created At:</span>{" "}
-            {order.shopify_order.created_at || "-"}
-          </div>
-          <div className="mb-2">
-            <span className="font-semibold">Total Price:</span> $
-            {order.shopify_order.total_price || "-"}
-          </div>
-          <div className="mb-2">
-            <span className="font-semibold">Payment Status:</span>{" "}
-            {order.shopify_order.payment_status || "-"}
-          </div>
-          <div className="mb-2">
-            <span className="font-semibold">Fulfillment Status:</span>{" "}
-            {order.shopify_order.fulfillment_status || "-"}
-          </div>
-          <div className="mb-2">
-            <span className="font-semibold">Line Items:</span>
-            <div className="ml-2">{renderLineItems(order.shopify_order.line_items)}</div>
-          </div>
+        {order.shopify_order ? (
+          <>
+            <div className="mb-2">
+              <span className="font-semibold">Order:</span> {order.shopify_order.name || "-"}
+            </div>
+            <div className="mb-2">
+              <span className="font-semibold">Shop:</span> {order.shopify_order.shop || "-"}
+            </div>
+            <div className="mb-2">
+              <span className="font-semibold">Created At:</span>{" "}
+              {order.shopify_order.created_at || "-"}
+            </div>
+            <div className="mb-2">
+              <span className="font-semibold">Total Price:</span> $
+              {order.shopify_order.total_price || "-"}
+            </div>
+            <div className="mb-2">
+              <span className="font-semibold">Payment Status:</span>{" "}
+              {order.shopify_order.payment_status || "-"}
+            </div>
+            <div className="mb-2">
+              <span className="font-semibold">Fulfillment Status:</span>{" "}
+              {order.shopify_order.fulfillment_status || "-"}
+            </div>
+            <div className="mb-2">
+              <span className="font-semibold">Line Items:</span>
+              <div className="ml-2">{renderLineItems(order.shopify_order.line_items)}</div>
+            </div>
 
-          {/* Action Buttons */}
-          <div className="mt-4 flex flex-wrap gap-2">
-            <button
-              onClick={handleRefund}
-              className="px-3 py-1.5 bg-green-500 text-white text-sm hover:bg-green-600 transition"
-            >
-              Refund
-            </button>
-            <button
-              onClick={handlePartialRefund}
-              className="px-3 py-1.5 bg-yellow-500 text-white text-sm hover:bg-yellow-600 transition"
-            >
-              Partial Refund
-            </button>
-            <button
-              onClick={handleCancel}
-              className="px-3 py-1.5 bg-red-500 text-white text-sm hover:bg-red-600 transition"
-            >
-              Cancel
-            </button>
-          </div>
-        </>
-      ) : (
-        <div className="mt-4 text-gray-500">{order.msg}</div>
+            {/* Action Buttons */}
+            <div className="mt-4 flex flex-wrap gap-2">
+              <button
+                onClick={() => setShowRefundModal(true)}
+                className="px-3 py-1.5 bg-green-500 text-white text-sm hover:bg-green-600 transition"
+              >
+                Refund
+              </button>
+              <button
+                onClick={handleCancel}
+                className="px-3 py-1.5 bg-red-500 text-white text-sm hover:bg-red-600 transition"
+              >
+                Cancel
+              </button>
+            </div>
+          </>
+        ) : (
+          <div className="mt-4 text-gray-500">{order.msg}</div>
+        )}
+      </div>
+
+      {showRefundModal && (
+        <RefundModal order={order} onClose={() => setShowRefundModal(false)} />
       )}
-    </div>
+    </>
   );
 };
 

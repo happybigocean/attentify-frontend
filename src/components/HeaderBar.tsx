@@ -11,7 +11,7 @@ export default function HeaderBar({ onMenuClick, isMobile }: HeaderBarProps) {
   const { title } = usePageTitle();
 
   return (
-    <header className="flex items-center justify-between px-5 h-15 border-b border-gray-300 bg-white">
+    <div className="flex items-center justify-between px-5 h-15 border-b border-gray-300">
       <div className="flex items-center gap-4">
         {isMobile && (
           <button
@@ -38,6 +38,6 @@ export default function HeaderBar({ onMenuClick, isMobile }: HeaderBarProps) {
           ))}
         </select>
       </div>
-    </header>
+    </div>
   );
 }

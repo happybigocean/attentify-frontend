@@ -170,7 +170,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
 
       {/* Sidebar */}
       <div
-        className={`z-40 text-gray-900 transition-all duration-300 ease-in-out border-r border-gray-300
+        className={`text-gray-900 transition-all duration-300 ease-in-out border-r border-gray-300
           ${mobileOpen ? "block fixed w-full" : "hidden"}
           lg:fixed lg:block lg:w-72 lg:h-full
         `}
