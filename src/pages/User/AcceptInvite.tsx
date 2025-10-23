@@ -20,7 +20,6 @@ const AcceptInvitePage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
   const navigate = useNavigate();
-  const { notify } = useNotification();
 
   useEffect(() => {
     if (!token) {

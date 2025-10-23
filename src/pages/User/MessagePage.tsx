@@ -65,7 +65,7 @@ export default function MessagePage() {
   const [selected, setSelected] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<ViewMode>("inbox");
   const [messages, setMessages] = useState<Message[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [_, setLoading] = useState<boolean>(false);
 
   // Track menu state for assign and status per message
   const [assignMenuId, setAssignMenuId] = useState<string | null>(null);
