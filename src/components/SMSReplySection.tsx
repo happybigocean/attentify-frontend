@@ -1,5 +1,4 @@
 import React, {useState, useEffect} from "react";
-import axios from "axios";
 
 type SMSReplyProps = {
   threadId?: string;
@@ -7,8 +6,7 @@ type SMSReplyProps = {
 };
 
 const SMSReplySection: React.FC<SMSReplyProps> = ({
-  replyFromParent,
-  threadId
+  replyFromParent
 }) => {
   const [reply, setReply] = useState(replyFromParent);
   const [sending, setSending] = useState(false);

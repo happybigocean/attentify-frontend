@@ -23,7 +23,7 @@ const EmailReplySection: React.FC<EmailReplyProps> = ({
       if (!reply.trim()) return;
       setSending(true);
       try {
-        const response = await axios.post(
+        await axios.post(
           `${import.meta.env.VITE_API_URL || ""}/message/${threadId}/reply`,
           { content: reply }
         );

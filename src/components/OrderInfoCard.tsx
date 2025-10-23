@@ -11,19 +11,6 @@ interface OrderInfoCardProps {
   error: string | null;
 }
 
-const renderAddress = (address?: ShopifyAddress) => {
-  if (!address) return <span className="text-gray-400">N/A</span>;
-  return (
-    <div>
-      <div>{address.address1}</div>
-      {address.address2 && <div>{address.address2}</div>}
-      <div>
-        {address.city}, {address.province}, {address.country} {address.zip}
-      </div>
-    </div>
-  );
-};
-
 const renderLineItems = (items?: ShopifyLineItem[]) => {
   if (!items || items.length === 0)
     return <span className="text-gray-400">No items</span>;
