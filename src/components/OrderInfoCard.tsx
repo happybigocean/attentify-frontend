@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import type { ShopifyAddress, ShopifyLineItem, OrderInfo } from "../types";
+import type { ShopifyLineItem, OrderInfo } from "../types";
 import { useNotification } from "../context/NotificationContext";
 import { useConfirmDialog } from "../context/ConfirmDialogContext";
 import axios from "axios";
