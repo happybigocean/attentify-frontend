@@ -29,6 +29,7 @@ interface Message {
   _id: string;
   client: string;
   title?: string;
+  ticket?: string;
   channel: string;
   status: string;
   archived: boolean;
@@ -347,6 +348,7 @@ export default function MessagePage() {
                 </th>
                 <th className="px-6 py-3 w-2/10 text-left">Client</th>
                 <th className="px-6 py-3 w-4/10 text-left">Title</th>
+                <th className="px-6 py-3 w-1/10 text-left">Ticket</th>
                 <th className="px-6 py-3 w-1/10 text-left">Assigned</th>
                 <th className="px-6 py-3 w-1/10 text-left">Status</th>
                 <th className="px-6 py-3 w-2/10 text-left">
@@ -383,6 +385,9 @@ export default function MessagePage() {
                       <Link to={`/message/${msg._id}`}>
                         {msg.title ?? "(no subject)"}
                       </Link>
+                    </td>
+                    <td className="px-6 py-4 w-1/10 text-blue-700 hover:underline">
+                      {msg.ticket?? ""}
                     </td>
                     {/* Assigned */}
                     <td className="px-6 py-4 w-1/10">
