@@ -28,6 +28,7 @@ export type Message = {
   status: "open" | "closed" | "pending";
   channel: "chat" | "sms" | "email" | "voice";
   title?: string;
+  ticket?: string;
   messages: ChatEntry[];
   ai_summary?: string;
   tags?: string[];
