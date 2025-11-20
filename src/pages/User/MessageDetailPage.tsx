@@ -191,7 +191,7 @@ const MessageDetailPage = () => {
           {/* Sidebar */}
           <div className="flex flex-col justify-start ml-6 space-y-6">
             <div className="sticky top-31 flex flex-col space-y-6">
-              <div className="w-[350px] border border-gray-300 bg-white p-4">
+              <div className="w-[380px] border border-gray-300 bg-white p-4">
                 <h2 className="text-2xl font-bold mb-5">Customer Info</h2>
                 {orderInfo &&
                   orderInfo?.shopify_order &&

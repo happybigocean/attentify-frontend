@@ -125,7 +125,7 @@ export default function Sidebar({
       >
         <div className="flex flex-col h-full">
           <a
-            className="h-15 flex items-center w-full pl-5 border-b border-gray-300"
+            className="h-16 flex items-center w-full pl-5 border-b border-gray-300"
             href="/dashboard"
           >
             <img className="h-10 w-auto" src="/logo.png" alt="Attentify logo" />
