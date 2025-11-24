@@ -23,9 +23,9 @@ const RefundModal: React.FC<RefundModalProps> = ({ order, onClose }) => {
 
   const [maxItemRefund, setMaxItemRefund] = useState(0);
 
-  // -------------------------------------
+  // ------------------------------------------------
   // Calculate max refundable item amount
-  // -------------------------------------
+  // ------------------------------------------------
   useEffect(() => {
     const total = selectedItems.reduce((sum, item) => {
       return sum + Number(item.price) * Number(item.quantity || 1);
@@ -55,9 +55,9 @@ const RefundModal: React.FC<RefundModalProps> = ({ order, onClose }) => {
     }
   };
 
-  // -------------------------------------
+  // ------------------------------------------------
   // Validate refund amount (items)
-  // -------------------------------------
+  // ------------------------------------------------
   const onRefundAmountChange = (value: string) => {
     const num = Number(value);
     if (num > maxItemRefund) {
@@ -69,9 +69,9 @@ const RefundModal: React.FC<RefundModalProps> = ({ order, onClose }) => {
     }
   };
 
-  // -------------------------------------
+  // ------------------------------------------------
   // Validate shipping refund
-  // -------------------------------------
+  // ------------------------------------------------
   const onShippingRefundChange = (value: string) => {
     const num = Number(value);
     if (num > shippingPrice) {
@@ -83,6 +83,9 @@ const RefundModal: React.FC<RefundModalProps> = ({ order, onClose }) => {
     }
   };
 
+  // ------------------------------------------------
+  // Refund Handler
+  // ------------------------------------------------
   const handleRefund = async () => {
     try {
       await axios.post(
@@ -94,12 +97,16 @@ const RefundModal: React.FC<RefundModalProps> = ({ order, onClose }) => {
             line_item_id: i.id,
             quantity: i.quantity,
           })),
+
+          // Allow item refund OR shipping refund OR both
           refund_amount: refundAmount ? Number(refundAmount) : null,
+
           refund_shipping: includeShipping
             ? refundShipping
               ? Number(refundShipping)
               : shippingPrice
             : null,
+
           note: refundNote,
         },
         {
@@ -117,7 +124,11 @@ const RefundModal: React.FC<RefundModalProps> = ({ order, onClose }) => {
     }
   };
 
-  const isRefundDisabled = selectedItems.length === 0;
+  // --------------------------------------
+  // Disable submit ONLY if both are empty
+  // --------------------------------------
+  const isRefundDisabled =
+    selectedItems.length === 0 && !includeShipping;
 
   return (
     <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-100">
@@ -186,10 +197,10 @@ const RefundModal: React.FC<RefundModalProps> = ({ order, onClose }) => {
               type="number"
               value={refundAmount}
               onChange={(e) => onRefundAmountChange(e.target.value)}
-              className="w-full border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-green-500 outline-none disabled:bg-gray-100"
+              className="w-full border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-green-500 outline-none"
               placeholder="Enter refund amount"
-              disabled={isRefundDisabled}
               max={maxItemRefund}
+              disabled={selectedItems.length === 0}
             />
           </div>
 
@@ -200,9 +211,8 @@ const RefundModal: React.FC<RefundModalProps> = ({ order, onClose }) => {
               checked={includeShipping}
               onChange={(e) => setIncludeShipping(e.target.checked)}
               className="w-4 h-4 accent-green-600"
-              disabled={isRefundDisabled}
             />
-            <label className="font-medium">Include shipping refund</label>
+            <label className="font-medium">Include Shipping Refund</label>
           </div>
 
           {includeShipping && (
@@ -214,9 +224,8 @@ const RefundModal: React.FC<RefundModalProps> = ({ order, onClose }) => {
                 type="number"
                 value={refundShipping}
                 onChange={(e) => onShippingRefundChange(e.target.value)}
-                className="w-full border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-green-500 outline-none disabled:bg-gray-100"
+                className="w-full border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-green-500 outline-none"
                 placeholder={`Max: $${shippingPrice.toFixed(2)}`}
-                disabled={isRefundDisabled}
                 max={shippingPrice}
               />
             </div>
@@ -224,7 +233,9 @@ const RefundModal: React.FC<RefundModalProps> = ({ order, onClose }) => {
 
           {/* Notes */}
           <div>
-            <label className="block text-sm font-medium mb-1">Refund Note</label>
+            <label className="block text-sm font-medium mb-1">
+              Refund Note
+            </label>
             <textarea
               value={refundNote}
               onChange={(e) => setRefundNote(e.target.value)}
