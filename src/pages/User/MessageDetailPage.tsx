@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import axios from "axios";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+//import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import type { Message } from "../../types";
 import Layout from "../../layouts/Layout";
 import EmailViewer from "../../components/EmailViewer";
@@ -124,7 +124,7 @@ const MessageDetailPage = () => {
                               date={entry.timestamp}
                               htmlBody={entry.content}
                               threadId={threadId}
-                              expended={isLast} // <-- only last element expanded
+                              //expended={isLast} // <-- only last element expanded
                               replyFromParent={reply}
                               OnHandleReply={() => {}}
                             />

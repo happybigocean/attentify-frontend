@@ -1,4 +1,4 @@
-import React, {useState } from "react";
+import React from "react";
 import DOMPurify from "dompurify";
 import { formatEmailAddress } from "../utils/formatEmailAddress";
 
@@ -9,7 +9,7 @@ type EmailViewerProps = {
   date: string;
   htmlBody: string;
   threadId?: string;
-  expended?: boolean;
+  //expended?: boolean;
   replyFromParent?: string;
   OnHandleReply?: () => void;
 };
@@ -20,12 +20,12 @@ const EmailViewer: React.FC<EmailViewerProps> = ({
   to,
   date,
   htmlBody,
-  expended,
+  //expended,
 }) => {
   const sanitizedHtml = DOMPurify.sanitize(htmlBody);
-  const [isExpanded, setIsExpanded] = useState(expended);
+  //const [isExpanded, setIsExpanded] = useState(expended);
 
-  const toggleExpand = () => setIsExpanded(prev => !prev);
+  //const toggleExpand = () => setIsExpanded(prev => !prev);
 
   return (
     <div className="bg-white border border-gray-300 p-4 max-w-5xl mx-auto mb-4">
