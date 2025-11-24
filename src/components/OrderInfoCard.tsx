@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import type { ShopifyLineItem, OrderInfo } from "../types";
 import { useNotification } from "../context/NotificationContext";
 import { useConfirmDialog } from "../context/ConfirmDialogContext";
