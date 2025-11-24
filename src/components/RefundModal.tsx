@@ -10,7 +10,10 @@ interface RefundModalProps {
 
 const RefundModal: React.FC<RefundModalProps> = ({ order, onClose }) => {
   const { notify } = useNotification();
+
   const items = order?.shopify_order?.line_items || [];
+  const shippingPrice = Number(order?.shopify_order?.total_shipping_price || 0);
+
   const [selectedItems, setSelectedItems] = useState<ShopifyLineItem[]>([]);
   const [refundAmount, setRefundAmount] = useState("");
   const [refundShipping, setRefundShipping] = useState("");
@@ -18,8 +21,19 @@ const RefundModal: React.FC<RefundModalProps> = ({ order, onClose }) => {
   const [includeShipping, setIncludeShipping] = useState(false);
   const [selectAll, setSelectAll] = useState(false);
 
+  const [maxItemRefund, setMaxItemRefund] = useState(0);
+
+  // -------------------------------------
+  // Calculate max refundable item amount
+  // -------------------------------------
   useEffect(() => {
-    // Auto-select all checkbox if all items are selected
+    const total = selectedItems.reduce((sum, item) => {
+      return sum + Number(item.price) * Number(item.quantity || 1);
+    }, 0);
+    setMaxItemRefund(total);
+  }, [selectedItems]);
+
+  useEffect(() => {
     setSelectAll(selectedItems.length === items.length && items.length > 0);
   }, [selectedItems, items]);
 
@@ -33,11 +47,39 @@ const RefundModal: React.FC<RefundModalProps> = ({ order, onClose }) => {
   };
 
   const handleItemToggle = (item: ShopifyLineItem) => {
-    const exists = selectedItems.find((i) => i.name === item.name);
+    const exists = selectedItems.find((i) => i.id === item.id);
     if (exists) {
-      setSelectedItems(selectedItems.filter((i) => i.name !== item.name));
+      setSelectedItems(selectedItems.filter((i) => i.id !== item.id));
     } else {
       setSelectedItems([...selectedItems, item]);
+    }
+  };
+
+  // -------------------------------------
+  // Validate refund amount (items)
+  // -------------------------------------
+  const onRefundAmountChange = (value: string) => {
+    const num = Number(value);
+    if (num > maxItemRefund) {
+      setRefundAmount(maxItemRefund.toFixed(2));
+    } else if (num < 0) {
+      setRefundAmount("0");
+    } else {
+      setRefundAmount(value);
+    }
+  };
+
+  // -------------------------------------
+  // Validate shipping refund
+  // -------------------------------------
+  const onShippingRefundChange = (value: string) => {
+    const num = Number(value);
+    if (num > shippingPrice) {
+      setRefundShipping(shippingPrice.toFixed(2));
+    } else if (num < 0) {
+      setRefundShipping("0");
+    } else {
+      setRefundShipping(value);
     }
   };
 
@@ -48,9 +90,16 @@ const RefundModal: React.FC<RefundModalProps> = ({ order, onClose }) => {
         {
           order_id: order?.shopify_order?.order_id,
           shop: order?.shopify_order?.shop,
-          selected_items: selectedItems,
-          refund_amount: refundAmount,
-          refund_shipping: includeShipping ? refundShipping : null,
+          selected_items: selectedItems.map((i) => ({
+            line_item_id: i.id,
+            quantity: i.quantity,
+          })),
+          refund_amount: refundAmount ? Number(refundAmount) : null,
+          refund_shipping: includeShipping
+            ? refundShipping
+              ? Number(refundShipping)
+              : shippingPrice
+            : null,
           note: refundNote,
         },
         {
@@ -59,6 +108,7 @@ const RefundModal: React.FC<RefundModalProps> = ({ order, onClose }) => {
           },
         }
       );
+
       notify("success", "Refund processed successfully!");
       onClose();
     } catch (err) {
@@ -71,10 +121,25 @@ const RefundModal: React.FC<RefundModalProps> = ({ order, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-100">
-      <div className="bg-white p-6 w-full max-w-2xl">
+      <div className="bg-white p-6 w-full max-w-2xl rounded shadow-xl">
         <h2 className="text-lg font-semibold mb-4">Process Refund</h2>
 
-        <div className="mb-4 border border-gray-300 p-4">
+        {/* Summary */}
+        <div className="mb-4 p-3 border border-gray-300 rounded bg-gray-50">
+          <p className="text-sm">
+            <strong>Selected items total:</strong> ${maxItemRefund.toFixed(2)}
+          </p>
+          <p className="text-sm">
+            <strong>Shipping paid:</strong> ${shippingPrice.toFixed(2)}
+          </p>
+          <p className="text-sm text-green-700 mt-1">
+            <strong>Max refundable:</strong>{" "}
+            ${(maxItemRefund + shippingPrice).toFixed(2)}
+          </p>
+        </div>
+
+        {/* ITEM SELECTION */}
+        <div className="mb-4 border border-gray-300 p-4 rounded">
           <label className="flex items-center mb-2 cursor-pointer space-x-2">
             <input
               type="checkbox"
@@ -94,33 +159,41 @@ const RefundModal: React.FC<RefundModalProps> = ({ order, onClose }) => {
                 <div className="flex items-center space-x-2">
                   <input
                     type="checkbox"
-                    checked={selectedItems.some((i) => i.name === item.name)}
+                    checked={selectedItems.some((i) => i.id === item.id)}
                     onChange={() => handleItemToggle(item)}
                     className="w-4 h-4 accent-green-600"
                   />
-                  <span>{item.name}</span>
+                  <span>
+                    {item.name} (x{item.quantity})
+                  </span>
                 </div>
                 <span className="text-gray-600">
-                  ${typeof item.price === "number" ? item.price.toFixed(2) : item.price}
+                  ${Number(item.price).toFixed(2)}
                 </span>
               </label>
             ))}
           </div>
         </div>
 
+        {/* Refund Details */}
         <div className="space-y-3">
+          {/* Refund amount */}
           <div>
-            <label className="block text-sm font-medium mb-1">Refund Amount ($)</label>
+            <label className="block text-sm font-medium mb-1">
+              Refund Amount ($)
+            </label>
             <input
               type="number"
               value={refundAmount}
-              onChange={(e) => setRefundAmount(e.target.value)}
+              onChange={(e) => onRefundAmountChange(e.target.value)}
               className="w-full border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-green-500 outline-none disabled:bg-gray-100"
               placeholder="Enter refund amount"
               disabled={isRefundDisabled}
+              max={maxItemRefund}
             />
           </div>
 
+          {/* Shipping Refund */}
           <div className="flex items-center space-x-2">
             <input
               type="checkbox"
@@ -134,41 +207,46 @@ const RefundModal: React.FC<RefundModalProps> = ({ order, onClose }) => {
 
           {includeShipping && (
             <div>
-              <label className="block text-sm font-medium mb-1">Shipping Refund Amount ($)</label>
+              <label className="block text-sm font-medium mb-1">
+                Shipping Refund Amount ($)
+              </label>
               <input
                 type="number"
                 value={refundShipping}
-                onChange={(e) => setRefundShipping(e.target.value)}
+                onChange={(e) => onShippingRefundChange(e.target.value)}
                 className="w-full border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-green-500 outline-none disabled:bg-gray-100"
-                placeholder="Enter shipping refund"
+                placeholder={`Max: $${shippingPrice.toFixed(2)}`}
                 disabled={isRefundDisabled}
+                max={shippingPrice}
               />
             </div>
           )}
 
+          {/* Notes */}
           <div>
             <label className="block text-sm font-medium mb-1">Refund Note</label>
             <textarea
               value={refundNote}
               onChange={(e) => setRefundNote(e.target.value)}
-              className="w-full border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-green-500 outline-none"
+              className="w-full border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-green-500 outline-none rounded"
               rows={3}
               placeholder="Enter reason or note for refund"
             />
           </div>
         </div>
 
+        {/* Buttons */}
         <div className="flex justify-end gap-2 mt-5">
           <button
             onClick={onClose}
-            className="px-4 py-2 border border-gray-300 hover:bg-gray-100 transition"
+            className="px-4 py-2 border border-gray-300 hover:bg-gray-100 transition rounded"
           >
             Cancel
           </button>
           <button
             onClick={handleRefund}
             disabled={isRefundDisabled}
-            className={`px-4 py-2 text-white transition ${
+            className={`px-4 py-2 text-white rounded transition ${
               isRefundDisabled
                 ? "bg-gray-400 cursor-not-allowed"
                 : "bg-green-600 hover:bg-green-700"

@@ -14,15 +14,18 @@ interface OrderInfoCardProps {
 const renderLineItems = (items?: ShopifyLineItem[]) => {
   if (!items || items.length === 0)
     return <span className="text-gray-400">No items</span>;
+
   return (
-    <ul className="space-y-1 list-disc list-inside">
+    <ul className="space-y-1">
       {items.map((item, idx) => (
-        <li key={idx}>
-          <span className="font-medium">{item.name}</span>
-          {item.quantity !== undefined && <> × {item.quantity}</>}
+        <li key={idx} className="flex justify-between">
+          <span>
+            <span className="font-medium">{item.name}</span>
+            {item.quantity !== undefined && <> × {item.quantity}</>}
+          </span>
           {item.price !== undefined && (
-            <span className="ml-2 text-gray-600">
-              (${typeof item.price === "number" ? item.price.toFixed(2) : item.price})
+            <span className="text-gray-600">
+              ${typeof item.price === "number" ? item.price.toFixed(2) : item.price}
             </span>
           )}
         </li>
@@ -82,63 +85,136 @@ const OrderInfoCard: React.FC<OrderInfoCardProps> = ({ order, loading, error }) 
     }
   };
 
-  useEffect(() => {
-    console.log("shopify order", order);
-  }, [order]);
-
   if (loading) return <div className="text-gray-500">Loading...</div>;
   if (error) return <div className="text-red-500">{error}</div>;
   if (!order) return <div className="text-gray-500">No order information found.</div>;
 
   return (
     <>
+    <div className="w-[380px] border border-gray-300 bg-white p-4">
+        <h2 className="text-lg font-bold mb-5">Customer</h2>
+        {order &&
+          order.shopify_order &&
+          order.shopify_order.customer && (
+            <>
+              <div className="flex justify-between mb-2">
+                <span className="font-semibold">Name:</span>
+                <span>{order.shopify_order.customer.name || "-"}</span>
+              </div>
+
+              <div className="flex justify-between mb-2">
+                <span className="font-semibold">Email:</span>
+                <span>{order.shopify_order.customer.email || "-"}</span>
+              </div>
+
+              <div className="flex justify-between mb-2">
+                <span className="font-semibold">Phone:</span>
+                <span>{order.shopify_order.customer.phone || "-"}</span>
+              </div>
+
+              <div className="flex justify-between mb-2">
+                <span className="font-semibold">Address:</span>
+                <span>
+                  {order.shopify_order.customer.default_address?.address1 || "-"}
+                </span>
+              </div>
+            </>
+        )}
+      </div>
+
       <div className="w-[380px] bg-white border border-gray-300 p-4">
-        <h3 className="text-lg font-semibold mb-4">Order Information</h3>
+        <h3 className="text-lg font-semibold mb-4">Order</h3>
 
         {order.shopify_order ? (
           <>
-            <div className="mb-2">
-              <span className="font-semibold">Order:</span> {order.shopify_order.name || "-"}
-            </div>
-            <div className="mb-2">
-              <span className="font-semibold">Shop:</span> {order.shopify_order.shop || "-"}
-            </div>
-            <div className="mb-2">
-              <span className="font-semibold">Created At:</span>{" "}
-              {order.shopify_order.created_at || "-"}
-            </div>
-            <div className="mb-2">
-              <span className="font-semibold">Total Price:</span> $
-              {order.shopify_order.total_price || "-"}
-            </div>
-            <div className="mb-2">
-              <span className="font-semibold">Payment Status:</span>{" "}
-              {order.shopify_order.payment_status || "-"}
-            </div>
-            <div className="mb-2">
-              <span className="font-semibold">Fulfillment Status:</span>{" "}
-              {order.shopify_order.fulfillment_status || "-"}
-            </div>
-            <div className="mb-2">
-              <span className="font-semibold">Line Items:</span>
-              <div className="ml-2">{renderLineItems(order.shopify_order.line_items)}</div>
-            </div>
+            {/* FORMAT DATE */}
+            {(() => {
+              const raw = order.shopify_order.created_at;
+              var dateFormatted = "-";
 
-            {/* Action Buttons */}
-            <div className="mt-4 flex flex-wrap gap-2">
-              <button
-                onClick={() => setShowRefundModal(true)}
-                className="px-3 py-1.5 bg-green-500 text-white text-sm hover:bg-green-600 transition"
-              >
-                Refund
-              </button>
-              <button
-                onClick={handleCancel}
-                className="px-3 py-1.5 bg-red-500 text-white text-sm hover:bg-red-600 transition"
-              >
-                Cancel
-              </button>
-            </div>
+              if (raw) {
+                try {
+                  const dateObj = new Date(raw);
+                  dateFormatted = dateObj.toLocaleString("en-US", {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                    hour: "numeric",
+                    minute: "2-digit",
+                  });
+                } catch (e) {
+                  dateFormatted = raw;
+                }
+              }
+
+              return (
+                <>
+                  {/* FLEX ROWS */}
+                  <div className="flex justify-between mb-2">
+                    <span className="font-semibold">ID:</span>
+                    <span>{order.shopify_order.name || "-"}</span>
+                  </div>
+
+                  <div className="flex justify-between mb-2">
+                    <span className="font-semibold">Shop:</span>
+                    <span>{order.shopify_order.shop || "-"}</span>
+                  </div>
+
+                  <div className="flex justify-between mb-2">
+                    <span className="font-semibold">Created At:</span>
+                    <span>{dateFormatted}</span>
+                  </div>
+
+                  <div className="flex justify-between mb-2">
+                    <span className="font-semibold">Total Price:</span>
+                    <span>${order.shopify_order.total_price || "-"}</span>
+                  </div>
+
+                  <div className="flex justify-between mb-2">
+                    <span className="font-semibold">Shipping:</span>
+                    <span>${order.shopify_order.total_shipping_price || "-"}</span>
+                  </div>
+
+                  <div className="flex justify-between mb-2">
+                    <span className="font-semibold">Payment Status:</span>
+                    <span>{order.shopify_order.payment_status || "-"}</span>
+                  </div>
+
+                  <div className="flex justify-between mb-2">
+                    <span className="font-semibold">Fulfillment Status:</span>
+                    <span
+                      className={`px-2 py-0.5 rounded text-sm font-medium
+                        ${order.shopify_order.fulfillment_status? "" : "bg-yellow-200 text-yellow-800"}`}
+                    >
+                      {order.shopify_order.fulfillment_status || "Unfulfilled"}
+                    </span>
+                  </div>
+
+                  {/* Line Items */}
+                  <div className="mt-3">
+                    <div className="font-semibold mb-1">Line Items:</div>
+                    <div className="ml-2">{renderLineItems(order.shopify_order.line_items)}</div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="mt-4 flex justify-end gap-2">
+                    <button
+                      onClick={() => setShowRefundModal(true)}
+                      className="px-3 py-1.5 bg-green-500 text-white text-sm hover:bg-green-600 transition"
+                    >
+                      Refund
+                    </button>
+
+                    <button
+                      onClick={handleCancel}
+                      className="px-3 py-1.5 bg-red-500 text-white text-sm hover:bg-red-600 transition"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </>
+              );
+            })()}
           </>
         ) : (
           <div className="mt-4 text-gray-500">{order.msg}</div>

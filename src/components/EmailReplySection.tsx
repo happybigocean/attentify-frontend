@@ -47,7 +47,7 @@ const EmailReplySection: React.FC<EmailReplyProps> = ({
 
   return (
     <div className="mt-4">
-      <div className="bg-white border border-gray-300 p-4 ">
+      <div className="bg-white border border-gray-300 p-4">
         <h3 className="text-lg font-semibold mb-2">Reply</h3>
         <div data-color-mode="light">
           <Editor
@@ -56,13 +56,17 @@ const EmailReplySection: React.FC<EmailReplyProps> = ({
             style={{ height: '320px' }}
           />
         </div>
-        <button
-          className="bg-blue-600 text-white px-6 py-2  hover:bg-blue-700 disabled:opacity-50 mt-2"
-          onClick={handleReply}
-          disabled={sending || isEditorEmpty(reply)}
-        >
-          {sending ? "Sending..." : "Send Reply"}
-        </button>
+
+        {/* Button aligned to the right */}
+        <div className="flex justify-end mt-2">
+          <button
+            className="bg-blue-600 text-white px-6 py-2 hover:bg-blue-700 disabled:opacity-50 transition"
+            onClick={handleReply}
+            disabled={sending || isEditorEmpty(reply)}
+          >
+            {sending ? "Sending..." : "Send Reply"}
+          </button>
+        </div>
       </div>
     </div>
   );

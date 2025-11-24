@@ -17,7 +17,6 @@ const MessageDetailPage = () => {
   const { threadId } = useParams<{ threadId: string }>();
   const [message, setMessage] = useState<Message | null>(null);
   const [loading, setLoading] = useState(true);
-  const [expandedIndexes, setExpandedIndexes] = useState<number[]>([]);
   const [reply, setReply] = useState("");
 
   const [orderInfo, setOrderInfo] = useState<OrderInfo | null>(null);
@@ -46,10 +45,7 @@ const MessageDetailPage = () => {
           `${import.meta.env.VITE_API_URL || ""}/message/${threadId}`
         );
         setMessage(response.data);
-        console.log("Fetched message:", response.data);
-        if (response.data?.messages?.length) {
-          setExpandedIndexes([response.data.messages.length - 1]);
-        }
+
       } catch (error) {
         console.error("Error fetching message:", error);
       } finally {
@@ -98,13 +94,6 @@ const MessageDetailPage = () => {
     }
   }, [message]);
 
-  // Toggle collapse/expand
-  const handleToggle = (idx: number) => {
-    setExpandedIndexes((prev) =>
-      prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx]
-    );
-  };
-
   return (
     <Layout>
       {loading && <div className="p-4">Loading...</div>}
@@ -112,31 +101,21 @@ const MessageDetailPage = () => {
         <div className="flex min-h-screen w-full p-4">
           {/* Main Email Thread */}
           <div className="flex-1 max-w-4xl">
-            <Link
-              to="/message"
-              className="inline-flex items-center text-blue-600 hover:underline"
-            >
-              <ArrowLeftIcon className="h-5 w-5 mr-2" />
-              Back to Messages
-            </Link>
+            
             {message ? (
               <div className="space-y-2 mt-4">
                 {message.messages.map((entry, index) => {
-                  const isExpanded = expandedIndexes.includes(index);
+                  const isLast = index === message.messages.length - 1;
+
                   return (
                     <div
                       key={index}
                       className={`flex ${
-                        entry.sender === "client"
-                          ? "justify-start"
-                          : "justify-end"
+                        entry.sender === "client" ? "justify-start" : "justify-end"
                       }`}
                     >
                       <div className="w-full max-w-5xl">
-                        <div
-                          className={`cursor-pointer select-none mb-2`}
-                          onClick={() => handleToggle(index)}
-                        >
+                        <div className="mb-2">
                           {entry.message_type === "html" && (
                             <EmailViewer
                               subject={entry.title || "No Subject"}
@@ -145,7 +124,7 @@ const MessageDetailPage = () => {
                               date={entry.timestamp}
                               htmlBody={entry.content}
                               threadId={threadId}
-                              isExpanded={isExpanded}
+                              expended={isLast} // <-- only last element expanded
                               replyFromParent={reply}
                               OnHandleReply={() => {}}
                             />
@@ -157,7 +136,7 @@ const MessageDetailPage = () => {
                               to={entry.metadata?.to || "Unknown"}
                               date={entry.timestamp}
                               body={entry.content}
-                              isExpanded={isExpanded}
+                              isExpanded={isLast} // <-- only last element expanded
                             />
                           )}
                         </div>
@@ -190,35 +169,7 @@ const MessageDetailPage = () => {
 
           {/* Sidebar */}
           <div className="flex flex-col justify-start ml-6 space-y-6">
-            <div className="sticky top-31 flex flex-col space-y-6">
-              <div className="w-[380px] border border-gray-300 bg-white p-4">
-                <h2 className="text-2xl font-bold mb-5">Customer Info</h2>
-                {orderInfo &&
-                  orderInfo?.shopify_order &&
-                  orderInfo?.shopify_order?.customer && (
-                    <>
-                      <div className="mb-4">
-                        <span className="font-semibold">Name: </span>
-                        {orderInfo?.shopify_order?.customer.name}
-                      </div>
-                      <div className="mb-4">
-                        <span className="font-semibold">Email: </span>
-                        {orderInfo?.shopify_order?.customer.email}
-                      </div>
-                      <div className="mb-4">
-                        <span className="font-semibold">Phone: </span>
-                        {orderInfo?.shopify_order?.customer.phone}
-                      </div>
-                      <div>
-                        <span className="font-semibold">Address: </span>
-                        {
-                          orderInfo?.shopify_order?.customer.default_address
-                            ?.address1
-                        }
-                      </div>
-                    </>
-                )}
-              </div>
+            <div className="sticky top-24 flex flex-col space-y-6">
               <OrderInfoCard
                 order={orderInfo}
                 loading={loadingOrder}
