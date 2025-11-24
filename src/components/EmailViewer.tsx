@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState } from "react";
 import DOMPurify from "dompurify";
 import { formatEmailAddress } from "../utils/formatEmailAddress";
 
@@ -9,7 +9,7 @@ type EmailViewerProps = {
   date: string;
   htmlBody: string;
   threadId?: string;
-  isExpanded?: boolean;
+  expended?: boolean;
   replyFromParent?: string;
   OnHandleReply?: () => void;
 };
@@ -20,55 +20,38 @@ const EmailViewer: React.FC<EmailViewerProps> = ({
   to,
   date,
   htmlBody,
-  isExpanded,
+  expended,
 }) => {
   const sanitizedHtml = DOMPurify.sanitize(htmlBody);
+  const [isExpanded, setIsExpanded] = useState(expended);
+
+  const toggleExpand = () => setIsExpanded(prev => !prev);
 
   return (
-    <div>
-      {!isExpanded && (
-        <div className="bg-white border border-gray-300 p-4 max-w-5xl mx-auto">
-          <header>
-            <h2 className="text-xl font-bold mb-2">{subject}</h2>
-            <div className="flex gap-3 text-sm text-gray-600">
-              <div>
-                <span className="font-semibold">From:</span>{" "}
-                {from}
-              </div>
-              <div>
-                <span className="font-semibold">To:</span>{" "}
-                {to}
-              </div>
-              <div>
-                <span className="font-semibold">Date:</span>  {new Date(date).toLocaleString()}
-              </div>
+    <div className="bg-white border border-gray-300 p-4 max-w-5xl mx-auto mb-4">
+      <header className="flex justify-between items-start mb-4 border-b border-gray-400 pb-4">
+        <div>
+          <h2 className="text-xl font-bold mb-2">{subject}</h2>
+          <div className="flex gap-3 text-sm text-gray-600">
+            <div>
+              <span className="font-semibold">From:</span>{" "}
+              {formatEmailAddress(from)}
             </div>
-          </header>
-        </div>
-      )}
-      {isExpanded && (
-        <div className="bg-white border border-gray-300 p-4 max-w-5xl mx-auto">
-          <header className="mb-4 border-b border-gray-400 pb-4">
-            <h2 className="text-xl font-bold mb-2">{subject}</h2>
-            <div className="flex gap-3 text-sm text-gray-600">
-              <div>
-                <span className="font-semibold">From:</span>{" "}
-                {formatEmailAddress(from)}
-              </div>
-              <div>
-                <span className="font-semibold">To:</span>{" "}
-                {formatEmailAddress(to)}
-              </div>
-              <div>
-                <span className="font-semibold">Date:</span> {new Date(date).toLocaleString()}
-              </div>
+            <div>
+              <span className="font-semibold">To:</span>{" "}
+              {formatEmailAddress(to)}
             </div>
-          </header>
-          <section className="prose max-w-none">
-            <div dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />
-          </section>
+            <div>
+              <span className="font-semibold">Date:</span>{" "}
+              {new Date(date).toLocaleString()}
+            </div>
+          </div>
         </div>
-      )}
+      </header>
+
+      <section className="prose max-w-none">
+        <div dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />
+      </section>
     </div>
   );
 };
