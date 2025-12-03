@@ -11,6 +11,7 @@ import type { OrderInfo } from "../../types";
 import EmailReplySection from "../../components/EmailReplySection";
 import SMSReplySection from "../../components/SMSReplySection";
 import { usePageTitle } from "../../context/PageTitleContext";
+import { useNotification } from "../../context/NotificationContext";
 import Comments from "../../components/Comments";
 
 const MessageDetailPage = () => {
@@ -26,6 +27,8 @@ const MessageDetailPage = () => {
   const hasFetchedMessage = useRef(false);
   const hasFetchedOrder = useRef(false);
   const { setTitle } = usePageTitle();
+
+  const { notify } = useNotification();
 
   useEffect(() => {
     setTitle("Message Detail");
@@ -174,6 +177,37 @@ const MessageDetailPage = () => {
                 order={orderInfo}
                 loading={loadingOrder}
                 error={error}
+                onOrderNameChanged={(orderNumber) => {
+                  (async () => {
+                    setLoadingOrder(true);
+                    try {
+                      const res = await axios.get(`${import.meta.env.VITE_API_URL || ""}/shopify/orders`, {
+                        params: {
+                          search: orderNumber,
+                          page: 1,
+                          size: 1,
+                          shop: "",
+                          company_id: "",
+                        },
+                      });
+                      setOrderInfo((prevState) => {
+                        if (!prevState) { 
+                          return prevState;
+                        } else {
+                          return {
+                            ...prevState,
+                            shopify_order: res.data.orders[0]
+                          }
+                        }
+                      });
+                    } catch (err) {
+                      console.error("Failed to fetch orders", err);
+                      notify("error", "Failed to fetch orders");
+                    } finally {
+                      setLoadingOrder(false);
+                    }
+                  })()
+                }}
               />
             </div>
           </div>

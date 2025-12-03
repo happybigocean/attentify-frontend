@@ -3,12 +3,14 @@ import type { ShopifyLineItem, OrderInfo } from "../types";
 import { useNotification } from "../context/NotificationContext";
 import { useConfirmDialog } from "../context/ConfirmDialogContext";
 import axios from "axios";
+import AsyncSelect from "react-select/async";
 import RefundModal from "./RefundModal";
 
 interface OrderInfoCardProps {
   order: OrderInfo | null;
   loading: boolean;
   error: string | null;
+  onOrderNameChanged: (orderName: string) => void;
 }
 
 const renderLineItems = (items?: ShopifyLineItem[]) => {
@@ -34,7 +36,7 @@ const renderLineItems = (items?: ShopifyLineItem[]) => {
   );
 };
 
-const OrderInfoCard: React.FC<OrderInfoCardProps> = ({ order, loading, error }) => {
+const OrderInfoCard: React.FC<OrderInfoCardProps> = ({ order, loading, error, onOrderNameChanged }) => {
   const { notify } = useNotification();
   const { confirm } = useConfirmDialog();
   const [showRefundModal, setShowRefundModal] = useState(false);
@@ -152,7 +154,46 @@ const OrderInfoCard: React.FC<OrderInfoCardProps> = ({ order, loading, error }) 
                   {/* FLEX ROWS */}
                   <div className="flex justify-between mb-2">
                     <span className="font-semibold">ID:</span>
-                    <span>{order.shopify_order.name || "-"}</span>
+                    {/* <span>{order.shopify_order.name || "-"}</span> */}
+                    <AsyncSelect
+                      components={{
+                        IndicatorSeparator: null,
+                        LoadingIndicator: () => null,
+                      }}
+                      classNames={{
+                        control: () => "w-[110px] border border-gray-300 !rounded-none text-sm",
+                        dropdownIndicator: () => "!p-0 !text-black",
+                      }}
+                      loadOptions={(inputValue, callback) => {
+                        (async () => {
+                          await axios.post(`${import.meta.env.VITE_API_URL || ""}/shopify/orders/sync`);
+                          try {
+                            const res = await axios.get(`${import.meta.env.VITE_API_URL || ""}/shopify/orders`, {
+                              params: {
+                                search: inputValue,
+                                page: 1,
+                                size: 50,
+                                shop: "",
+                                company_id: "",
+                              },
+                            });
+                            callback(res.data.orders.map((item: any) => ({value: item.name, label: item.name})));
+                          } catch (err) {
+                            console.error("Failed to fetch orders", err);
+                            notify("error", "Failed to fetch orders");
+                          }
+                        })();
+                      }}
+                      value={{
+                        value: order.shopify_order.name,
+                        label: order.shopify_order.name,
+                      }}
+                      onChange={(newValue) => {
+                        if (newValue?.value) {
+                          onOrderNameChanged(newValue.value);
+                        }
+                      }}
+                    />
                   </div>
 
                   <div className="flex justify-between mb-2">
