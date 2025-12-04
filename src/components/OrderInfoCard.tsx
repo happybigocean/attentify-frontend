@@ -10,6 +10,7 @@ interface OrderInfoCardProps {
   order: OrderInfo | null;
   loading: boolean;
   error: string | null;
+  onLoadOrderOptions: (inputValue: string, callback: (options: any) => void) => void;
   onOrderNameChanged: (orderName: string) => void;
 }
 
@@ -36,7 +37,7 @@ const renderLineItems = (items?: ShopifyLineItem[]) => {
   );
 };
 
-const OrderInfoCard: React.FC<OrderInfoCardProps> = ({ order, loading, error, onOrderNameChanged }) => {
+const OrderInfoCard: React.FC<OrderInfoCardProps> = ({ order, loading, error, onLoadOrderOptions, onOrderNameChanged }) => {
   const { notify } = useNotification();
   const { confirm } = useConfirmDialog();
   const [showRefundModal, setShowRefundModal] = useState(false);
@@ -165,24 +166,7 @@ const OrderInfoCard: React.FC<OrderInfoCardProps> = ({ order, loading, error, on
                         dropdownIndicator: () => "!p-0 !text-black",
                       }}
                       loadOptions={(inputValue, callback) => {
-                        (async () => {
-                          await axios.post(`${import.meta.env.VITE_API_URL || ""}/shopify/orders/sync`);
-                          try {
-                            const res = await axios.get(`${import.meta.env.VITE_API_URL || ""}/shopify/orders`, {
-                              params: {
-                                search: inputValue,
-                                page: 1,
-                                size: 50,
-                                shop: "",
-                                company_id: "",
-                              },
-                            });
-                            callback(res.data.orders.map((item: any) => ({value: item.name, label: item.name})));
-                          } catch (err) {
-                            console.error("Failed to fetch orders", err);
-                            notify("error", "Failed to fetch orders");
-                          }
-                        })();
+                        onLoadOrderOptions(inputValue, callback);
                       }}
                       value={{
                         value: order.shopify_order.name,
