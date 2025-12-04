@@ -177,6 +177,29 @@ const MessageDetailPage = () => {
                 order={orderInfo}
                 loading={loadingOrder}
                 error={error}
+                onLoadOrderOptions={(inputValue, callback) => {
+                  (async () => {
+                    const matches = message?.client?.match(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g);
+                    const email = matches?.[0];
+                    await axios.post(`${import.meta.env.VITE_API_URL || ""}/shopify/orders/sync`);
+                    try {
+                      const res = await axios.get(`${import.meta.env.VITE_API_URL || ""}/shopify/orders`, {
+                        params: {
+                          search: inputValue,
+                          page: 1,
+                          size: 50,
+                          shop: "",
+                          company_id: "",
+                          email,
+                        },
+                      });
+                      callback(res.data.orders.map((item: any) => ({ value: item.name, label: item.name })));
+                    } catch (err) {
+                      console.error("Failed to fetch orders", err);
+                      notify("error", "Failed to fetch orders");
+                    }
+                  })();
+                }}
                 onOrderNameChanged={(orderNumber) => {
                   (async () => {
                     setLoadingOrder(true);
@@ -191,13 +214,13 @@ const MessageDetailPage = () => {
                         },
                       });
                       setOrderInfo((prevState) => {
-                        if (!prevState) { 
+                        if (!prevState) {
                           return prevState;
                         } else {
                           return {
                             ...prevState,
-                            shopify_order: res.data.orders[0]
-                          }
+                            shopify_order: res.data.orders[0],
+                          };
                         }
                       });
                     } catch (err) {
@@ -206,7 +229,7 @@ const MessageDetailPage = () => {
                     } finally {
                       setLoadingOrder(false);
                     }
-                  })()
+                  })();
                 }}
               />
             </div>

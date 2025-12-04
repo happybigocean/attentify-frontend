@@ -19,8 +19,8 @@ export type Message = {
   participants?: string[];
 
   // For compatibility with chat/SMS legacy logic
-  client_id?: string;
-  agent_id?: string;
+  client?: string;
+  agent?: string;
   session_id?: string;
 
   started_at: string;
