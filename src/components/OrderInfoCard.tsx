@@ -3,14 +3,14 @@ import type { ShopifyLineItem, OrderInfo } from "../types";
 import { useNotification } from "../context/NotificationContext";
 import { useConfirmDialog } from "../context/ConfirmDialogContext";
 import axios from "axios";
-import AsyncSelect from "react-select/async";
+import Select from "react-select";
 import RefundModal from "./RefundModal";
 
 interface OrderInfoCardProps {
   order: OrderInfo | null;
   loading: boolean;
   error: string | null;
-  onLoadOrderOptions: (inputValue: string, callback: (options: any) => void) => void;
+  orderOptions: any;
   onOrderNameChanged: (orderName: string) => void;
 }
 
@@ -37,7 +37,7 @@ const renderLineItems = (items?: ShopifyLineItem[]) => {
   );
 };
 
-const OrderInfoCard: React.FC<OrderInfoCardProps> = ({ order, loading, error, onLoadOrderOptions, onOrderNameChanged }) => {
+const OrderInfoCard: React.FC<OrderInfoCardProps> = ({ order, loading, error, orderOptions, onOrderNameChanged }) => {
   const { notify } = useNotification();
   const { confirm } = useConfirmDialog();
   const [showRefundModal, setShowRefundModal] = useState(false);
@@ -156,7 +156,7 @@ const OrderInfoCard: React.FC<OrderInfoCardProps> = ({ order, loading, error, on
                   <div className="flex justify-between mb-2">
                     <span className="font-semibold">ID:</span>
                     {/* <span>{order.shopify_order.name || "-"}</span> */}
-                    <AsyncSelect
+                    <Select
                       components={{
                         IndicatorSeparator: null,
                         LoadingIndicator: () => null,
@@ -165,9 +165,7 @@ const OrderInfoCard: React.FC<OrderInfoCardProps> = ({ order, loading, error, on
                         control: () => "w-[110px] border border-gray-300 !rounded-none text-sm",
                         dropdownIndicator: () => "!p-0 !text-black",
                       }}
-                      loadOptions={(inputValue, callback) => {
-                        onLoadOrderOptions(inputValue, callback);
-                      }}
+                      options={orderOptions}
                       value={{
                         value: order.shopify_order.name,
                         label: order.shopify_order.name,
