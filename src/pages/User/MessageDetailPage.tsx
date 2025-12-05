@@ -23,6 +23,7 @@ const MessageDetailPage = () => {
   const [orderInfo, setOrderInfo] = useState<OrderInfo | null>(null);
   const [loadingOrder, setLoadingOrder] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [orderOptions, setOrderOptions] = useState<any>([]);
 
   const hasFetchedMessage = useRef(false);
   const hasFetchedOrder = useRef(false);
@@ -83,7 +84,11 @@ const MessageDetailPage = () => {
           { message_id: message._id }
         );
         setOrderInfo(response.data);
-        setReply(response.data?.msg || "");
+        if (response.data?.msg === 'Email not matched') {
+          setReply("Please send inquiry via email from the order.");
+        } else {
+          setReply(response.data?.msg || "");
+        }
       } catch (err: any) {
         setError(err.message || "Failed to fetch order info");
         setOrderInfo(null);
@@ -92,8 +97,31 @@ const MessageDetailPage = () => {
       }
     };
 
+    const fetchOrderOptions = async () => {
+      const matches = message?.client?.match(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g);
+      const email = matches?.[0];
+      await axios.post(`${import.meta.env.VITE_API_URL || ""}/shopify/orders/sync`);
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL || ""}/shopify/orders`, {
+          params: {
+            search: "",
+            // page: 1,
+            // size: 50,
+            shop: "",
+            company_id: "",
+            email,
+          },
+        });
+        setOrderOptions(res.data.orders.map((item: any) => ({ value: item.name, label: item.name })));
+      } catch (err) {
+        console.error("Failed to fetch orders", err);
+        notify("error", "Failed to fetch orders");
+      }
+    };
+
     if (message) {
       fetchOrderInfo();
+      fetchOrderOptions();
     }
   }, [message]);
 
@@ -177,29 +205,7 @@ const MessageDetailPage = () => {
                 order={orderInfo}
                 loading={loadingOrder}
                 error={error}
-                onLoadOrderOptions={(inputValue, callback) => {
-                  (async () => {
-                    const matches = message?.client?.match(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g);
-                    const email = matches?.[0];
-                    await axios.post(`${import.meta.env.VITE_API_URL || ""}/shopify/orders/sync`);
-                    try {
-                      const res = await axios.get(`${import.meta.env.VITE_API_URL || ""}/shopify/orders`, {
-                        params: {
-                          search: inputValue,
-                          page: 1,
-                          size: 50,
-                          shop: "",
-                          company_id: "",
-                          email,
-                        },
-                      });
-                      callback(res.data.orders.map((item: any) => ({ value: item.name, label: item.name })));
-                    } catch (err) {
-                      console.error("Failed to fetch orders", err);
-                      notify("error", "Failed to fetch orders");
-                    }
-                  })();
-                }}
+                orderOptions={orderOptions}
                 onOrderNameChanged={(orderNumber) => {
                   (async () => {
                     setLoadingOrder(true);
