@@ -229,6 +229,9 @@ const MessageDetailPage = () => {
                           };
                         }
                       });
+                      await axios.put(`${import.meta.env.VITE_API_URL || ""}/message/${message?._id}`, {
+                        "order_info.order_id": orderNumber,
+                      });
                     } catch (err) {
                       console.error("Failed to fetch orders", err);
                       notify("error", "Failed to fetch orders");
