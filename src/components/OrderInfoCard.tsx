@@ -12,6 +12,8 @@ interface OrderInfoCardProps {
   error: string | null;
   orderOptions: any;
   onOrderNameChanged: (orderName: string) => void;
+  showConfirmButton: boolean,
+  onConfirm: () => void;
 }
 
 const renderLineItems = (items?: ShopifyLineItem[]) => {
@@ -37,7 +39,15 @@ const renderLineItems = (items?: ShopifyLineItem[]) => {
   );
 };
 
-const OrderInfoCard: React.FC<OrderInfoCardProps> = ({ order, loading, error, orderOptions, onOrderNameChanged }) => {
+const OrderInfoCard: React.FC<OrderInfoCardProps> = ({ 
+  order, 
+  loading, 
+  error, 
+  orderOptions, 
+  onOrderNameChanged, 
+  showConfirmButton, 
+  onConfirm,  
+}) => {
   const { notify } = useNotification();
   const { confirm } = useConfirmDialog();
   const [showRefundModal, setShowRefundModal] = useState(false);
@@ -156,26 +166,34 @@ const OrderInfoCard: React.FC<OrderInfoCardProps> = ({ order, loading, error, or
                   <div className="flex justify-between mb-2">
                     <span className="font-semibold">ID:</span>
                     {/* <span>{order.shopify_order.name || "-"}</span> */}
-                    <Select
-                      components={{
-                        IndicatorSeparator: null,
-                        LoadingIndicator: () => null,
-                      }}
-                      classNames={{
-                        control: () => "w-[110px] border border-gray-300 !rounded-none text-sm",
-                        dropdownIndicator: () => "!p-0 !text-black",
-                      }}
-                      options={orderOptions}
-                      value={{
-                        value: order.shopify_order.name,
-                        label: order.shopify_order.name,
-                      }}
-                      onChange={(newValue) => {
-                        if (newValue?.value) {
-                          onOrderNameChanged(newValue.value);
-                        }
-                      }}
-                    />
+                    <div className="flex gap-1">
+                      <Select
+                        components={{
+                          IndicatorSeparator: null,
+                          LoadingIndicator: () => null,
+                        }}
+                        classNames={{
+                          control: () => "w-[110px] border border-gray-300 !rounded-none text-sm",
+                          dropdownIndicator: () => "!p-0 !text-black",
+                        }}
+                        options={orderOptions}
+                        value={{
+                          value: order.shopify_order.name,
+                          label: order.shopify_order.name,
+                        }}
+                        onChange={(newValue) => {
+                          if (newValue?.value) {
+                            onOrderNameChanged(newValue.value);
+                          }
+                        }}
+                      />
+                      {showConfirmButton && <button 
+                        className="px-3 py-1.5 bg-blue-600 text-white text-sm hover:bg-blue-700 transition"
+                        onClick={onConfirm}
+                      >
+                        Confirm
+                      </button>}
+                    </div>
                   </div>
 
                   <div className="flex justify-between mb-2">
@@ -220,7 +238,7 @@ const OrderInfoCard: React.FC<OrderInfoCardProps> = ({ order, loading, error, or
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="mt-4 flex justify-end gap-2">
+                  {!showConfirmButton && <div className="mt-4 flex justify-end gap-2">
                     <button
                       onClick={() => setShowRefundModal(true)}
                       className="px-3 py-1.5 bg-green-500 text-white text-sm hover:bg-green-600 transition"
@@ -234,7 +252,7 @@ const OrderInfoCard: React.FC<OrderInfoCardProps> = ({ order, loading, error, or
                     >
                       Cancel
                     </button>
-                  </div>
+                  </div>}
                 </>
               );
             })()}
