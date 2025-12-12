@@ -34,6 +34,7 @@ export type Message = {
   tags?: string[];
   resolved_by_ai?: boolean;
   comments?: Comment[];
+  order_info?: OrderInfo;
 };
 
 export interface OrderInfo {
@@ -42,6 +43,7 @@ export interface OrderInfo {
   status: number;
   msg: string;
   shopify_order?: ShopifyOrder;
+  confirmed?: boolean;
 };
 
 export interface ShopifyAddress {

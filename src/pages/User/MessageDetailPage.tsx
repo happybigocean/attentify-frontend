@@ -65,20 +65,18 @@ const MessageDetailPage = () => {
   // Analyze email to get order info
   useEffect(() => {
     //hasFetchedOrder.current = false;
-    setOrderInfo(null);
-    setLoadingOrder(true);
-    setError(null);
 
     const fetchOrderInfo = async () => {
       if (hasFetchedOrder.current) return;
       hasFetchedOrder.current = true;
       if (!message || !message.messages?.length) {
-        setOrderInfo(null);
-        setLoadingOrder(false);
         return;
       }
 
       try {
+        setOrderInfo(null);
+        setLoadingOrder(true);
+        setError(null);
         const response = await axios.post(
           (import.meta.env.VITE_API_URL || "") + "/message/analyze",
           { message_id: message._id }
@@ -225,12 +223,10 @@ const MessageDetailPage = () => {
                         } else {
                           return {
                             ...prevState,
+                            order_id: orderNumber,
                             shopify_order: res.data.orders[0],
                           };
                         }
-                      });
-                      await axios.put(`${import.meta.env.VITE_API_URL || ""}/message/${message?._id}`, {
-                        "order_info.order_id": orderNumber,
                       });
                     } catch (err) {
                       console.error("Failed to fetch orders", err);
@@ -239,6 +235,33 @@ const MessageDetailPage = () => {
                       setLoadingOrder(false);
                     }
                   })();
+                }}
+                showConfirmButton={!message?.order_info?.confirmed || message.order_info.order_id !== orderInfo?.order_id}
+                onConfirm={async () => {
+                  try {
+                    await axios.put(`${import.meta.env.VITE_API_URL || ""}/message/${message?._id}`, {
+                      "order_info.order_id": orderInfo?.order_id,
+                      "order_info.confirmed": true,
+                    });
+                    setMessage((prevState) => {
+                      if (!prevState || !prevState.order_info || !orderInfo) {
+                        return prevState;
+                      } else {
+                        return {
+                          ...prevState,
+                          order_info: {
+                            ...prevState?.order_info,
+                            order_id: orderInfo?.order_id,
+                            confirmed: true,
+                          }
+                        };
+                      }
+                    });
+                    notify("success", "Order confirmed");
+                  } catch (err) {
+                    console.error("Failed to update message", err);
+                    notify("error", "Failed to update message");
+                  }
                 }}
               />
             </div>
