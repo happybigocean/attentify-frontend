@@ -14,7 +14,6 @@ interface OrderInfoCardProps {
   onOrderNameChanged: (orderName: string) => void;
   showConfirmButton: boolean,
   onConfirm: () => void;
-  showActionButtons: boolean,
 }
 
 const renderLineItems = (items?: ShopifyLineItem[]) => {
